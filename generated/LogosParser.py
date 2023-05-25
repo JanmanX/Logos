@@ -18,7 +18,7 @@ def serializedATN():
         9,1,0,0,0,9,7,1,0,0,0,9,10,1,0,0,0,10,11,1,0,0,0,11,12,5,0,0,1,12,
         1,1,0,0,0,13,14,5,12,0,0,14,15,5,1,0,0,15,26,3,4,2,0,16,17,5,2,0,
         0,17,26,5,12,0,0,18,19,5,3,0,0,19,20,3,4,2,0,20,21,5,4,0,0,21,22,
-        3,2,1,0,22,26,1,0,0,0,23,24,5,5,0,0,24,26,3,4,2,0,25,13,1,0,0,0,
+        3,2,1,0,22,26,1,0,0,0,23,24,5,5,0,0,24,26,5,12,0,0,25,13,1,0,0,0,
         25,16,1,0,0,0,25,18,1,0,0,0,25,23,1,0,0,0,26,3,1,0,0,0,27,28,6,2,
         -1,0,28,29,5,10,0,0,29,30,3,4,2,0,30,31,5,11,0,0,31,35,1,0,0,0,32,
         35,5,12,0,0,33,35,5,13,0,0,34,27,1,0,0,0,34,32,1,0,0,0,34,33,1,0,
@@ -38,7 +38,7 @@ class LogosParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "':='", "'print'", "'if'", "'then'", "'return'", 
+    literalNames = [ "<INVALID>", "':='", "'print'", "'if'", "'then'", "'exit'", 
                      "'*'", "'/'", "'+'", "'-'", "'('", "')'" ]
 
     symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
@@ -155,6 +155,24 @@ class LogosParser ( Parser ):
 
 
 
+    class ExitContext(StmtContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.StmtContext
+            super().__init__(parser)
+            self.copyFrom(ctx)
+
+        def ID(self):
+            return self.getToken(LogosParser.ID, 0)
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterExit" ):
+                listener.enterExit(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitExit" ):
+                listener.exitExit(self)
+
+
     class PrintContext(StmtContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.StmtContext
@@ -193,25 +211,6 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitIf" ):
                 listener.exitIf(self)
-
-
-    class ReturnContext(StmtContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.StmtContext
-            super().__init__(parser)
-            self.copyFrom(ctx)
-
-        def expr(self):
-            return self.getTypedRuleContext(LogosParser.ExprContext,0)
-
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterReturn" ):
-                listener.enterReturn(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitReturn" ):
-                listener.exitReturn(self)
 
 
     class AssignContext(StmtContext):
@@ -275,12 +274,12 @@ class LogosParser ( Parser ):
                 self.stmt()
                 pass
             elif token in [5]:
-                localctx = LogosParser.ReturnContext(self, localctx)
+                localctx = LogosParser.ExitContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
                 self.state = 23
                 self.match(LogosParser.T__4)
                 self.state = 24
-                self.expr(0)
+                self.match(LogosParser.ID)
                 pass
             else:
                 raise NoViableAltException(self)

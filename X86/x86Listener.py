@@ -69,7 +69,6 @@ class X86Listener(LogosListener):
     def enterPrint(self, ctx:LogosParser.PrintContext):
         reg = self.get_reg(ctx.ID().getText())
         self.code += consts.PRINT_FMT.format(reg=reg)
-        pass
 
     # Exit a parse tree produced by LogosParser#print.
     def exitPrint(self, ctx:LogosParser.PrintContext):
@@ -83,15 +82,14 @@ class X86Listener(LogosListener):
     def exitIf(self, ctx:LogosParser.IfContext):
         pass
 
+    # Enter a parse tree produced by LogosParser#exit.
+    def enterExit(self, ctx:LogosParser.ExitContext):
+        reg = self.get_reg(ctx.ID().getText())
+        self.code += consts.EXIT_FMT.format(reg=reg)
 
-    # Enter a parse tree produced by LogosParser#return.
-    def enterReturn(self, ctx:LogosParser.ReturnContext):
+    # Exit a parse tree produced by LogosParser#exit.
+    def exitExit(self, ctx:LogosParser.ExitContext):
         pass
-
-    # Exit a parse tree produced by LogosParser#return.
-    def exitReturn(self, ctx:LogosParser.ReturnContext):
-        pass
-
 
     # Enter a parse tree produced by LogosParser#expr.
     def enterExpr(self, ctx:LogosParser.ExprContext):

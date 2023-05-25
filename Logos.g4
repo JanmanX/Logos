@@ -5,7 +5,7 @@ prog: stmt+ EOF;
 stmt : ID ':=' expr                 #assign
     | 'print' ID                    #print      
     | 'if' expr 'then' stmt         #if
-    | 'return' expr                 #return  
+    | 'exit' ID                     #exit
     ;
 
 expr: expr op=('*'|'/') expr

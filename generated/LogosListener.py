@@ -44,12 +44,12 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#return.
-    def enterReturn(self, ctx:LogosParser.ReturnContext):
+    # Enter a parse tree produced by LogosParser#exit.
+    def enterExit(self, ctx:LogosParser.ExitContext):
         pass
 
-    # Exit a parse tree produced by LogosParser#return.
-    def exitReturn(self, ctx:LogosParser.ReturnContext):
+    # Exit a parse tree produced by LogosParser#exit.
+    def exitExit(self, ctx:LogosParser.ExitContext):
         pass
 
 

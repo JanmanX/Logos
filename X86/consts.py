@@ -4,10 +4,8 @@
 
 PROG_START = """
 section .data
-    output db "%x", 0x10, 0x00  
 
 section .text 
-
 global _start
 
 _start:
@@ -15,13 +13,13 @@ _start:
 
 
 PROG_END = """
-    mov rax, 0x01       ; sys_exit
-    mov rbx, 0x00       ; exit code
-    INT 0x80
+    mov rax, 0x3c       ; sys_exit
+    mov rdi, 0x00       ; exit code
+    syscall
 """
 
 ASSIGN_FMT = """
-    mov {reg}, {val}
+    mov {reg}, {val}    ; assign {val} to {reg}
 """
 
 
@@ -36,4 +34,11 @@ PRINT_FMT = """
 
     add rsp, 0x08       ; pop the stack
 
+    """
+
+
+EXIT_FMT = """
+    mov rax, 0x3c       ; sys_exit
+    mov rdi, {reg}      ; exit code   
+    syscall
     """
