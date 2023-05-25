@@ -24,15 +24,16 @@ ASSIGN_FMT = """
 
 
 PRINT_FMT = """
+    push 0x0A
     push {reg}          ; register to print
 
     mov rax, 0x01       ; sys_write
     mov rdi, 0x01       ; stdout
     mov rsi, rsp        ; pointer to top of stack where value is stored
-    mov rdx, 0x08       ; length of string. 8 bytes for 64 bit register
+    mov rdx, 0x09       ; length of string. 8 bytes for 64 bit register
     syscall    
 
-    add rsp, 0x08       ; pop the stack
+    add rsp, 0x09       ; pop the stack
 
     """
 

@@ -53,7 +53,6 @@ class X86Listener(LogosListener):
     def exitProg(self, ctx:LogosParser.ProgContext):
         self.code += consts.PROG_END
 
-
     # Enter a parse tree produced by LogosParser#assign.
     def enterAssign(self, ctx:LogosParser.AssignContext):
         # Get the ID and allocate a register for it
@@ -91,11 +90,74 @@ class X86Listener(LogosListener):
     def exitExit(self, ctx:LogosParser.ExitContext):
         pass
 
-    # Enter a parse tree produced by LogosParser#expr.
-    def enterExpr(self, ctx:LogosParser.ExprContext):
+    # Enter a parse tree produced by LogosParser#LeLeqGeGeq.
+    def enterLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
         pass
 
-    # Exit a parse tree produced by LogosParser#expr.
-    def exitExpr(self, ctx:LogosParser.ExprContext):
+    # Exit a parse tree produced by LogosParser#LeLeqGeGeq.
+    def exitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#MulDiv.
+    def enterMulDiv(self, ctx:LogosParser.MulDivContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#MulDiv.
+    def exitMulDiv(self, ctx:LogosParser.MulDivContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#AddSub.
+    def enterAddSub(self, ctx:LogosParser.AddSubContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#AddSub.
+    def exitAddSub(self, ctx:LogosParser.AddSubContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#LogicalAndOr.
+    def enterLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#LogicalAndOr.
+    def exitLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#Id.
+    def enterId(self, ctx:LogosParser.IdContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#Id.
+    def exitId(self, ctx:LogosParser.IdContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#AndXorOr.
+    def enterAndXorOr(self, ctx:LogosParser.AndXorOrContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#AndXorOr.
+    def exitAndXorOr(self, ctx:LogosParser.AndXorOrContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#Int.
+    def enterInt(self, ctx:LogosParser.IntContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#Int.
+    def exitInt(self, ctx:LogosParser.IntContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#EqNeq.
+    def enterEqNeq(self, ctx:LogosParser.EqNeqContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#EqNeq.
+    def exitEqNeq(self, ctx:LogosParser.EqNeqContext):
         pass
 
