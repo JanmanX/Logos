@@ -17,12 +17,39 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#stmt.
-    def enterStmt(self, ctx:LogosParser.StmtContext):
+    # Enter a parse tree produced by LogosParser#assign.
+    def enterAssign(self, ctx:LogosParser.AssignContext):
         pass
 
-    # Exit a parse tree produced by LogosParser#stmt.
-    def exitStmt(self, ctx:LogosParser.StmtContext):
+    # Exit a parse tree produced by LogosParser#assign.
+    def exitAssign(self, ctx:LogosParser.AssignContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#print.
+    def enterPrint(self, ctx:LogosParser.PrintContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#print.
+    def exitPrint(self, ctx:LogosParser.PrintContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#if.
+    def enterIf(self, ctx:LogosParser.IfContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#if.
+    def exitIf(self, ctx:LogosParser.IfContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#return.
+    def enterReturn(self, ctx:LogosParser.ReturnContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#return.
+    def exitReturn(self, ctx:LogosParser.ReturnContext):
         pass
 
 

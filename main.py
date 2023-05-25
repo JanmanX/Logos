@@ -1,8 +1,9 @@
+import os
 import sys
 from antlr4 import *
 from generated.LogosLexer import LogosLexer 
 from generated.LogosParser import LogosParser 
-from X86.X86Listener import X86Listener
+from X86.x86Listener import X86Listener
 
 def main(argv):
     input_stream = FileStream(argv[1])
@@ -15,6 +16,23 @@ def main(argv):
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
- 
+    print("Binary code:")
+    print(listener.code)
+
+    code = listener.code
+
+    # Output to file
+    with open("out.asm", "w") as f:
+        f.write(code)
+    
+    # Compile
+    os.system("nasm -f elf64 out.asm -o out.o")
+
+    # Link
+    os.system("ld -m elf_x86_64 out.o -o out")
+
+
+
+
 if __name__ == '__main__':
     main(sys.argv)

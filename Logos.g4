@@ -2,8 +2,10 @@ grammar Logos;
 
 prog: stmt+ EOF;
 
-stmt : ID ':=' expr
-    | 'print' expr
+stmt : ID ':=' expr                 #assign
+    | 'print' ID                    #print      
+    | 'if' expr 'then' stmt         #if
+    | 'return' expr                 #return  
     ;
 
 expr: expr op=('*'|'/') expr
