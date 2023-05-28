@@ -125,6 +125,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitProg" ):
                 listener.exitProg(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitProg" ):
+                return visitor.visitProg(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -192,6 +198,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitExit" ):
                 listener.exitExit(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExit" ):
+                return visitor.visitExit(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class PrintContext(StmtContext):
 
@@ -209,6 +221,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitPrint" ):
                 listener.exitPrint(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPrint" ):
+                return visitor.visitPrint(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class IfContext(StmtContext):
@@ -232,6 +250,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitIf" ):
                 listener.exitIf(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIf" ):
+                return visitor.visitIf(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class AssignContext(StmtContext):
 
@@ -252,6 +276,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAssign" ):
                 listener.exitAssign(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAssign" ):
+                return visitor.visitAssign(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -361,6 +391,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitLeLeqGeGeq" ):
                 listener.exitLeLeqGeGeq(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLeLeqGeGeq" ):
+                return visitor.visitLeLeqGeGeq(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class MulDivContext(ExprContext):
 
@@ -389,6 +425,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitMulDiv" ):
                 listener.exitMulDiv(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitMulDiv" ):
+                return visitor.visitMulDiv(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class AddSubContext(ExprContext):
@@ -419,6 +461,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitAddSub" ):
                 listener.exitAddSub(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAddSub" ):
+                return visitor.visitAddSub(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class LogicalAndOrContext(ExprContext):
 
@@ -448,6 +496,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitLogicalAndOr" ):
                 listener.exitLogicalAndOr(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLogicalAndOr" ):
+                return visitor.visitLogicalAndOr(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class IdContext(ExprContext):
 
@@ -465,6 +519,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitId" ):
                 listener.exitId(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitId" ):
+                return visitor.visitId(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class AndXorOrContext(ExprContext):
@@ -497,6 +557,12 @@ class LogosParser ( Parser ):
             if hasattr( listener, "exitAndXorOr" ):
                 listener.exitAndXorOr(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAndXorOr" ):
+                return visitor.visitAndXorOr(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class IntContext(ExprContext):
 
@@ -514,6 +580,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitInt" ):
                 listener.exitInt(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInt" ):
+                return visitor.visitInt(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class EqNeqContext(ExprContext):
@@ -543,6 +615,12 @@ class LogosParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitEqNeq" ):
                 listener.exitEqNeq(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitEqNeq" ):
+                return visitor.visitEqNeq(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
