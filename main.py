@@ -1,27 +1,26 @@
 import os
 import sys
 from antlr4 import *
-from X86.x86Visitor import X86Visitor
 from generated.LogosLexer import LogosLexer 
 from generated.LogosParser import LogosParser 
 from X86.x86Listener import X86Listener
+from X86.x86Visitor import X86Visitor
 
 def main(argv):
-    print("Logos Compiler")
-
-    argv.append("programs/0.l")
     input_stream = FileStream(argv[1])
     lexer = LogosLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = LogosParser(stream)
     tree = parser.prog()
 
-#    listener = X86Listener()
-#    walker = ParseTreeWalker()
-#    walker.walk(listener, tree)
+#     listener = X86Listener()
+#     walker = ParseTreeWalker()
+#     walker.walk(listener, tree)
 
     visitor = X86Visitor()
     code = visitor.visit(tree)
+
+    print("Binary code:")
     print(code)
 
     # Output to file
