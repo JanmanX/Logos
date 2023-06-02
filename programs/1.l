@@ -1,6 +1,6 @@
-a := 65
-b := 20
+a = 20
+mem 10 b
 
-print a
+print b
 
-exit b
+exit a 

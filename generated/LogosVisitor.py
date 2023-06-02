@@ -19,6 +19,11 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LogosParser#assignMem.
+    def visitAssignMem(self, ctx:LogosParser.AssignMemContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#print.
     def visitPrint(self, ctx:LogosParser.PrintContext):
         return self.visitChildren(ctx)

@@ -4,7 +4,8 @@ import LogosLexerRules;
 
 prog: stmt+ EOF;
 
-stmt : ID ':=' expr                 #assign
+stmt: ID '=' expr                   #assign
+    | 'mem' size=INT ID             #assignMem
     | 'print' ID                    #print      
     | 'if' expr 'then' stmt         #if
     | 'exit' ID                     #exit

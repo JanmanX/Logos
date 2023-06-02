@@ -26,6 +26,15 @@ class LogosListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LogosParser#assignMem.
+    def enterAssignMem(self, ctx:LogosParser.AssignMemContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#assignMem.
+    def exitAssignMem(self, ctx:LogosParser.AssignMemContext):
+        pass
+
+
     # Enter a parse tree produced by LogosParser#print.
     def enterPrint(self, ctx:LogosParser.PrintContext):
         pass

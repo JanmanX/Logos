@@ -17,18 +17,8 @@ class X86Listener(LogosListener):
             "r13": "",
             "r14": "",
             "r15": "",
-
-            # Not sure if I should use these registers for now
-            # Perhaps system allocated?
-#            "rax": "",
-#            "rbx": "",
-#            "rcx": "",
-#            "rdx": "",
-#            "rsi": "",
-#            "rdi": "",
-
-
         }
+        self.stack = []
 
     def get_reg(self, id):
         # Check if the ID is already allocated
@@ -55,14 +45,12 @@ class X86Listener(LogosListener):
 
     # Enter a parse tree produced by LogosParser#assign.
     def enterAssign(self, ctx:LogosParser.AssignContext):
-        # Get the ID and allocate a register for it
-        id = ctx.ID().getText()
-        reg = self.get_reg(id)
-        self.code += consts.ASSIGN_FMT.format(reg=reg, val=ctx.expr().getText())
+        pass
 
     # Exit a parse tree produced by LogosParser#assign.
     def exitAssign(self, ctx:LogosParser.AssignContext):
-        pass
+        reg = self.get_reg(ctx.ID().getText())
+        self.code += consts.ASSIGN_FMT.format(reg=reg, val="rax")
 
     # Enter a parse tree produced by LogosParser#print.
     def enterPrint(self, ctx:LogosParser.PrintContext):
@@ -110,12 +98,17 @@ class X86Listener(LogosListener):
 
     # Enter a parse tree produced by LogosParser#AddSub.
     def enterAddSub(self, ctx:LogosParser.AddSubContext):
-        pass
+        self.code += """
+        mov rbx, rax
+        xor rax, rax
+        """
 
     # Exit a parse tree produced by LogosParser#AddSub.
     def exitAddSub(self, ctx:LogosParser.AddSubContext):
-        pass
-
+        self.code += """
+        add rax, rbx
+        xor rax, rax        
+        """
 
     # Enter a parse tree produced by LogosParser#LogicalAndOr.
     def enterLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
@@ -128,7 +121,11 @@ class X86Listener(LogosListener):
 
     # Enter a parse tree produced by LogosParser#Id.
     def enterId(self, ctx:LogosParser.IdContext):
-        pass
+        reg = self.get_reg(ctx.ID().getText())
+
+        self.code += f"""
+        add rax, {reg}
+        """
 
     # Exit a parse tree produced by LogosParser#Id.
     def exitId(self, ctx:LogosParser.IdContext):
@@ -146,7 +143,9 @@ class X86Listener(LogosListener):
 
     # Enter a parse tree produced by LogosParser#Int.
     def enterInt(self, ctx:LogosParser.IntContext):
-        pass
+        self.code += f"""
+        add rax, {ctx.INT().getText()}
+        """
 
     # Exit a parse tree produced by LogosParser#Int.
     def exitInt(self, ctx:LogosParser.IntContext):
