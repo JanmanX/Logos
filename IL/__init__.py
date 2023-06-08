@@ -16,9 +16,16 @@ class InstructionLabel:
     id: str
 
 @dataclass
-class AssignmentInstruction:
+class AssignmentAtomInstruction:
     id: str
     atom: AtomId | AtomNum
+
+@dataclass
+class AssignmentBinopInstruction:
+    id: str
+    op: str
+    atom1: AtomId | AtomNum
+    atom2: AtomId | AtomNum
 
 @dataclass
 class AssignmentFromMemInstruction:
@@ -61,5 +68,5 @@ class Function:
 
 @dataclass
 class Program:
-    functions: list
+    instructions: list
 
