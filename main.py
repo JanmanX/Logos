@@ -5,6 +5,7 @@ from generated.LogosLexer import LogosLexer
 from generated.LogosParser import LogosParser 
 from X86.x86Listener import X86Listener
 from X86.x86Visitor import X86Visitor
+from IL.ILGenerator import ILGenerator
 
 def main(argv):
     input_stream = FileStream(argv[1])
@@ -17,21 +18,21 @@ def main(argv):
 #     walker = ParseTreeWalker()
 #     walker.walk(listener, tree)
 
-    visitor = X86Visitor()
-    code = visitor.visit(tree)
+    visitor = ILGenerator()
+    program = visitor.visit(tree)
 
     print("Binary code:")
-    print(code)
+    print(program)
 
-    # Output to file
-    with open("out.asm", "w") as f:
-        f.write(code)
-    
-    # Compile
-    os.system("nasm -f elf64 out.asm -o out.o")
-
-    # Link
-    os.system("ld -m elf_x86_64 out.o -o out")
+#     # Output to file
+#     with open("out.asm", "w") as f:
+#         f.write(code)
+#     
+#     # Compile
+#     os.system("nasm -f elf64 out.asm -o out.o")
+# 
+#     # Link
+#     os.system("ld -m elf_x86_64 out.o -o out")
 
 
 

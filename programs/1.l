@@ -1,6 +1,2 @@
-a = 20
-mem 10 b
-
-print b
-
-exit a 
+20
+30

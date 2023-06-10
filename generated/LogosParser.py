@@ -1,4 +1,4 @@
-# Generated from Logos.g4 by ANTLR 4.10.1
+# Generated from Logos.g4 by ANTLR 4.13.0
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
@@ -92,7 +92,7 @@ class LogosParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.10.1")
+        self.checkVersion("4.13.0")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
@@ -152,7 +152,7 @@ class LogosParser ( Parser ):
                 self.state = 9 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << LogosParser.T__1) | (1 << LogosParser.T__2) | (1 << LogosParser.T__3) | (1 << LogosParser.T__5) | (1 << LogosParser.ID))) != 0)):
+                if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & 220) != 0)):
                     break
 
             self.state = 11
@@ -322,7 +322,7 @@ class LogosParser ( Parser ):
             self.state = 28
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [LogosParser.ID]:
+            if token in [7]:
                 localctx = LogosParser.AssignContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
                 self.state = 13
@@ -332,7 +332,7 @@ class LogosParser ( Parser ):
                 self.state = 15
                 self.expr(0)
                 pass
-            elif token in [LogosParser.T__1]:
+            elif token in [2]:
                 localctx = LogosParser.AssignMemContext(self, localctx)
                 self.enterOuterAlt(localctx, 2)
                 self.state = 16
@@ -342,7 +342,7 @@ class LogosParser ( Parser ):
                 self.state = 18
                 self.match(LogosParser.ID)
                 pass
-            elif token in [LogosParser.T__2]:
+            elif token in [3]:
                 localctx = LogosParser.PrintContext(self, localctx)
                 self.enterOuterAlt(localctx, 3)
                 self.state = 19
@@ -350,7 +350,7 @@ class LogosParser ( Parser ):
                 self.state = 20
                 self.match(LogosParser.ID)
                 pass
-            elif token in [LogosParser.T__3]:
+            elif token in [4]:
                 localctx = LogosParser.IfContext(self, localctx)
                 self.enterOuterAlt(localctx, 4)
                 self.state = 21
@@ -362,7 +362,7 @@ class LogosParser ( Parser ):
                 self.state = 24
                 self.stmt()
                 pass
-            elif token in [LogosParser.T__5]:
+            elif token in [6]:
                 localctx = LogosParser.ExitContext(self, localctx)
                 self.enterOuterAlt(localctx, 5)
                 self.state = 26
@@ -676,7 +676,7 @@ class LogosParser ( Parser ):
             self.state = 33
             self._errHandler.sync(self)
             token = self._input.LA(1)
-            if token in [LogosParser.ID]:
+            if token in [7]:
                 localctx = LogosParser.IdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
@@ -684,7 +684,7 @@ class LogosParser ( Parser ):
                 self.state = 31
                 self.match(LogosParser.ID)
                 pass
-            elif token in [LogosParser.INT]:
+            elif token in [8]:
                 localctx = LogosParser.IntContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
@@ -717,7 +717,7 @@ class LogosParser ( Parser ):
                         self.state = 36
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==LogosParser.OP_MUL or _la==LogosParser.OP_DIV):
+                        if not(_la==15 or _la==16):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -737,7 +737,7 @@ class LogosParser ( Parser ):
                         self.state = 39
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==LogosParser.OP_ADD or _la==LogosParser.OP_SUB):
+                        if not(_la==13 or _la==14):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -757,7 +757,7 @@ class LogosParser ( Parser ):
                         self.state = 42
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << LogosParser.OP_GT) | (1 << LogosParser.OP_GEQ) | (1 << LogosParser.OP_LT) | (1 << LogosParser.OP_LEQ))) != 0)):
+                        if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 7864320) != 0)):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -777,7 +777,7 @@ class LogosParser ( Parser ):
                         self.state = 45
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==LogosParser.OP_EQ or _la==LogosParser.OP_NEQ):
+                        if not(_la==17 or _la==18):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -797,7 +797,7 @@ class LogosParser ( Parser ):
                         self.state = 48
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << LogosParser.OP_AND) | (1 << LogosParser.OP_XOR) | (1 << LogosParser.OP_OR))) != 0)):
+                        if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 58720256) != 0)):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)
@@ -817,7 +817,7 @@ class LogosParser ( Parser ):
                         self.state = 51
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
-                        if not(_la==LogosParser.OP_LOGICAL_OR or _la==LogosParser.OP_LOGICAL_AND):
+                        if not(_la==26 or _la==27):
                             localctx.op = self._errHandler.recoverInline(self)
                         else:
                             self._errHandler.reportMatch(self)

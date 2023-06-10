@@ -1,6 +1,6 @@
-# Generated from Logos.g4 by ANTLR 4.10.1
+# Generated from Logos.g4 by ANTLR 4.13.0
 from antlr4 import *
-if __name__ is not None and "." in __name__:
+if "." in __name__:
     from .LogosParser import LogosParser
 else:
     from LogosParser import LogosParser
