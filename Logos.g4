@@ -8,6 +8,7 @@ stmt: ID '=' expr                   #assign
     | 'mem' size=INT ID             #assignMem
     | 'print' ID                    #print      
     | 'if' expr 'then' stmt         #if
+    | 'while' expr 'do' stmt        #while
     | 'exit' ID                     #exit
     ;
 

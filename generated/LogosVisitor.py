@@ -34,6 +34,11 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LogosParser#while.
+    def visitWhile(self, ctx:LogosParser.WhileContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#exit.
     def visitExit(self, ctx:LogosParser.ExitContext):
         return self.visitChildren(ctx)

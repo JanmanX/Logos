@@ -53,6 +53,15 @@ class LogosListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LogosParser#while.
+    def enterWhile(self, ctx:LogosParser.WhileContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#while.
+    def exitWhile(self, ctx:LogosParser.WhileContext):
+        pass
+
+
     # Enter a parse tree produced by LogosParser#exit.
     def enterExit(self, ctx:LogosParser.ExitContext):
         pass
