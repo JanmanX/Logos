@@ -22,7 +22,7 @@ def main(argv):
     program = visitor.visit(tree)
 
     print("Binary code:")
-    print(program)
+    print(str(program))
 
 #     # Output to file
 #     with open("out.asm", "w") as f:
