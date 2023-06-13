@@ -35,7 +35,6 @@ class ILGenerator(LogosVisitor):
             if _code:
                 code += _code
 
-
         self.program.instructions = code
 
         return self.program

@@ -35,62 +35,67 @@ class AtomNum:
 
 # --- Instructions
 @dataclass
-class InstructionLabel:
-    id: str
+class Instruction:
+    pass
 
-    def __repr__(self) -> str:
-        return f'{self.id}:'
 
 @dataclass
-class AssignmentAtomInstruction:
-    id: str
-    atom: AtomId | AtomNum
+class InstructionLabel(Instruction):
+    label_id: str
 
     def __repr__(self) -> str:
-        return f'{self.id} = {self.atom}'
+        return f'{self.label_id}:'
 
 @dataclass
-class AssignmentBinopInstruction:
-    id: str
+class AssignmentAtomInstruction(Instruction):
+    dest: AtomId
+    src: AtomId | AtomNum
+
+    def __repr__(self) -> str:
+        return f'{self.dest} = {self.src}'
+
+@dataclass
+class AssignmentBinopInstruction(Instruction):
+    dst: AtomId
     op: Binop 
-    atom1: AtomId | AtomNum
-    atom2: AtomId | AtomNum
+    left: AtomId | AtomNum
+    right: AtomId | AtomNum
 
     def __repr__(self) -> str:
-        return f'{self.id} = {self.atom1} {self.op.value} {self.atom2}'
+        return f'{self.dst} = {self.left} {self.op.value} {self.right}'
  
 @dataclass
-class AssignmentFromMemInstruction:
-    id: str
+class AssignmentFromMemInstruction(Instruction):
+    dst: AtomId
     atom: AtomId | AtomNum
 
 @dataclass
-class AssignmentToMemInstruction:
-    id: str
+class AssignmentToMemInstruction(Instruction):
+    mem: AtomId
     atom: AtomId | AtomNum
 
 @dataclass
-class GotoInstruction:
-    id: str
+class GotoInstruction(Instruction):
+    label_id: AtomId
 
 @dataclass
-class IfInstruction:
+class IfInstruction(Instruction):
     atom: AtomId | AtomNum
-    trueGotoLabel: str
-    falseGotoLabel: str
+    true_label: AtomId
+    false_label: AtomId
 
     def __repr__(self) -> str:
-        return f'if {self.atom} goto {self.trueGotoLabel} else goto {self.falseGotoLabel}'
+        return f'if {self.atom} goto {self.true_label} else goto {self.false_label}'
 
 @dataclass
-class FunctionCallInstruction:
-    id: str
-    function: str
+class FunctionCallInstruction(Instruction):
+    dst: AtomId
+    function: AtomId
     args: list
 
 @dataclass
-class ReturnInstruction:
-    id: str
+class ReturnInstruction(Instruction):
+    atom: AtomId | AtomNum
 
 
 # --- Other
