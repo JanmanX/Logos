@@ -1,6 +1,16 @@
 from IL import *
 
 
+def lists_of_sets_equal(l1, l2):
+    if len(l1) != len(l2):
+        return False
+
+    for set1, set2 in zip(l1, l2):
+        if set1 != set2:
+            return False
+
+    return True
+
 def get_gen(instruction: Instruction) -> set:
     # Iterate over types of instruction
     if isinstance(instruction, InstructionLabel):
@@ -114,7 +124,7 @@ def liveness_analysis(program: Program):
     print(f"Number of instructions: {num_instructions}")
 
     # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
-    succ = get_successors(program.instructions)
+    successors = get_successors(program.instructions)
 
     # List of instructions that may be read from the current instruction
     # eg., gen[i] = {x} means that x is read from instruction i
@@ -134,9 +144,20 @@ def liveness_analysis(program: Program):
     prev_line_in = []
     prev_line_out = []
 
-    for i, instruction in reversed(list(enumerate(program.instructions))):
-        live_out[i] = get_out(succ[i], live_in)
-        live_in[i] = get_in(gen[i], live_out[i], kill[i])
+    iter_number = 0
+    while not (lists_of_sets_equal(live_in, prev_line_in)
+               and lists_of_sets_equal(live_out, prev_line_out)):
+        prev_line_out = list(live_out)
+        prev_line_in = list(live_in)
+
+        for i, instruction in reversed(list(enumerate(program.instructions))):
+            live_out[i] = get_out(successors[i], live_in)
+            live_in[i] = get_in(gen[i], live_out[i], kill[i])
+
+        # Limit number of iterations
+        iter_number += 1
+        if iter_number > 10:
+            break
 
 
     # print the results
