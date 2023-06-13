@@ -56,17 +56,17 @@ class AssignmentAtomInstruction(Instruction):
 
 @dataclass
 class AssignmentBinopInstruction(Instruction):
-    dst: AtomId
+    dest: AtomId
     op: Binop 
     left: AtomId | AtomNum
     right: AtomId | AtomNum
 
     def __repr__(self) -> str:
-        return f'{self.dst} = {self.left} {self.op.value} {self.right}'
+        return f'{self.dest} = {self.left} {self.op.value} {self.right}'
  
 @dataclass
 class AssignmentFromMemInstruction(Instruction):
-    dst: AtomId
+    dest: AtomId
     atom: AtomId | AtomNum
 
 @dataclass
@@ -89,7 +89,7 @@ class IfInstruction(Instruction):
 
 @dataclass
 class FunctionCallInstruction(Instruction):
-    dst: AtomId
+    dest: AtomId
     function: AtomId
     args: list
 

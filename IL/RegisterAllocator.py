@@ -33,7 +33,10 @@ def get_gen(instruction: Instruction) -> set:
         else:
             return set()
     elif isinstance(instruction, ReturnInstruction):
-        return {instruction.atom.id}
+        if isinstance(instruction.atom, AtomId):
+            return {instruction.atom.id}
+        else:
+            return set()
         
 
 def get_kill(instruction: Instruction):
@@ -43,9 +46,9 @@ def get_kill(instruction: Instruction):
     elif isinstance(instruction, AssignmentAtomInstruction):
         return {instruction.dest.id}
     elif isinstance(instruction, AssignmentBinopInstruction):
-        return {instruction.dst.id}
+        return {instruction.dest.id}
     elif isinstance(instruction, AssignmentFromMemInstruction):
-        return {instruction.dst.id}
+        return {instruction.dest.id}
     elif isinstance(instruction, AssignmentToMemInstruction):
         return set()
     elif isinstance(instruction, GotoInstruction):
@@ -60,38 +63,83 @@ def get_kill(instruction: Instruction):
         return set()
 
 
-def _in(gen: set, out: set, kill: set):
+def get_in(gen: set, out: set, kill: set):
     # gen[i] U (out[i] \ kill[i])
     return gen.union(out.difference(kill))
 
-def _out(succ: list, _in: set):
-    # U_{j in succ[i]} in[j]
-    return set.union(*[succ[i] for i in _in])
+
+def get_out(succ: set, live_in: list):
+    # U_{j in succ} in[j]
+    return set().union(*[live_in[j] for j in succ])
+
+
+def get_successors(instructions: list):
+    successors = [set() for _ in range(len(instructions))]
+
+    for i, instruction in enumerate(instructions):
+        if isinstance(instruction, GotoInstruction):
+            for j, instruction2 in enumerate(instructions):
+                if isinstance(instruction2, InstructionLabel) and instruction2.label_id == instruction.label_id:
+                    successors[i] = {j}
+                    break
+        elif isinstance(instruction, IfInstruction): 
+            _succ = set()
+
+            # Find the instruction with the label and get the index
+            for j, instruction2 in enumerate(instructions):
+                if isinstance(instruction2, InstructionLabel) and instruction2.label_id == instruction.true_label:
+                    _succ.add(j)
+                    break
+
+            for j, instruction2 in enumerate(instructions):
+                if isinstance(instruction2, InstructionLabel) and instruction2.label_id == instruction.false_label:
+                    _succ.add(j)
+                    break
+
+            successors[i] = _succ
+        
+        elif isinstance(instruction, ReturnInstruction):
+            successors[i] = set()
+
+        else:
+            successors[i] = {i+1}
+
+    return successors
+
 
 def liveness_analysis(program: Program):
+    program.instructions.append(ReturnInstruction(AtomNum(0)))
+
+    num_instructions = len(program.instructions)
+    print(f"Number of instructions: {num_instructions}")
+
     # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
-    succ = []
+    succ = get_successors(program.instructions)
 
     # List of instructions that may be read from the current instruction
     # eg., gen[i] = {x} means that x is read from instruction i
-    gen = []
+    gen = [get_gen(instruction) for instruction in program.instructions]
 
     # A set that lists that may be written to by the current instruction
     # eg., kill[i] = set(x,y) means that x and y are written to by instruction i
-    kill = []
+    kill = [get_kill(instruction) for instruction in program.instructions]
 
     # _in[i] holds the variables that are live at the start of i
-    _in = []
+    live_in = [set() for _ in range(num_instructions)]
 
     # out[i] holds the variables that are live at the end of i
-    out = []
+    live_out = [set() for _ in range(num_instructions)]
 
     # Iterate
-    prev_in = []
-    prev_out = []
+    prev_line_in = []
+    prev_line_out = []
+
     for i, instruction in reversed(list(enumerate(program.instructions))):
+        live_out[i] = get_out(succ[i], live_in)
+        live_in[i] = get_in(gen[i], live_out[i], kill[i])
 
-        out = _out(succ, _in)
-        _in = _in(gen, out, kill)
 
-
+    # print the results
+    print("Liveness analysis:")
+    for i, instruction in enumerate(program.instructions):
+        print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")

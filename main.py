@@ -6,6 +6,7 @@ from generated.LogosParser import LogosParser
 from X86.x86Listener import X86Listener
 from X86.x86Visitor import X86Visitor
 from IL.ILGenerator import ILGenerator
+from IL.RegisterAllocator import liveness_analysis
 
 def main(argv):
     input_stream = FileStream(argv[1])
@@ -23,6 +24,9 @@ def main(argv):
 
     print("Binary code:")
     print(str(program))
+
+
+    liveness_analysis(program)
 
 #     # Output to file
 #     with open("out.asm", "w") as f:

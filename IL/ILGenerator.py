@@ -57,7 +57,7 @@ class ILGenerator(LogosVisitor):
         code = self.visit(ctx.expr())
 
         # Add assignment instruction
-        return code + [AssignmentAtomInstruction(x, AtomId(self.place))]
+        return code + [AssignmentAtomInstruction(AtomId(x), AtomId(self.place))]
 
 
     # Visit a parse tree produced by LogosParser#MulDiv.
@@ -76,7 +76,7 @@ class ILGenerator(LogosVisitor):
 
         # Add instruction
         op = Binop.MUL if ctx.op.type == LogosParser.OP_MUL else Binop.DIV
-        code = code1 + code2 + [AssignmentBinopInstruction(place0, op, AtomId(place1), AtomId(place2))]
+        code = code1 + code2 + [AssignmentBinopInstruction(AtomId(place0), op, AtomId(place1), AtomId(place2))]
         return code
 
 
@@ -96,7 +96,7 @@ class ILGenerator(LogosVisitor):
 
         # Add instruction
         op = Binop.ADD if ctx.op.type == LogosParser.OP_ADD else Binop.SUB
-        code = code1 + code2 + [AssignmentBinopInstruction(place0, op, AtomId(place1), AtomId(place2))]
+        code = code1 + code2 + [AssignmentBinopInstruction(AtomId(place0), op, AtomId(place1), AtomId(place2))]
         return code
 
 
@@ -122,7 +122,7 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#Int.
     def visitInt(self, ctx:LogosParser.IntContext):
-        return [AssignmentAtomInstruction(self.place, AtomNum(ctx.INT().getText()))]
+        return [AssignmentAtomInstruction(AtomId(self.place), AtomNum(ctx.INT().getText()))]
 
 
     # Visit a parse tree produced by LogosParser#Id.
@@ -130,7 +130,7 @@ class ILGenerator(LogosVisitor):
         id = ctx.ID().getText()
         x = self.vtable[id]
 
-        return [AssignmentAtomInstruction(self.place, AtomId(x))]
+        return [AssignmentAtomInstruction(AtomId(self.place), AtomId(x))]
 
 
     # Visit a parse tree produced by LogosParser#if.
@@ -147,7 +147,7 @@ class ILGenerator(LogosVisitor):
         code1 = self.visit(ctx.stmt())
 
         return code0 + \
-            [IfInstruction(AtomId(place1), label1, label2), InstructionLabel(label1)]  \
+            [IfInstruction(AtomId(place1), AtomId(label1), AtomId(label2)), InstructionLabel(label1)]  \
             + code1  \
             + [InstructionLabel(label2)]
 
@@ -167,8 +167,8 @@ class ILGenerator(LogosVisitor):
 
         return [InstructionLabel(label1)] \
             + code0 \
-            + [IfInstruction(AtomId(place1), label2, label3), InstructionLabel(label2)] \
+            + [IfInstruction(AtomId(place1), AtomId(label2), AtomId(label3)), InstructionLabel(label2)] \
             + code1 \
-            + [GotoInstruction(label1), InstructionLabel(label3)]
+            + [GotoInstruction(AtomId(label1)), InstructionLabel(label3)]
 
 
