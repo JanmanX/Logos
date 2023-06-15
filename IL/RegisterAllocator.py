@@ -117,6 +117,23 @@ def get_successors(instructions: list):
     return successors
 
 
+def get_interference(instructions: list[Instruction], kill: list[set], out: list[set]):
+    interference = {}
+
+    # A varible x interferes with a variable y if x != y and there is an 
+    # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
+    for i, instruction in enumerate(instructions):
+        if isinstance(instruction, AssignmentAtomInstruction) and isinstance(instruction.src, AtomId):
+            if instruction.dest.id != instruction.src.id:
+                continue
+
+            
+
+
+
+
+
+
 def liveness_analysis(program: Program):
     program.instructions.append(ReturnInstruction(AtomNum(0)))
 
