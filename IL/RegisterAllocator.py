@@ -117,21 +117,27 @@ def get_successors(instructions: list):
     return successors
 
 
-def get_interference(instructions: list[Instruction], kill: list[set], out: list[set]):
-    interference = {}
+# Calculates intereference graph for a program.
+def get_interference_graph(
+        instructions: list[Instruction], 
+        kill: list[set], 
+        out: list[set]) -> list[tuple]:
+    interference = []
 
     # A varible x interferes with a variable y if x != y and there is an 
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
     for i, instruction in enumerate(instructions):
-        if isinstance(instruction, AssignmentAtomInstruction) and isinstance(instruction.src, AtomId):
-            if instruction.dest.id != instruction.src.id:
-                continue
+        # Iterate over combination of variables in kill[i] and out[i]
+        for x in kill[i]:
+            for y in out[i]:
+                if (x != y 
+                    and not (isinstance(instruction, AssignmentAtomInstruction) 
+                             and instruction.dest.id == y 
+                             and instruction.src.id == x)):
 
-            
+                    interference.append((x, y))
 
-
-
-
+    return interference
 
 
 def liveness_analysis(program: Program):
@@ -181,3 +187,9 @@ def liveness_analysis(program: Program):
     print("Liveness analysis:")
     for i, instruction in enumerate(program.instructions):
         print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
+
+
+    # Print interference graph
+    print("\nInterference graph:")
+    interference = get_interference_graph(program.instructions, kill, live_out)
+    print(interference)
