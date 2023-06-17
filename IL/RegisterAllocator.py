@@ -15,34 +15,34 @@ def get_gen(instruction: Instruction) -> set:
     # Iterate over types of instruction
     if isinstance(instruction, InstructionLabel):
         return set()
-    elif isinstance(instruction, AssignmentAtomInstruction):
+    elif isinstance(instruction, InstructionAssign):
         if isinstance(instruction.src, AtomId):
             return {instruction.src.id}
         else:
             return set()
-    elif isinstance(instruction, AssignmentBinopInstruction):
+    elif isinstance(instruction, InstructionAssignBinop):
         s = set()
         if isinstance(instruction.left, AtomId):
             s.add(instruction.left.id)
         if isinstance(instruction.right, AtomId):
             s.add(instruction.right.id)
         return s
-    elif isinstance(instruction, AssignmentFromMemInstruction):
+    elif isinstance(instruction, InstructionAssignFromMem):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
-    elif isinstance(instruction, AssignmentToMemInstruction):
+    elif isinstance(instruction, InstructionAssignToMem):
         s = {instruction.mem}
         if isinstance(instruction.atom, AtomId):
             s.add(instruction.atom.id)
         return s
-    elif isinstance(instruction, GotoInstruction):
+    elif isinstance(instruction, InstructionGoto):
         return set()
-    elif isinstance(instruction, IfInstruction):
+    elif isinstance(instruction, InstructionIf):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
         else:
             return set()
-    elif isinstance(instruction, ReturnInstruction):
+    elif isinstance(instruction, InstructionReturn):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
         else:
@@ -53,21 +53,21 @@ def get_kill(instruction: Instruction):
     # Iterate over types of instruction
     if isinstance(instruction, InstructionLabel):
         return set()
-    elif isinstance(instruction, AssignmentAtomInstruction):
+    elif isinstance(instruction, InstructionAssign):
         return {instruction.dest.id}
-    elif isinstance(instruction, AssignmentBinopInstruction):
+    elif isinstance(instruction, InstructionAssignBinop):
         return {instruction.dest.id}
-    elif isinstance(instruction, AssignmentFromMemInstruction):
+    elif isinstance(instruction, InstructionAssignFromMem):
         return {instruction.dest.id}
-    elif isinstance(instruction, AssignmentToMemInstruction):
+    elif isinstance(instruction, InstructionAssignToMem):
         return set()
-    elif isinstance(instruction, GotoInstruction):
+    elif isinstance(instruction, InstructionGoto):
         return set()
-    elif isinstance(instruction, IfInstruction):
+    elif isinstance(instruction, InstructionIf):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
         return set()
-    elif isinstance(instruction, ReturnInstruction):
+    elif isinstance(instruction, InstructionReturn):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
         return set()
@@ -87,12 +87,12 @@ def get_successors(instructions: list):
     successors = [set() for _ in range(len(instructions))]
 
     for i, instruction in enumerate(instructions):
-        if isinstance(instruction, GotoInstruction):
+        if isinstance(instruction, InstructionGoto):
             for j, instruction2 in enumerate(instructions):
                 if isinstance(instruction2, InstructionLabel) and instruction2.label_id == instruction.label_id:
                     successors[i] = {j}
                     break
-        elif isinstance(instruction, IfInstruction): 
+        elif isinstance(instruction, InstructionIf): 
             _succ = set()
 
             # Find the instruction with the label and get the index
@@ -108,7 +108,7 @@ def get_successors(instructions: list):
 
             successors[i] = _succ
         
-        elif isinstance(instruction, ReturnInstruction):
+        elif isinstance(instruction, InstructionReturn):
             successors[i] = set()
 
         else:
@@ -131,7 +131,7 @@ def get_interference_graph(
         for x in kill[i]:
             for y in out[i]:
                 if (x != y 
-                    and not (isinstance(instruction, AssignmentAtomInstruction) 
+                    and not (isinstance(instruction, InstructionAssign) 
                              and instruction.dest.id == y 
                              and instruction.src.id == x)):
 
@@ -141,7 +141,7 @@ def get_interference_graph(
 
 
 def liveness_analysis(program: Program):
-    program.instructions.append(ReturnInstruction(AtomNum(0)))
+    program.instructions.append(InstructionReturn(AtomNum(0)))
 
     num_instructions = len(program.instructions)
     print(f"Number of instructions: {num_instructions}")

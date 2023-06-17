@@ -9,7 +9,7 @@ class Binop(Enum):
     DIV = '/'
     MOD = '%'
 
-class Relop(Enum):
+    # Logical
     EQ = '=='
     NE = '!='
     LT = '<'
@@ -47,7 +47,7 @@ class InstructionLabel(Instruction):
         return f'{self.label_id}:'
 
 @dataclass
-class AssignmentAtomInstruction(Instruction):
+class InstructionAssign(Instruction):
     dest: AtomId
     src: AtomId | AtomNum
 
@@ -55,7 +55,7 @@ class AssignmentAtomInstruction(Instruction):
         return f'{self.dest} = {self.src}'
 
 @dataclass
-class AssignmentBinopInstruction(Instruction):
+class InstructionAssignBinop(Instruction):
     dest: AtomId
     op: Binop 
     left: AtomId | AtomNum
@@ -65,21 +65,21 @@ class AssignmentBinopInstruction(Instruction):
         return f'{self.dest} = {self.left} {self.op.value} {self.right}'
  
 @dataclass
-class AssignmentFromMemInstruction(Instruction):
+class InstructionAssignFromMem(Instruction):
     dest: AtomId
     atom: AtomId | AtomNum
 
 @dataclass
-class AssignmentToMemInstruction(Instruction):
+class InstructionAssignToMem(Instruction):
     mem: AtomId
     atom: AtomId | AtomNum
 
 @dataclass
-class GotoInstruction(Instruction):
+class InstructionGoto(Instruction):
     label_id: AtomId
 
 @dataclass
-class IfInstruction(Instruction):
+class InstructionIf(Instruction):
     atom: AtomId | AtomNum
     true_label: AtomId
     false_label: AtomId
@@ -88,13 +88,13 @@ class IfInstruction(Instruction):
         return f'if {self.atom} goto {self.true_label} else goto {self.false_label}'
 
 @dataclass
-class FunctionCallInstruction(Instruction):
+class InstructionFunctionCall(Instruction):
     dest: AtomId
     function: AtomId
     args: list
 
 @dataclass
-class ReturnInstruction(Instruction):
+class InstructionReturn(Instruction):
     atom: AtomId | AtomNum
 
 
