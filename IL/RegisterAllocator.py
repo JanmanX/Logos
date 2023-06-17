@@ -193,3 +193,15 @@ def liveness_analysis(program: Program):
     print("\nInterference graph:")
     interference = get_interference_graph(program.instructions, kill, live_out)
     print(interference)
+
+
+    # Debug
+    import networkx as nx
+    import matplotlib.pyplot as plt
+
+    G = nx.Graph()
+    G.add_edges_from(interference)
+
+    nx.draw(G, with_labels=True)
+    plt.show()
+
