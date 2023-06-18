@@ -1,5 +1,6 @@
+import copy
 from IL import *
-from utils.graph import get_neighbours
+from utils.graph import Graph
 
 def lists_of_sets_equal(l1, l2):
     if len(l1) != len(l2):
@@ -121,8 +122,8 @@ def get_successors(instructions: list):
 def get_interference_graph(
         instructions: list[Instruction], 
         kill: list[set], 
-        out: list[set]) -> list[tuple]:
-    interference = []
+        out: list[set]) -> Graph:
+    edges = []
 
     # A varible x interferes with a variable y if x != y and there is an 
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
@@ -135,23 +136,32 @@ def get_interference_graph(
                              and instruction.dest.id == y 
                              and instruction.src.id == x)):
 
-                    interference.append((x, y))
+                    edges.append((x, y))
 
-    return interference
+    return Graph.from_edges(edges)
 
 
-def simplify(graph: list[tuple], N: int) -> list[tuple]:
+def simplify(graph: Graph, N: int) -> list[tuple]:
+    _graph = graph.copy()
     stack = []
 
-    degrees = {node: len(get_neighbours(graph, node)) for node in graph}
+    while len(_graph.nodes) > 0:
+        # Create a dictionary with the degree of each node
+        degrees = {node: len(_graph.get_neighbours(node)) for node in _graph.nodes}
 
-    while degrees:
+        # Sort by degree
+        degrees = dict(sorted(degrees.items(), key=lambda item: item[1]))
+
+        # Put node with degree < N on the stack
         for node, degree in degrees.items():
             if degree < N:
-                stack.append(node)
-                del degrees[node]
+                stack.append((node, _graph.get_neighbours(node)))
+
+                # Remove node from graph
+                _graph.remove_node(node)
                 break
 
+    return stack
 
 def assign_registers(graph: list[tuple], num_registers: int) -> dict:
     stack = []
@@ -163,9 +173,6 @@ def assign_registers(graph: list[tuple], num_registers: int) -> dict:
     # Calculate degrees
 
     # Simplify
-        
-
-
     for node in nodes:
         # Get number of neighbours
         num_neighbours = len([edge for edge in graph if node in edge])
@@ -174,8 +181,6 @@ def assign_registers(graph: list[tuple], num_registers: int) -> dict:
         if num_neighbours < num_registers:
             stack.append(node)
             graph = [edge for edge in graph if node not in edge]
-
-
 
 
 

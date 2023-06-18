@@ -1,5 +1,12 @@
 from IL.RegisterAllocator import *
 from IL import *
+from utils.graph import *
+
+
+graph = Graph.from_edges([('a', 'b'), ('b','c')])
+simplified = simplify(graph, 6)
+print(simplified)
+exit(0)
 
 program = Program([
     InstructionAssign(AtomId('n'), AtomNum(32)),
