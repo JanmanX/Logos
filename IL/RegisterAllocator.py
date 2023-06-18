@@ -1,5 +1,5 @@
 from IL import *
-
+from utils.graph import get_neighbours
 
 def lists_of_sets_equal(l1, l2):
     if len(l1) != len(l2):
@@ -138,6 +138,45 @@ def get_interference_graph(
                     interference.append((x, y))
 
     return interference
+
+
+def simplify(graph: list[tuple], N: int) -> list[tuple]:
+    stack = []
+
+    degrees = {node: len(get_neighbours(graph, node)) for node in graph}
+
+    while degrees:
+        for node, degree in degrees.items():
+            if degree < N:
+                stack.append(node)
+                del degrees[node]
+                break
+
+
+def assign_registers(graph: list[tuple], num_registers: int) -> dict:
+    stack = []
+
+    # Get nodes in graph
+    nodes = set([item for sublist in graph for item in sublist])
+
+
+    # Calculate degrees
+
+    # Simplify
+        
+
+
+    for node in nodes:
+        # Get number of neighbours
+        num_neighbours = len([edge for edge in graph if node in edge])
+
+        # Put it on the stack and remove it from the graph
+        if num_neighbours < num_registers:
+            stack.append(node)
+            graph = [edge for edge in graph if node not in edge]
+
+
+
 
 
 def liveness_analysis(program: Program):
