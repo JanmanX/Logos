@@ -163,25 +163,28 @@ def simplify(graph: Graph, N: int) -> list[tuple]:
 
     return stack
 
-def assign_registers(graph: list[tuple], num_registers: int) -> dict:
-    stack = []
+def select(stack: list[tuple], N):
+    available_colors = set(range(N))
+    colors = {}
 
-    # Get nodes in graph
-    nodes = set([item for sublist in graph for item in sublist])
+    while stack:
+        node, neighbours = stack.pop()
+        colors_taken = {colors[neighbour] for neighbour in neighbours if neighbour in colors}
 
+        # Assign color
+        candidate_colors = available_colors.difference(colors_taken)
 
-    # Calculate degrees
+        if len(candidate_colors) == 0:
+            colors[node] = 'spill'
+        else:
+            colors[node] = candidate_colors.pop()
 
-    # Simplify
-    for node in nodes:
-        # Get number of neighbours
-        num_neighbours = len([edge for edge in graph if node in edge])
+    return colors
 
-        # Put it on the stack and remove it from the graph
-        if num_neighbours < num_registers:
-            stack.append(node)
-            graph = [edge for edge in graph if node not in edge]
-
+def color_graph(graph: Graph, N: int) -> dict:
+    stack = simplify(graph, N)
+    colors = select(stack, N)
+    return colors
 
 
 def liveness_analysis(program: Program):
@@ -235,8 +238,22 @@ def liveness_analysis(program: Program):
 
     # Print interference graph
     print("\nInterference graph:")
-    interference = get_interference_graph(program.instructions, kill, live_out)
-    print(interference)
+    graph = get_interference_graph(program.instructions, kill, live_out)
+
+    # Color graph
+    graph = Graph.from_edges([
+        ('a', 'b'),
+        ('b', 'c'),
+        ('c', 'a'),
+        ('d', 'e'),
+        ('e', 'f'),
+        ('a', 'd'),
+        ('c', 'd'),
+        ('d', 'b'),
+        ('f', 'c')
+    ])
+    colors = color_graph(graph, 4)
+    print(f"Colors: {colors}")
 
 
     # Debug
@@ -244,8 +261,25 @@ def liveness_analysis(program: Program):
     import matplotlib.pyplot as plt
 
     G = nx.Graph()
-    G.add_edges_from(interference)
+    G.add_edges_from(graph.edges)
 
-    nx.draw(G, with_labels=True)
+
+    # Add colors
+    color_table = {
+        0: 'pink',
+        1: 'blue',
+        2: 'green',
+        3: 'yellow',
+        4: 'orange',
+        5: 'purple',
+        6: 'pink',
+        'spill': 'red'
+    }
+
+    color_map = []
+    for node in G:
+        color_map.append(color_table[colors[node]])
+
+    nx.draw(G, with_labels=True, node_color=color_map)
     plt.show()
 
