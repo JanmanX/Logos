@@ -1,4 +1,6 @@
+import copy
 from IL import *
+from utils.graph import Graph
 from consts import REGISTER_SIZE
 
 def lists_of_sets_equal(l1, l2):
@@ -121,8 +123,8 @@ def get_successors(instructions: list):
 def get_interference_graph(
         instructions: list[Instruction], 
         kill: list[set], 
-        out: list[set]) -> list[tuple]:
-    interference = []
+        out: list[set]) -> Graph:
+    edges = []
 
     # A varible x interferes with a variable y if x != y and there is an 
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
@@ -135,9 +137,56 @@ def get_interference_graph(
                              and instruction.dest.id == y 
                              and instruction.src.id == x)):
 
-                    interference.append((x, y))
+                    edges.append((x, y))
 
-    return interference
+    return Graph.from_edges(edges)
+
+
+def simplify(graph: Graph, N: int) -> list[tuple]:
+    _graph = graph.copy()
+    stack = []
+
+    while len(_graph.nodes) > 0:
+        # Create a dictionary with the degree of each node
+        degrees = {node: len(_graph.get_neighbours(node)) for node in _graph.nodes}
+
+        # Sort by degree
+        degrees = dict(sorted(degrees.items(), key=lambda item: item[1]))
+
+        # Put node with degree < N on the stack
+        for node, degree in degrees.items():
+            if degree < N:
+                stack.append((node, _graph.get_neighbours(node)))
+
+                # Remove node from graph
+                _graph.remove_node(node)
+                break
+
+    return stack
+
+def select(stack: list[tuple], N):
+    available_colors = set(range(N))
+    colors = {}
+
+    while stack:
+        node, neighbours = stack.pop()
+        colors_taken = {colors[neighbour] for neighbour in neighbours if neighbour in colors}
+
+        # Assign color
+        candidate_colors = available_colors.difference(colors_taken)
+
+        if len(candidate_colors) == 0:
+            colors[node] = 'spill'
+        else:
+            colors[node] = candidate_colors.pop()
+
+    return colors
+
+def color_graph(graph: Graph, N: int) -> dict:
+    stack = simplify(graph, N)
+    colors = select(stack, N)
+    return colors
+
 
 
 def spill_registers(instructions: list[Instruction], variables: set[str]):
@@ -241,6 +290,48 @@ def liveness_analysis(program: Program):
 
     # Print interference graph
     print("\nInterference graph:")
-    interference = get_interference_graph(program.instructions, kill, live_out)
-    print(interference)
+    graph = get_interference_graph(program.instructions, kill, live_out)
+
+    # Color graph
+    graph = Graph.from_edges([
+        ('a', 'b'),
+        ('b', 'c'),
+        ('c', 'a'),
+        ('d', 'e'),
+        ('e', 'f'),
+        ('a', 'd'),
+        ('c', 'd'),
+        ('d', 'b'),
+        ('f', 'c')
+    ])
+    colors = color_graph(graph, 4)
+    print(f"Colors: {colors}")
+
+
+    # Debug
+    import networkx as nx
+    import matplotlib.pyplot as plt
+
+    G = nx.Graph()
+    G.add_edges_from(graph.edges)
+
+
+    # Add colors
+    color_table = {
+        0: 'pink',
+        1: 'blue',
+        2: 'green',
+        3: 'yellow',
+        4: 'orange',
+        5: 'purple',
+        6: 'pink',
+        'spill': 'red'
+    }
+
+    color_map = []
+    for node in G:
+        color_map.append(color_table[colors[node]])
+
+    nx.draw(G, with_labels=True, node_color=color_map)
+    plt.show()
 
