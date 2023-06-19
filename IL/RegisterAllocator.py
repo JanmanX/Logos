@@ -1,5 +1,5 @@
 from IL import *
-
+from consts import REGISTER_SIZE
 
 def lists_of_sets_equal(l1, l2):
     if len(l1) != len(l2):
@@ -140,6 +140,56 @@ def get_interference_graph(
     return interference
 
 
+def spill_registers(instructions: list[Instruction], variables: set[str]):
+    instructions_updated = instructions.copy()
+
+    for variable in variables:
+        # 1. choose an address to store the variable address_x
+        address_entry = DataEntry(f"address_{variable}", 0, REGISTER_SIZE)
+
+        # 2. n every instruction i that reads or assigns x, we locally in this instruction
+        #   rename x to x_i
+        for i, instruction in enumerate(instructions):
+            variable_replacement = f"{variable}_{i}"
+
+            if isinstance(instruction, InstructionAssign):
+                if instruction.dest.id == variable:
+                    instruction.dest.id = variable_replacement
+                if isinstance(instruction.src, AtomId) and instruction.src.id == variable:
+                    instruction.src.id = variable_replacement
+
+            elif isinstance(instruction, InstructionAssignBinop):
+                if instruction.dest.id == variable:
+                    instruction.dest.id = variable_replacement
+                if isinstance(instruction.left, AtomId) and instruction.left.id == variable:
+                    instruction.left.id = variable_replacement
+                if isinstance(instruction.right, AtomId) and instruction.right.id == variable:
+                    instruction.right.id = variable_replacement
+
+        # 3. before an instruction i that reads x_i, insert the instruction x_i = MEM[address_x]
+        for i, instruction in enumerate(instructions):
+            if isinstance(instruction, InstructionAssign):
+                if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.src, address_entry))
+
+            elif isinstance(instruction, InstructionAssignBinop):
+                if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, address_entry))
+                if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, address_entry))
+
+
+        # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
+
+        # 5. If x is live at the start of the program, add an instruction M[addressx] := x
+        #   to the start of the program. Note that we use the original name for x here.
+
+        # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
+        #   the end of the program. Note that we use the original name for x here.
+
+
+
+
 def liveness_analysis(program: Program):
     program.instructions.append(InstructionReturn(AtomNum(0)))
 
@@ -193,15 +243,4 @@ def liveness_analysis(program: Program):
     print("\nInterference graph:")
     interference = get_interference_graph(program.instructions, kill, live_out)
     print(interference)
-
-
-    # Debug
-    import networkx as nx
-    import matplotlib.pyplot as plt
-
-    G = nx.Graph()
-    G.add_edges_from(interference)
-
-    nx.draw(G, with_labels=True)
-    plt.show()
 

@@ -98,6 +98,13 @@ class InstructionReturn(Instruction):
     atom: AtomId | AtomNum
 
 
+# --- Data
+@dataclass
+class DataEntry:
+    label: str 
+    value: str 
+    size: int
+
 # --- Other
 @dataclass
 class Function:
@@ -106,8 +113,10 @@ class Function:
 
 @dataclass
 class Program:
+    data: list[DataEntry]
     instructions: list
 
     def __repr__(self) -> str:
         return '\n'.join([str(i) for i in self.instructions])
+
 
