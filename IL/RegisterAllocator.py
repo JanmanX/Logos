@@ -33,10 +33,8 @@ def get_gen(instruction: Instruction) -> set:
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
     elif isinstance(instruction, InstructionAssignToMem):
-        s = {instruction.mem}
         if isinstance(instruction.atom, AtomId):
-            s.add(instruction.atom.id)
-        return s
+            return {instruction.atom.id}
     elif isinstance(instruction, InstructionGoto):
         return set()
     elif isinstance(instruction, InstructionIf):
@@ -49,7 +47,8 @@ def get_gen(instruction: Instruction) -> set:
             return {instruction.atom.id}
         else:
             return set()
-        
+
+    return set() 
 
 def get_kill(instruction: Instruction):
     # Iterate over types of instruction
@@ -146,21 +145,18 @@ def simplify(graph: Graph, N: int) -> list[tuple]:
     _graph = graph.copy()
     stack = []
 
-    while len(_graph.nodes) > 0:
-        # Create a dictionary with the degree of each node
-        degrees = {node: len(_graph.get_neighbours(node)) for node in _graph.nodes}
+    # Create a dictionary with the degree of each node
+    degrees = {node: len(_graph.get_neighbours(node)) for node in _graph.nodes}
 
-        # Sort by degree
-        degrees = dict(sorted(degrees.items(), key=lambda item: item[1]))
+    # Sort by degree
+    degrees = dict(sorted(degrees.items(), key=lambda item: item[1]))
 
-        # Put node with degree < N on the stack
-        for node, degree in degrees.items():
-            if degree < N:
-                stack.append((node, _graph.get_neighbours(node)))
+    # Put node with degree < N on the stack
+    for node, degree in degrees.items():
+        stack.append((node, _graph.get_neighbours(node)))
 
-                # Remove node from graph
-                _graph.remove_node(node)
-                break
+        # Remove node from graph
+        _graph.remove_node(node)
 
     return stack
 
@@ -184,7 +180,15 @@ def select(stack: list[tuple], N):
 
 def color_graph(graph: Graph, N: int) -> dict:
     stack = simplify(graph, N)
+
+    print("Stack:\n")
+    print(stack)
+
     colors = select(stack, N)
+
+    print("Colors:\n")
+    print(colors)
+
     return colors
 
 
@@ -195,11 +199,12 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
     for variable in variables:
         # 1. choose an address to store the variable address_x
         address_entry = DataEntry(f"address_{variable}", 0, REGISTER_SIZE)
-        variable_replacement = f"{variable}_{i}"
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
         for i, instruction in enumerate(instructions):
+            variable_replacement = f"{variable}_{i}"
+
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable:
                     instruction.dest.id = variable_replacement
@@ -216,6 +221,8 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
 
         # 3. before an instruction i that reads x_i, insert the instruction x_i = MEM[address_x]
         for i, instruction in enumerate(instructions):
+            variable_replacement = f"{variable}_{i}"
+
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
                     instructions_updated.insert(i, InstructionAssignFromMem(instruction.src, address_entry))
@@ -228,6 +235,8 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
         for i, instruction in enumerate(instructions):
+            variable_replacement = f"{variable}_{i}"
+
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
                     instructions_updated.insert(i+1, InstructionAssignToMem(address_entry, instruction.dest))
@@ -295,21 +304,36 @@ def liveness_analysis(program: Program):
 
 
         # print the results
-        print("Liveness analysis:")
-        for i, instruction in enumerate(program.instructions):
-            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
+#        print("Liveness analysis:")
+#        for i, instruction in enumerate(program.instructions):
+#            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
 
+        # print program
+        print("\nProgram:")
+        for i, instruction in enumerate(program.instructions):
+            print(f"{i}: {instruction}")
 
         # Print interference graph
         print("\nInterference graph:")
         graph = get_interference_graph(program.instructions, kill, live_out)
 
         # Color graph
-        colors = color_graph(graph, N=2)
+        colors = color_graph(graph, N=3)
+
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        G = nx.Graph()
+        G.add_edges_from(graph.edges)
+
+        nx.draw(G, with_labels=True)
+        plt.show()
+
 
         if 'spill' in colors.values():
-            print("Spilling registers")
-            program.instructions = spill_registers(program.instructions, colors.keys(), live_in, live_out)
+            regs = set([variable for variable, color in colors.items() if color == 'spill'])
+            print(f"Spilling registers: {regs}")
+            program.instructions = spill_registers(program.instructions, regs, live_in, live_out)
             continue
         else:
             break

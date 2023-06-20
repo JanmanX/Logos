@@ -69,10 +69,16 @@ class InstructionAssignFromMem(Instruction):
     dest: AtomId
     atom: AtomId | AtomNum
 
+    def __repr__(self) -> str:
+        return f'{self.dest} = MEM[{self.atom}]'
+
 @dataclass
 class InstructionAssignToMem(Instruction):
     mem: AtomId
     atom: AtomId | AtomNum
+
+    def __repr__(self) -> str:
+        return f'MEM[{self.mem}] = {self.atom}'
 
 @dataclass
 class InstructionGoto(Instruction):
@@ -104,6 +110,9 @@ class DataEntry:
     label: str 
     value: str 
     size: int
+
+    def __repr__(self) -> str:
+        return f'{self.label}: .{self.size} {self.value}'
 
 # --- Other
 @dataclass
