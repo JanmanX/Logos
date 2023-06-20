@@ -26,7 +26,11 @@ def main(argv):
     print(str(program))
 
 
-    liveness_analysis(program)
+    colors = liveness_analysis(program)
+
+    print("Colors:")
+    print(str(colors))
+
 
 #     # Output to file
 #     with open("out.asm", "w") as f:
