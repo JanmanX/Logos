@@ -189,18 +189,17 @@ def color_graph(graph: Graph, N: int) -> dict:
 
 
 
-def spill_registers(instructions: list[Instruction], variables: set[str]):
+def spill_registers(instructions: list[Instruction], variables: set[str], live_in: list[set], live_out: list[set]):
     instructions_updated = instructions.copy()
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
         address_entry = DataEntry(f"address_{variable}", 0, REGISTER_SIZE)
+        variable_replacement = f"{variable}_{i}"
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
         for i, instruction in enumerate(instructions):
-            variable_replacement = f"{variable}_{i}"
-
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable:
                     instruction.dest.id = variable_replacement
@@ -227,15 +226,28 @@ def spill_registers(instructions: list[Instruction], variables: set[str]):
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
                     instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, address_entry))
 
-
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
+        for i, instruction in enumerate(instructions):
+            if isinstance(instruction, InstructionAssign):
+                if instruction.dest.id == variable_replacement:
+                    instructions_updated.insert(i+1, InstructionAssignToMem(address_entry, instruction.dest))
+
+            elif isinstance(instruction, InstructionAssignBinop):
+                if instruction.dest.id == variable_replacement:
+                    instructions_updated.insert(i+1, InstructionAssignToMem(address_entry, instruction.dest))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
+        if variable in live_in[0]:
+            instructions_updated.insert(0, InstructionAssignToMem(address_entry, AtomId(variable)))
 
         # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
         #   the end of the program. Note that we use the original name for x here.
+        if variable in live_out[-1]:
+            instructions_updated.append(InstructionAssignFromMem(AtomId(variable), address_entry))
 
+
+    return instructions_updated
 
 
 
