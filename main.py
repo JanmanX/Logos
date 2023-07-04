@@ -22,10 +22,6 @@ def main(argv):
     visitor = ILGenerator()
     program = visitor.visit(tree)
 
-    print("Binary code:")
-    print(str(program))
-
-
     colors = liveness_analysis(program)
 
     print("Colors:")

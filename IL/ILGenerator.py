@@ -51,13 +51,13 @@ class ILGenerator(LogosVisitor):
             x = self.vtable[id]
 
         # Set place
-        self.place = self.newvar()
+        place = self.place = self.newvar()
 
         # Visit expression
         code = self.visit(ctx.expr())
 
         # Add assignment instruction
-        return code + [InstructionAssign(AtomId(x), AtomId(self.place))]
+        return code + [InstructionAssign(AtomId(x), AtomId(place))]
 
 
     # Visit a parse tree produced by LogosParser#MulDiv.
@@ -102,8 +102,6 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#LeLeqGeGeq.
     def visitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
-
-
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by LogosParser#EqNeq.

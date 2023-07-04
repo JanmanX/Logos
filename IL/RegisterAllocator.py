@@ -151,8 +151,19 @@ def simplify(graph: Graph, N: int) -> list[tuple]:
     # Sort by degree
     degrees = dict(sorted(degrees.items(), key=lambda item: item[1]))
 
+    # To improve our chances of coloring, we try to first select nodes with degree < N
+    nodes_with_degree_geq_N = [node for node, degree in degrees.items() if degree >= N]
+    nodes_with_degree_lt_N = [node for node, degree in degrees.items() if degree < N]
+
     # Put node with degree < N on the stack
-    for node, degree in degrees.items():
+    for node in nodes_with_degree_lt_N:
+        stack.append((node, _graph.get_neighbours(node)))
+
+        # Remove node from graph
+        _graph.remove_node(node)
+
+    # Put the rest of the nodes on the stack. These will be spilled later
+    for node in nodes_with_degree_geq_N:
         stack.append((node, _graph.get_neighbours(node)))
 
         # Remove node from graph
@@ -318,7 +329,7 @@ def liveness_analysis(program: Program):
         graph = get_interference_graph(program.instructions, kill, live_out)
 
         # Color graph
-        colors = color_graph(graph, N=3)
+        colors = color_graph(graph, N=2)
 
         import networkx as nx
         import matplotlib.pyplot as plt
