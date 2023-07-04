@@ -51,7 +51,8 @@ class ILGenerator(LogosVisitor):
             x = self.vtable[id]
 
         # Set place
-        place = self.place = self.newvar()
+        self.place = self.newvar()
+        place = self.place # I need to do this because self.place will be changed by visit(ctx.expr())
 
         # Visit expression
         code = self.visit(ctx.expr())
