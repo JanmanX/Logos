@@ -3,6 +3,7 @@ from IL import *
 from utils.graph import Graph
 from consts import REGISTER_SIZE
 
+
 def lists_of_sets_equal(l1, l2):
     if len(l1) != len(l2):
         return False
@@ -12,6 +13,7 @@ def lists_of_sets_equal(l1, l2):
             return False
 
     return True
+
 
 def get_gen(instruction: Instruction) -> set:
     # Iterate over types of instruction
@@ -49,6 +51,7 @@ def get_gen(instruction: Instruction) -> set:
             return set()
 
     return set()
+
 
 def get_kill(instruction: Instruction):
     # Iterate over types of instruction
@@ -113,7 +116,7 @@ def get_successors(instructions: list):
             successors[i] = set()
 
         else:
-            successors[i] = {i+1}
+            successors[i] = {i + 1}
 
     return successors
 
@@ -132,10 +135,9 @@ def get_interference_graph(
         for x in kill[i]:
             for y in out[i]:
                 if (x != y
-                    and not (isinstance(instruction, InstructionAssign)
-                             and instruction.dest.id == y
-                             and instruction.src.id == x)):
-
+                        and not (isinstance(instruction, InstructionAssign)
+                                 and instruction.dest.id == y
+                                 and instruction.src.id == x)):
                     edges.append((x, y))
 
     return Graph.from_edges(edges)
@@ -171,6 +173,7 @@ def simplify(graph: Graph, N: int) -> list[tuple]:
 
     return stack
 
+
 def select(stack: list[tuple], N):
     available_colors = set(range(N))
     colors = {}
@@ -189,11 +192,13 @@ def select(stack: list[tuple], N):
 
     return colors
 
+
 def color_graph(graph: Graph, N: int) -> dict:
     stack = simplify(graph, N)
     colors = select(stack, N)
 
     return colors
+
 
 def spill_registers(instructions: list[Instruction], variables: set[str], live_in: list[set], live_out: list[set]):
     instructions_updated = instructions.copy()
@@ -241,11 +246,11 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
 
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i+1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i+1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
@@ -257,20 +262,20 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
         if variable in live_out[-1]:
             instructions_updated.append(InstructionAssignFromMem(AtomId(variable), address_entry))
 
-
     return instructions_updated
 
+
 def get_live_in_out(instructions: list, successors: list[set], gen: list[set], kill: list[set]):
-    live_in = []
-    live_out = []
+    live_in = [{} for _ in instructions]
+    live_out = [{} for _ in instructions]
 
     # Iterate
     prev_live_in = None
     prev_live_out = None
 
     iter_number = 0
-    while not (lists_of_sets_equal(live_in, prev_live_in)
-               and lists_of_sets_equal(live_out, prev_live_out)):
+    while not (live_in == prev_live_in
+               and live_out == prev_live_out):
         prev_live_out = list(live_out)
         prev_live_in = list(live_in)
 
@@ -283,6 +288,7 @@ def get_live_in_out(instructions: list, successors: list[set], gen: list[set], k
         if iter_number > 10:
             raise Exception("Could not converge live_in and live_out")
 
+    return live_in, live_out
 
 def liveness_analysis(program: Program, num_registers=6):
     program.instructions.append(InstructionReturn(AtomNum(0)))
@@ -310,9 +316,9 @@ def liveness_analysis(program: Program, num_registers=6):
         live_in, live_out = get_live_in_out(program.instructions, successors, gen, kill)
 
         # print the results
-#        print("Liveness analysis:")
-#        for i, instruction in enumerate(program.instructions):
-#            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
+        #        print("Liveness analysis:")
+        #        for i, instruction in enumerate(program.instructions):
+        #            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
 
         # print program
         print("\nProgram:")
@@ -325,15 +331,15 @@ def liveness_analysis(program: Program, num_registers=6):
 
         # Color graph
         colors = color_graph(graph, N=num_registers)
-#
-#        import networkx as nx
-#        import matplotlib.pyplot as plt
-#
-#        G = nx.Graph()
-#        G.add_edges_from(graph.edges)
-#
-#        nx.draw(G, with_labels=True)
-#        plt.show()
+        #
+        #        import networkx as nx
+        #        import matplotlib.pyplot as plt
+        #
+        #        G = nx.Graph()
+        #        G.add_edges_from(graph.edges)
+        #
+        #        nx.draw(G, with_labels=True)
+        #        plt.show()
 
         if 'spill' in colors.values():
             import networkx as nx
@@ -353,4 +359,3 @@ def liveness_analysis(program: Program, num_registers=6):
             break
 
     return colors
-
