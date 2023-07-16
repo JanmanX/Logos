@@ -48,7 +48,7 @@ def get_gen(instruction: Instruction) -> set:
         else:
             return set()
 
-    return set() 
+    return set()
 
 def get_kill(instruction: Instruction):
     # Iterate over types of instruction
@@ -93,7 +93,7 @@ def get_successors(instructions: list):
                 if isinstance(instruction2, InstructionLabel) and instruction2.label_id == instruction.label_id:
                     successors[i] = {j}
                     break
-        elif isinstance(instruction, InstructionIf): 
+        elif isinstance(instruction, InstructionIf):
             _succ = set()
 
             # Find the instruction with the label and get the index
@@ -108,7 +108,7 @@ def get_successors(instructions: list):
                     break
 
             successors[i] = _succ
-        
+
         elif isinstance(instruction, InstructionReturn):
             successors[i] = set()
 
@@ -118,22 +118,22 @@ def get_successors(instructions: list):
     return successors
 
 
-# Calculates intereference graph for a program.
+# Calculates interference graph for a program.
 def get_interference_graph(
-        instructions: list[Instruction], 
-        kill: list[set], 
+        instructions: list[Instruction],
+        kill: list[set],
         out: list[set]) -> Graph:
     edges = []
 
-    # A varible x interferes with a variable y if x != y and there is an 
+    # A varible x interferes with a variable y if x != y and there is an
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
     for i, instruction in enumerate(instructions):
         # Iterate over combination of variables in kill[i] and out[i]
         for x in kill[i]:
             for y in out[i]:
-                if (x != y 
-                    and not (isinstance(instruction, InstructionAssign) 
-                             and instruction.dest.id == y 
+                if (x != y
+                    and not (isinstance(instruction, InstructionAssign)
+                             and instruction.dest.id == y
                              and instruction.src.id == x)):
 
                     edges.append((x, y))
@@ -191,18 +191,9 @@ def select(stack: list[tuple], N):
 
 def color_graph(graph: Graph, N: int) -> dict:
     stack = simplify(graph, N)
-
-    print("Stack:\n")
-    print(stack)
-
     colors = select(stack, N)
 
-    print("Colors:\n")
-    print(colors)
-
     return colors
-
-
 
 def spill_registers(instructions: list[Instruction], variables: set[str], live_in: list[set], live_out: list[set]):
     instructions_updated = instructions.copy()
@@ -269,12 +260,39 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
 
     return instructions_updated
 
+def get_live_in_out(instructions: list, successors: list[set], gen: list[set], kill: list[set]):
+    live_in = []
+    live_out = []
+
+    # Iterate
+    prev_live_in = None
+    prev_live_out = None
+
+    iter_number = 0
+    while not (lists_of_sets_equal(live_in, prev_live_in)
+               and lists_of_sets_equal(live_out, prev_live_out)):
+        prev_live_out = list(live_out)
+        prev_live_in = list(live_in)
+
+        for i, instruction in reversed(list(enumerate(instructions))):
+            live_out[i] = get_out(successors[i], live_in)
+            live_in[i] = get_in(gen[i], live_out[i], kill[i])
+
+        # Limit number of iterations
+        iter_number += 1
+        if iter_number > 10:
+            raise Exception("Could not converge live_in and live_out")
 
 
-def liveness_analysis(program: Program):
+def liveness_analysis(program: Program, num_registers=6):
     program.instructions.append(InstructionReturn(AtomNum(0)))
 
+    _breakpoint = 0
     while True:
+        _breakpoint += 1
+        if _breakpoint > 3:
+            raise Exception("Could not color program using {} registers".format(num_registers))
+
         num_instructions = len(program.instructions)
 
         # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
@@ -288,31 +306,8 @@ def liveness_analysis(program: Program):
         # eg., kill[i] = set(x,y) means that x and y are written to by instruction i
         kill = [get_kill(instruction) for instruction in program.instructions]
 
-        # live_in[i] holds the variables that are live at the start of i
-        live_in = [set() for _ in range(num_instructions)]
-
-        # live_out[i] holds the variables that are live at the end of i
-        live_out = [set() for _ in range(num_instructions)]
-
-        # Iterate
-        prev_line_in = []
-        prev_line_out = []
-
-        iter_number = 0
-        while not (lists_of_sets_equal(live_in, prev_line_in)
-                   and lists_of_sets_equal(live_out, prev_line_out)):
-            prev_line_out = list(live_out)
-            prev_line_in = list(live_in)
-
-            for i, instruction in reversed(list(enumerate(program.instructions))):
-                live_out[i] = get_out(successors[i], live_in)
-                live_in[i] = get_in(gen[i], live_out[i], kill[i])
-
-            # Limit number of iterations
-            iter_number += 1
-            if iter_number > 10:
-                break
-
+        # Get live_in and live_out
+        live_in, live_out = get_live_in_out(program.instructions, successors, gen, kill)
 
         # print the results
 #        print("Liveness analysis:")
@@ -329,19 +324,27 @@ def liveness_analysis(program: Program):
         graph = get_interference_graph(program.instructions, kill, live_out)
 
         # Color graph
-        colors = color_graph(graph, N=2)
-
-        import networkx as nx
-        import matplotlib.pyplot as plt
-
-        G = nx.Graph()
-        G.add_edges_from(graph.edges)
-
-        nx.draw(G, with_labels=True)
-        plt.show()
-
+        colors = color_graph(graph, N=num_registers)
+#
+#        import networkx as nx
+#        import matplotlib.pyplot as plt
+#
+#        G = nx.Graph()
+#        G.add_edges_from(graph.edges)
+#
+#        nx.draw(G, with_labels=True)
+#        plt.show()
 
         if 'spill' in colors.values():
+            import networkx as nx
+            import matplotlib.pyplot as plt
+
+            G = nx.Graph()
+            G.add_edges_from(graph.edges)
+
+            nx.draw(G, with_labels=True)
+            plt.show()
+
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
             print(f"Spilling registers: {regs}")
             program.instructions = spill_registers(program.instructions, regs, live_in, live_out)

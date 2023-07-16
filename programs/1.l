@@ -1,11 +1,5 @@
-a = 20
-b = a
-c = 1 * 2
-d = a + b
-e = d + c 
+a = 1
+b = 2
 
-if 3 + 4 then c = 6
+t = a + b
 
-
-while 4 - a do 
-    a = a + 1

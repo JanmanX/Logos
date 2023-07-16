@@ -22,7 +22,7 @@ def main(argv):
     visitor = ILGenerator()
     program = visitor.visit(tree)
 
-    colors = liveness_analysis(program)
+    colors = liveness_analysis(program, num_registers=2)
 
     print("Colors:")
     print(str(colors))

@@ -41,7 +41,7 @@ class Instruction:
 
 @dataclass
 class InstructionLabel(Instruction):
-    label_id: str
+    label_id: AtomId
 
     def __repr__(self) -> str:
         return f'{self.label_id}:'
