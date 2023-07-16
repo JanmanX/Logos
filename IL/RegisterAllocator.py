@@ -128,7 +128,7 @@ def get_interference_graph(
         out: list[set]) -> Graph:
     edges = []
 
-    # A varible x interferes with a variable y if x != y and there is an
+    # A variable x interferes with a variable y if x != y and there is an
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
     for i, instruction in enumerate(instructions):
         # Iterate over combination of variables in kill[i] and out[i]
@@ -325,8 +325,7 @@ def liveness_analysis(program: Program, num_registers=6):
         for i, instruction in enumerate(program.instructions):
             print(f"{i}: {instruction}")
 
-        # Print interference graph
-        print("\nInterference graph:")
+        # Get inteference graph
         graph = get_interference_graph(program.instructions, kill, live_out)
 
         # Color graph
