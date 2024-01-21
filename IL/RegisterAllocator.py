@@ -1,7 +1,6 @@
-import copy
 from IL import *
-from utils.graph import Graph
 from consts import REGISTER_SIZE
+from utils.graph import Graph
 
 
 def lists_of_sets_equal(l1, l2):
@@ -290,6 +289,7 @@ def get_live_in_out(instructions: list, successors: list[set], gen: list[set], k
 
     return live_in, live_out
 
+
 def liveness_analysis(program: Program, num_registers=6):
     program.instructions.append(InstructionReturn(AtomNum(0)))
 
@@ -298,8 +298,6 @@ def liveness_analysis(program: Program, num_registers=6):
         _breakpoint += 1
         if _breakpoint > 3:
             raise Exception("Could not color program using {} registers".format(num_registers))
-
-        num_instructions = len(program.instructions)
 
         # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
         successors = get_successors(program.instructions)
@@ -347,6 +345,7 @@ def liveness_analysis(program: Program, num_registers=6):
             G = nx.Graph()
             G.add_edges_from(graph.edges)
 
+            plt.clf()
             nx.draw(G, with_labels=True)
             plt.show()
 

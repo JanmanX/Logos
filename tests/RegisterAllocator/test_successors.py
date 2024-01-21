@@ -1,5 +1,5 @@
-from IL import *
 from IL.RegisterAllocator import *
+
 
 def test_get_successors():
     instructions = [
@@ -14,6 +14,7 @@ def test_get_successors():
     assert successors == [
         {1}, {2}, {3}, {4}
     ]
+
 
 def test_get_successors_branching():
     instructions = [

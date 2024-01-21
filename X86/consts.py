@@ -1,7 +1,6 @@
 # https://faculty.nps.edu/cseagle/assembly/sys_call.html
 
 
-
 PROG_START = """
 section .data
 
@@ -10,7 +9,6 @@ global _start
 
 _start:
 """
-
 
 PROG_END = """
     mov rax, 0x3c       ; sys_exit
@@ -21,7 +19,6 @@ PROG_END = """
 ASSIGN_FMT = """
     mov {reg}, {val}    ; assign {val} to {reg}
 """
-
 
 PRINT_FMT = """
     push 0x0A
@@ -36,7 +33,6 @@ PRINT_FMT = """
     add rsp, 0x09       ; pop the stack
 
     """
-
 
 EXIT_FMT = """
     mov rax, 0x3c       ; sys_exit

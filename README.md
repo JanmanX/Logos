@@ -1,8 +1,7 @@
 # Logos
 
-
-
 ## Cheatsheet
+
 ```
 $ antlr4-parse Logos.g4 prog -gui
 10+20*30

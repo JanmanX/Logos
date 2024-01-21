@@ -1,5 +1,4 @@
 from IL.RegisterAllocator import *
-from IL import *
 
 
 def test_simple_program():
@@ -17,6 +16,5 @@ def test_simple_program():
 
     # Test liveness analysis
     colors = liveness_analysis(program, 2)
-
 
     assert colors

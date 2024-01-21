@@ -1,5 +1,6 @@
 from IL.RegisterAllocator import *
 
+
 def test_colors():
     graph = Graph.from_edges([
         ('a', 'b'),
@@ -19,12 +20,11 @@ def test_spill():
         ('a', 'b'),
         ('b', 'c'),
         ('c', 'a')
-        ])
+    ])
     colors = color_graph(graph, 2)
 
     # Assert one of the colors is spilled ("spill")
     assert 'spill' in colors.values()
-
 
 
 def test_colors2():
@@ -40,4 +40,3 @@ def test_colors2():
     colors = color_graph(graph, 3)
 
     assert 'spill' not in colors.values()
-

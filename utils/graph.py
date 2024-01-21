@@ -31,12 +31,24 @@ class Graph:
         nodes = set([item for sublist in connected_edges for item in sublist])
 
         # Remove the node itself if present
-        if node in nodes: 
+        if node in nodes:
             nodes.remove(node)
 
-        return nodes     
+        return nodes
 
     def remove_node(self, node: str):
         """Removes a node from an undirected graph."""
         self.nodes.remove(node)
         self.edges = set([edge for edge in self.edges if node not in edge])
+
+    def draw_graph(self):
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        G = nx.Graph()
+
+        for edge in self.edges:
+            G.add_edge(edge[0], edge[1])
+
+        nx.draw(G, with_labels=True, font_weight='bold')
+        plt.show()

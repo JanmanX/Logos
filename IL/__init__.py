@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
+
 # --- Operators
 class Binop(Enum):
     ADD = '+'
@@ -16,6 +17,7 @@ class Binop(Enum):
     LE = '<='
     GT = '>'
     GE = '>='
+
 
 # --- Atoms
 @dataclass
@@ -33,6 +35,7 @@ class AtomNum:
     def __repr__(self) -> str:
         return str(self.num)
 
+
 # --- Instructions
 @dataclass
 class Instruction:
@@ -46,24 +49,30 @@ class InstructionLabel(Instruction):
     def __repr__(self) -> str:
         return f'{self.label_id}:'
 
+
 @dataclass
 class InstructionAssign(Instruction):
     dest: AtomId
     src: AtomId | AtomNum
 
     def __repr__(self) -> str:
+        if isinstance(self.src, AtomId):
+            return f'{self.dest} = Atom[{self.src}]'
+
         return f'{self.dest} = {self.src}'
+
 
 @dataclass
 class InstructionAssignBinop(Instruction):
     dest: AtomId
-    op: Binop 
+    op: Binop
     left: AtomId | AtomNum
     right: AtomId | AtomNum
 
     def __repr__(self) -> str:
         return f'{self.dest} = {self.left} {self.op.value} {self.right}'
- 
+
+
 @dataclass
 class InstructionAssignFromMem(Instruction):
     dest: AtomId
@@ -71,6 +80,7 @@ class InstructionAssignFromMem(Instruction):
 
     def __repr__(self) -> str:
         return f'{self.dest} = MEM[{self.atom}]'
+
 
 @dataclass
 class InstructionAssignToMem(Instruction):
@@ -80,9 +90,11 @@ class InstructionAssignToMem(Instruction):
     def __repr__(self) -> str:
         return f'MEM[{self.mem}] = {self.atom}'
 
+
 @dataclass
 class InstructionGoto(Instruction):
     label_id: AtomId
+
 
 @dataclass
 class InstructionIf(Instruction):
@@ -93,11 +105,13 @@ class InstructionIf(Instruction):
     def __repr__(self) -> str:
         return f'if {self.atom} goto {self.true_label} else goto {self.false_label}'
 
+
 @dataclass
 class InstructionFunctionCall(Instruction):
     dest: AtomId
     function: AtomId
     args: list
+
 
 @dataclass
 class InstructionReturn(Instruction):
@@ -107,18 +121,20 @@ class InstructionReturn(Instruction):
 # --- Data
 @dataclass
 class DataEntry:
-    label: str 
-    value: str 
+    label: str
+    value: str
     size: int
 
     def __repr__(self) -> str:
         return f'{self.label}: .{self.size} {self.value}'
+
 
 # --- Other
 @dataclass
 class Function:
     header: str
     body: list
+
 
 @dataclass
 class Program:
@@ -127,5 +143,3 @@ class Program:
 
     def __repr__(self) -> str:
         return '\n'.join([str(i) for i in self.instructions])
-
-

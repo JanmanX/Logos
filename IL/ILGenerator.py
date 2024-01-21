@@ -1,15 +1,14 @@
-import random
-
-from generated.LogosVisitor import LogosVisitor 
 from generated.LogosParser import LogosParser
+from generated.LogosVisitor import LogosVisitor
 from . import *
+
 
 class ILGenerator(LogosVisitor):
     def newvar(self):
         name = 't' + str(self._newvar_index)
         self._newvar_index += 1
         return name
-    
+
     def newlabel(self):
         name = 'l' + str(self._newlabel_index)
         self._newlabel_index += 1
@@ -18,12 +17,12 @@ class ILGenerator(LogosVisitor):
     def bind(self, table, name, place):
         table[name] = place
 
-    def visitProg(self, ctx:LogosParser.ProgContext) -> Program:
+    def visitProg(self, ctx: LogosParser.ProgContext) -> Program:
         self.program = Program([], [])
         self.vtable = dict()
         self.ftable = dict()
         self.place = None
-        self.label = None 
+        self.label = None
 
         # internals
         self._newvar_index = 0
@@ -39,8 +38,7 @@ class ILGenerator(LogosVisitor):
 
         return self.program
 
-
-    def visitAssign(self, ctx:LogosParser.AssignContext):
+    def visitAssign(self, ctx: LogosParser.AssignContext):
         id = ctx.ID().getText()
 
         # If id not in vtable, add it
@@ -52,7 +50,7 @@ class ILGenerator(LogosVisitor):
 
         # Set place
         self.place = self.newvar()
-        place = self.place # I need to do this because self.place will be changed by visit(ctx.expr())
+        place = self.place  # I need to do this because self.place will be changed by visit(ctx.expr())
 
         # Visit expression
         code = self.visit(ctx.expr())
@@ -60,9 +58,8 @@ class ILGenerator(LogosVisitor):
         # Add assignment instruction
         return code + [InstructionAssign(AtomId(x), AtomId(place))]
 
-
     # Visit a parse tree produced by LogosParser#MulDiv.
-    def visitMulDiv(self, ctx:LogosParser.MulDivContext):
+    def visitMulDiv(self, ctx: LogosParser.MulDivContext):
         place0 = self.place
 
         # Visit left
@@ -80,9 +77,8 @@ class ILGenerator(LogosVisitor):
         code = code1 + code2 + [InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2))]
         return code
 
-
     # Visit a parse tree produced by LogosParser#AddSub.
-    def visitAddSub(self, ctx:LogosParser.AddSubContext):
+    def visitAddSub(self, ctx: LogosParser.AddSubContext):
         place0 = self.place
 
         # Visit left
@@ -100,40 +96,35 @@ class ILGenerator(LogosVisitor):
         code = code1 + code2 + [InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2))]
         return code
 
-
     # Visit a parse tree produced by LogosParser#LeLeqGeGeq.
-    def visitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
+    def visitLeLeqGeGeq(self, ctx: LogosParser.LeLeqGeGeqContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by LogosParser#EqNeq.
-    def visitEqNeq(self, ctx:LogosParser.EqNeqContext):
+    def visitEqNeq(self, ctx: LogosParser.EqNeqContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by LogosParser#LogicalAndOr.
-    def visitLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
+    def visitLogicalAndOr(self, ctx: LogosParser.LogicalAndOrContext):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by LogosParser#AndXorOr.
-    def visitAndXorOr(self, ctx:LogosParser.AndXorOrContext):
+    def visitAndXorOr(self, ctx: LogosParser.AndXorOrContext):
         return self.visitChildren(ctx)
 
-
-
     # Visit a parse tree produced by LogosParser#Int.
-    def visitInt(self, ctx:LogosParser.IntContext):
+    def visitInt(self, ctx: LogosParser.IntContext):
         return [InstructionAssign(AtomId(self.place), AtomNum(ctx.INT().getText()))]
 
-
     # Visit a parse tree produced by LogosParser#Id.
-    def visitId(self, ctx:LogosParser.IdContext):
+    def visitId(self, ctx: LogosParser.IdContext):
         id = ctx.ID().getText()
         x = self.vtable[id]
 
         return [InstructionAssign(AtomId(self.place), AtomId(x))]
 
-
     # Visit a parse tree produced by LogosParser#if.
-    def visitIf(self, ctx:LogosParser.IfContext):
+    def visitIf(self, ctx: LogosParser.IfContext):
         label1 = self.newlabel()
         label2 = self.newlabel()
 
@@ -146,12 +137,12 @@ class ILGenerator(LogosVisitor):
         code1 = self.visit(ctx.stmt())
 
         return code0 + \
-            [InstructionIf(AtomId(place1), AtomId(label1), AtomId(label2)), InstructionLabel(label1)]  \
-            + code1  \
+            [InstructionIf(AtomId(place1), AtomId(label1), AtomId(label2)), InstructionLabel(label1)] \
+            + code1 \
             + [InstructionLabel(label2)]
 
     # Visit a parse tree produced by LogosParser#while.
-    def visitWhile(self, ctx:LogosParser.WhileContext):
+    def visitWhile(self, ctx: LogosParser.WhileContext):
         label1 = self.newlabel()
         label2 = self.newlabel()
         label3 = self.newlabel()
@@ -169,5 +160,3 @@ class ILGenerator(LogosVisitor):
             + [InstructionIf(AtomId(place1), AtomId(label2), AtomId(label3)), InstructionLabel(label2)] \
             + code1 \
             + [InstructionGoto(AtomId(label1)), InstructionLabel(label3)]
-
-

@@ -1,6 +1,7 @@
-from . import consts
-from generated.LogosParser import LogosParser
 from generated.LogosListener import LogosListener
+from generated.LogosParser import LogosParser
+from . import consts
+
 
 class X86Listener(LogosListener):
 
@@ -34,93 +35,89 @@ class X86Listener(LogosListener):
 
         raise Exception("No registers available")
 
-
     # Enter a parse tree produced by LogosParser#prog.
-    def enterProg(self, ctx:LogosParser.ProgContext):
+    def enterProg(self, ctx: LogosParser.ProgContext):
         self.code += consts.PROG_START
 
     # Exit a parse tree produced by LogosParser#prog.
-    def exitProg(self, ctx:LogosParser.ProgContext):
+    def exitProg(self, ctx: LogosParser.ProgContext):
         self.code += consts.PROG_END
 
     # Enter a parse tree produced by LogosParser#assign.
-    def enterAssign(self, ctx:LogosParser.AssignContext):
+    def enterAssign(self, ctx: LogosParser.AssignContext):
         pass
 
     # Exit a parse tree produced by LogosParser#assign.
-    def exitAssign(self, ctx:LogosParser.AssignContext):
+    def exitAssign(self, ctx: LogosParser.AssignContext):
         reg = self.get_reg(ctx.ID().getText())
         self.code += consts.ASSIGN_FMT.format(reg=reg, val="rax")
 
     # Enter a parse tree produced by LogosParser#print.
-    def enterPrint(self, ctx:LogosParser.PrintContext):
+    def enterPrint(self, ctx: LogosParser.PrintContext):
         reg = self.get_reg(ctx.ID().getText())
         self.code += consts.PRINT_FMT.format(reg=reg)
 
     # Exit a parse tree produced by LogosParser#print.
-    def exitPrint(self, ctx:LogosParser.PrintContext):
+    def exitPrint(self, ctx: LogosParser.PrintContext):
         pass
 
     # Enter a parse tree produced by LogosParser#if.
-    def enterIf(self, ctx:LogosParser.IfContext):
+    def enterIf(self, ctx: LogosParser.IfContext):
         pass
 
     # Exit a parse tree produced by LogosParser#if.
-    def exitIf(self, ctx:LogosParser.IfContext):
+    def exitIf(self, ctx: LogosParser.IfContext):
         pass
 
     # Enter a parse tree produced by LogosParser#exit.
-    def enterExit(self, ctx:LogosParser.ExitContext):
+    def enterExit(self, ctx: LogosParser.ExitContext):
         reg = self.get_reg(ctx.ID().getText())
         self.code += consts.EXIT_FMT.format(reg=reg)
 
     # Exit a parse tree produced by LogosParser#exit.
-    def exitExit(self, ctx:LogosParser.ExitContext):
+    def exitExit(self, ctx: LogosParser.ExitContext):
         pass
 
     # Enter a parse tree produced by LogosParser#LeLeqGeGeq.
-    def enterLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
+    def enterLeLeqGeGeq(self, ctx: LogosParser.LeLeqGeGeqContext):
         pass
 
     # Exit a parse tree produced by LogosParser#LeLeqGeGeq.
-    def exitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
+    def exitLeLeqGeGeq(self, ctx: LogosParser.LeLeqGeGeqContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#MulDiv.
-    def enterMulDiv(self, ctx:LogosParser.MulDivContext):
+    def enterMulDiv(self, ctx: LogosParser.MulDivContext):
         pass
 
     # Exit a parse tree produced by LogosParser#MulDiv.
-    def exitMulDiv(self, ctx:LogosParser.MulDivContext):
+    def exitMulDiv(self, ctx: LogosParser.MulDivContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#AddSub.
-    def enterAddSub(self, ctx:LogosParser.AddSubContext):
+    def enterAddSub(self, ctx: LogosParser.AddSubContext):
         self.code += """
         mov rbx, rax
         xor rax, rax
         """
 
     # Exit a parse tree produced by LogosParser#AddSub.
-    def exitAddSub(self, ctx:LogosParser.AddSubContext):
+    def exitAddSub(self, ctx: LogosParser.AddSubContext):
         self.code += """
         add rax, rbx
         xor rax, rax        
         """
 
     # Enter a parse tree produced by LogosParser#LogicalAndOr.
-    def enterLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
+    def enterLogicalAndOr(self, ctx: LogosParser.LogicalAndOrContext):
         pass
 
     # Exit a parse tree produced by LogosParser#LogicalAndOr.
-    def exitLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
+    def exitLogicalAndOr(self, ctx: LogosParser.LogicalAndOrContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#Id.
-    def enterId(self, ctx:LogosParser.IdContext):
+    def enterId(self, ctx: LogosParser.IdContext):
         reg = self.get_reg(ctx.ID().getText())
 
         self.code += f"""
@@ -128,35 +125,31 @@ class X86Listener(LogosListener):
         """
 
     # Exit a parse tree produced by LogosParser#Id.
-    def exitId(self, ctx:LogosParser.IdContext):
+    def exitId(self, ctx: LogosParser.IdContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#AndXorOr.
-    def enterAndXorOr(self, ctx:LogosParser.AndXorOrContext):
+    def enterAndXorOr(self, ctx: LogosParser.AndXorOrContext):
         pass
 
     # Exit a parse tree produced by LogosParser#AndXorOr.
-    def exitAndXorOr(self, ctx:LogosParser.AndXorOrContext):
+    def exitAndXorOr(self, ctx: LogosParser.AndXorOrContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#Int.
-    def enterInt(self, ctx:LogosParser.IntContext):
+    def enterInt(self, ctx: LogosParser.IntContext):
         self.code += f"""
         add rax, {ctx.INT().getText()}
         """
 
     # Exit a parse tree produced by LogosParser#Int.
-    def exitInt(self, ctx:LogosParser.IntContext):
+    def exitInt(self, ctx: LogosParser.IntContext):
         pass
 
-
     # Enter a parse tree produced by LogosParser#EqNeq.
-    def enterEqNeq(self, ctx:LogosParser.EqNeqContext):
+    def enterEqNeq(self, ctx: LogosParser.EqNeqContext):
         pass
 
     # Exit a parse tree produced by LogosParser#EqNeq.
-    def exitEqNeq(self, ctx:LogosParser.EqNeqContext):
+    def exitEqNeq(self, ctx: LogosParser.EqNeqContext):
         pass
-

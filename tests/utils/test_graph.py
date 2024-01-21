@@ -1,5 +1,6 @@
 from utils.graph import Graph
 
+
 def test_graph_from_edges():
     edges = [
         ('a', 'b'),
