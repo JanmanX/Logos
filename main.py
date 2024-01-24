@@ -1,17 +1,15 @@
-import sys
 import argparse
 
 from antlr4 import *
 
 from IL.ILGenerator import ILGenerator
 from IL.RegisterAllocator import liveness_analysis
+from codegen import Architecture, TargetConfig, codegen
 from generated.LogosLexer import LogosLexer
 from generated.LogosParser import LogosParser
 
 
-
-
-def main(program_path, architecture):
+def main(program_path: str, config: TargetConfig):
     input_stream = FileStream(program_path)
     lexer = LogosLexer(input_stream)
     stream = CommonTokenStream(lexer)
@@ -25,28 +23,24 @@ def main(program_path, architecture):
     visitor = ILGenerator()
     program = visitor.visit(tree)
 
-    program.variable_colors = liveness_analysis(program, num_registers=3)
+    program.variable_colors = liveness_analysis(program, num_registers=config.num_registers)
+
 
     print("Colors:")
     print(str(program.variable_colors))
 
-
-#     # Output to file
-#     with open("out.asm", "w") as f:
-#         f.write(code)
-#     
-#     # Compile
-#     os.system("nasm -f elf64 out.asm -o out.o")
-# 
-#     # Link
-#     os.system("ld -m elf_x86_64 out.o -o out")
-
+    code = codegen(program, config)
+    print("CODE: ")
+    print("\n".join(code))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description = 'Logos compiler')
+    parser = argparse.ArgumentParser(description='Logos compiler')
     parser.add_argument("program", help="program")
-    parser.add_argument('-a', '--arch', help = 'Target architecture', default = 'arm')
+    parser.add_argument('-a', '--arch', help='Target architecture', default='arm')
     args = parser.parse_args()
 
-    print("Compiling " + args.program + " for " + args.arch + " architecture")
-    main(args.program, args.arch)
+    # Setup config
+    target_config = TargetConfig.from_architecture(Architecture[args.arch.upper()])
+
+    # Go!
+    main(args.program, target_config)
