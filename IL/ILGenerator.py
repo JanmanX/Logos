@@ -18,7 +18,7 @@ class ILGenerator(LogosVisitor):
         table[name] = place
 
     def visitProg(self, ctx: LogosParser.ProgContext) -> Program:
-        self.program = Program([], [])
+        self.program = Program([], [], {})
         self.vtable = dict()
         self.ftable = dict()
         self.place = None

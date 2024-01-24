@@ -140,6 +140,7 @@ class Function:
 class Program:
     data: list[DataEntry]
     instructions: list
+    variable_colors: dict
 
     def __repr__(self) -> str:
         return '\n'.join([str(i) for i in self.instructions])

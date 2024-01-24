@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 from antlr4 import *
 
@@ -8,8 +9,10 @@ from generated.LogosLexer import LogosLexer
 from generated.LogosParser import LogosParser
 
 
-def main(argv):
-    input_stream = FileStream(argv[1])
+
+
+def main(program_path, architecture):
+    input_stream = FileStream(program_path)
     lexer = LogosLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = LogosParser(stream)
@@ -22,10 +25,10 @@ def main(argv):
     visitor = ILGenerator()
     program = visitor.visit(tree)
 
-    colors = liveness_analysis(program, num_registers=2)
+    program.variable_colors = liveness_analysis(program, num_registers=3)
 
     print("Colors:")
-    print(str(colors))
+    print(str(program.variable_colors))
 
 
 #     # Output to file
@@ -40,4 +43,10 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    parser = argparse.ArgumentParser(description = 'Logos compiler')
+    parser.add_argument("program", help="program")
+    parser.add_argument('-a', '--arch', help = 'Target architecture', default = 'arm')
+    args = parser.parse_args()
+
+    print("Compiling " + args.program + " for " + args.arch + " architecture")
+    main(args.program, args.arch)
