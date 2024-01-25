@@ -98,7 +98,6 @@ def codegen(program: Program) -> str:
             raise NotImplemented
         elif isinstance(instruction, InstructionReturn):
             code.append('RET')
-        #    code.append(f'RET {REGISTER_MAP[instruction.atom.id]}')
         else:
             raise Exception("Unknown instruction")
 
