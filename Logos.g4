@@ -21,7 +21,4 @@ expr: left=expr op=(OP_MUL|OP_DIV) right=expr                       # MulDiv
     | ID                                                            # Id                            
     | INT                                                           # Int
     ;
-
-ID: [a-zA-Z]+;
-INT: [0-9]+;
-WS: [ \t\r\n]+ -> skip;
+    
