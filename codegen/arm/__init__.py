@@ -48,9 +48,11 @@ def codegen_binop(instruction: InstructionAssignBinop):
     code = []
     op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
-    code.append(f'{op_instruction} {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}, {REGISTER_MAP[instruction.right.id]}')
+    code.append(
+        f'{op_instruction} {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}, {REGISTER_MAP[instruction.right.id]}')
 
     return code
+
 
 def codegen_assign(instruction: InstructionAssign):
     code = []
@@ -60,28 +62,35 @@ def codegen_assign(instruction: InstructionAssign):
         code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
     return code
 
+
 def codegen_label(instruction: InstructionLabel):
-    code = []
-    code.append(f'{instruction.label_id}:')
+    code = [f'{instruction.label_id.id}:']
     return code
+
 
 def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
     raise NotImplemented
 
+
 def codegen_assign_to_mem(instruction: InstructionAssignToMem):
     raise NotImplemented
+
 
 def codegen_goto(instruction: InstructionGoto):
     raise NotImplemented
 
+
 def codegen_if(instruction: InstructionIf):
     raise NotImplemented
+
 
 def codegen_function_call(instruction: InstructionFunctionCall):
     raise NotImplemented
 
+
 def codegen_return(instruction: InstructionReturn):
     return ['RET']
+
 
 def codegen(program: Program) -> str:
     prolog = [

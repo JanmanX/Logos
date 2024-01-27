@@ -137,9 +137,9 @@ class ILGenerator(LogosVisitor):
         code1 = self.visit(ctx.stmt())
 
         return code0 + \
-            [InstructionIf(AtomId(place1), AtomId(label1), AtomId(label2)), InstructionLabel(label1)] \
+            [InstructionIf(AtomId(place1), AtomId(label1), AtomId(label2)), InstructionLabel(AtomId(label1))] \
             + code1 \
-            + [InstructionLabel(label2)]
+            + [InstructionLabel(AtomId(label2))]
 
     # Visit a parse tree produced by LogosParser#while.
     def visitWhile(self, ctx: LogosParser.WhileContext):
@@ -155,8 +155,8 @@ class ILGenerator(LogosVisitor):
         # Visit stmt
         code1 = self.visit(ctx.stmt())
 
-        return [InstructionLabel(label1)] \
+        return [InstructionLabel(AtomId(label1))] \
             + code0 \
-            + [InstructionIf(AtomId(place1), AtomId(label2), AtomId(label3)), InstructionLabel(label2)] \
+            + [InstructionIf(AtomId(place1), AtomId(label2), AtomId(label3)), InstructionLabel(AtomId(label2))] \
             + code1 \
-            + [InstructionGoto(AtomId(label1)), InstructionLabel(label3)]
+            + [InstructionGoto(AtomId(label1)), InstructionLabel(AtomId(label3))]
