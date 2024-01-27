@@ -30,11 +30,13 @@ def main(program_path: str, config: TargetConfig, output_path: str):
     with open(output_path, 'w') as f:
         f.write(code)
 
+    print(code)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Logos compiler')
     parser.add_argument("program", help="program")
     parser.add_argument('-a', '--arch', help='Target architecture', default='arm')
-    parser.add_argument('-o', '--output', help='Output file', default='program.S')
+    parser.add_argument('-o', '--output', help='Output file', default='program.as')
     args = parser.parse_args()
 
     # Setup config

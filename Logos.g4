@@ -10,6 +10,7 @@ stmt: ID '=' expr                   #assign
     | 'if' expr 'then' stmt         #if
     | 'while' expr 'do' stmt        #while
     | 'exit' ID                     #exit
+    | 'include' STRING              #include
     ;
 
 expr: left=expr op=(OP_MUL|OP_DIV) right=expr                       # MulDiv

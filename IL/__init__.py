@@ -66,8 +66,8 @@ class InstructionAssign(Instruction):
 class InstructionAssignBinop(Instruction):
     dest: AtomId
     op: Binop
-    left: AtomId | AtomNum
-    right: AtomId | AtomNum
+    left: AtomId
+    right: AtomId
 
     def __repr__(self) -> str:
         return f'{self.dest} = {self.left} {self.op.value} {self.right}'

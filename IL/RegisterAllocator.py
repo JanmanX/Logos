@@ -318,11 +318,6 @@ def liveness_analysis(program: Program, num_registers=6):
         #        for i, instruction in enumerate(program.instructions):
         #            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
 
-        # print program
-        print("\nProgram:")
-        for i, instruction in enumerate(program.instructions):
-            print(f"{i}: {instruction}")
-
         # Get inteference graph
         graph = get_interference_graph(program.instructions, kill, live_out)
 

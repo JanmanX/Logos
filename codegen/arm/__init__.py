@@ -1,6 +1,13 @@
 from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionAssignFromMem, \
     InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId
 
+BINOP_INSTRUCTION_MAP = {
+    Binop.ADD: 'ADD',
+    Binop.SUB: 'SUB',
+    Binop.MUL: 'MUL',
+    Binop.DIV: 'SDIV',
+}
+
 REGISTER_MAP = {
     't0': 'X0',
     't1': 'X1',
@@ -39,33 +46,42 @@ REGISTER_MAP = {
 
 def codegen_binop(instruction: InstructionAssignBinop):
     code = []
-    if instruction.op == Binop.ADD:
-        if isinstance(instruction.left, AtomId):
-            code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}')
-        else:
-            code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.left.num}')
+    op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
-        if isinstance(instruction.right, AtomId):
-            code.append(f'ADD {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.right.id]}')
-        else:
-            code.append(f'ADD {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.dest.id]}, #{instruction.right.num}')
-
-    elif instruction.op == Binop.SUB:
-        if isinstance(instruction.left, AtomId):
-            code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}')
-        else:
-            code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.left.num}')
-
-        if isinstance(instruction.right, AtomId):
-            code.append(f'SUB {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.right.id]}')
-        else:
-            code.append(f'SUB {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.dest.id]}, #{instruction.right.num}')
-
-    else:
-        raise NotImplemented
+    code.append(f'{op_instruction} {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}, {REGISTER_MAP[instruction.right.id]}')
 
     return code
 
+def codegen_assign(instruction: InstructionAssign):
+    code = []
+    if isinstance(instruction.src, AtomId):
+        code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.src.id]}')
+    else:
+        code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
+    return code
+
+def codegen_label(instruction: InstructionLabel):
+    code = []
+    code.append(f'{instruction.label_id}:')
+    return code
+
+def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
+    raise NotImplemented
+
+def codegen_assign_to_mem(instruction: InstructionAssignToMem):
+    raise NotImplemented
+
+def codegen_goto(instruction: InstructionGoto):
+    raise NotImplemented
+
+def codegen_if(instruction: InstructionIf):
+    raise NotImplemented
+
+def codegen_function_call(instruction: InstructionFunctionCall):
+    raise NotImplemented
+
+def codegen_return(instruction: InstructionReturn):
+    return ['RET']
 
 def codegen(program: Program) -> str:
     prolog = [
@@ -78,26 +94,23 @@ def codegen(program: Program) -> str:
 
     for instruction in program.instructions:
         if isinstance(instruction, InstructionLabel):
-            raise NotImplemented
+            code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
-            if isinstance(instruction.src, AtomId):
-                code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.src.id]}')
-            else:
-                code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
+            code.extend(codegen_assign(instruction))
         elif isinstance(instruction, InstructionAssignBinop):
             code.extend(codegen_binop(instruction))
         elif isinstance(instruction, InstructionAssignFromMem):
-            raise NotImplemented
+            code.extend(codegen_assign_from_mem(instruction))
         elif isinstance(instruction, InstructionAssignToMem):
-            raise NotImplemented
+            code.extend(codegen_assign_to_mem(instruction))
         elif isinstance(instruction, InstructionGoto):
-            raise NotImplemented
+            code.extend(codegen_goto(instruction))
         elif isinstance(instruction, InstructionIf):
-            raise NotImplemented
+            code.extend(codegen_if(instruction))
         elif isinstance(instruction, InstructionFunctionCall):
-            raise NotImplemented
+            code.extend(codegen_function_call(instruction))
         elif isinstance(instruction, InstructionReturn):
-            code.append('RET')
+            code.extend(codegen_return(instruction))
         else:
             raise Exception("Unknown instruction")
 
