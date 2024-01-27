@@ -32,6 +32,7 @@ def main(program_path: str, config: TargetConfig, output_path: str):
 
     print(code)
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Logos compiler')
     parser.add_argument("program", help="program")

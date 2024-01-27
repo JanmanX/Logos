@@ -8,6 +8,9 @@ BINOP_INSTRUCTION_MAP = {
     Binop.DIV: 'SDIV',
 }
 
+# TODO: https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms
+# Dont use register X18 (x18) for anything other than the platform's Thread Local Storage (TLS) pointer.
+
 REGISTER_MAP = {
     't0': 'X0',
     't1': 'X1',
@@ -89,16 +92,22 @@ def codegen_function_call(instruction: InstructionFunctionCall):
 
 
 def codegen_return(instruction: InstructionReturn):
-    return ['RET']
+    return []
+#    return ['RET']
 
 
 def codegen(program: Program) -> str:
     prolog = [
         '.text',
-        '.global _start',
-        '_start:',
+        '.global _main',
+        '_main:',
     ]
-    epilog = []
+
+    epilog = """
+        MOV     X16, #1  // System call number 1 terminates this program
+        SVC     #0x80  // Call kernel to terminate the program
+    """.splitlines()
+
     code = []
 
     for instruction in program.instructions:
