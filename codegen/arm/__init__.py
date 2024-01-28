@@ -84,7 +84,13 @@ def codegen_goto(instruction: InstructionGoto):
 
 
 def codegen_if(instruction: InstructionIf):
-    raise NotImplemented
+    code = [
+        f'CMP {REGISTER_MAP[instruction.atom.id]}, #0',
+        f'BEQ {instruction.false_label.id}',
+        f'BNE {instruction.true_label.id}'
+    ]
+
+    return code
 
 
 def codegen_function_call(instruction: InstructionFunctionCall):

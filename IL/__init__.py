@@ -98,7 +98,7 @@ class InstructionGoto(Instruction):
 
 @dataclass
 class InstructionIf(Instruction):
-    atom: AtomId | AtomNum
+    atom: AtomId
     true_label: AtomId
     false_label: AtomId
 
