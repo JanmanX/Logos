@@ -22,7 +22,7 @@ def main(program_path: str, config: TargetConfig, output_path: str):
 
     # Analyze
     program.variable_colors = liveness_analysis(program, num_registers=config.num_registers)
-
+    print(program)
     # Codegen
     code = codegen(program, config)
 

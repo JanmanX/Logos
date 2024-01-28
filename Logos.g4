@@ -4,13 +4,13 @@ import LogosLexerRules;
 
 prog: stmt+ EOF;
 
-stmt: ID '=' expr                       #assign
-    | 'if' expr '{' stmts+=stmt* '}'     #if
-    | 'while' expr 'do' stmt            #while
-    | 'exit' ID                         #exit
-    | 'include' STRING                  #include
-    | 'mem' ID '=' expr                 #assignMem
-    | 'mem' size=INT ID                 #assignMem
+stmt: ID '=' expr                           #assign
+    | 'if' expr '{' stmts+=stmt* '}'        #if
+    | 'while' expr '{' stmts+=stmt* '}'     #while
+    | 'exit' ID                             #exit
+    | 'include' STRING                      #include
+    | 'mem' ID '=' expr                     #assignMem
+    | 'mem' size=INT ID                     #assignMem
     ;
 
 expr: left=expr op=(OP_MUL|OP_DIV) right=expr                       # MulDiv

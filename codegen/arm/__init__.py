@@ -80,7 +80,10 @@ def codegen_assign_to_mem(instruction: InstructionAssignToMem):
 
 
 def codegen_goto(instruction: InstructionGoto):
-    raise NotImplemented
+    code = [
+        f'B {instruction.label_id.id}'
+    ]
+    return code
 
 
 def codegen_if(instruction: InstructionIf):

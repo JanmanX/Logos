@@ -131,7 +131,7 @@ class ILGenerator(LogosVisitor):
         # Visit condition
         place1 = self.newvar()
         self.place = place1
-        code_expr = self.visit(ctx.expr())
+        code_cond = self.visit(ctx.expr())
 
         # Visit stmt
         code_stmts = []
@@ -142,7 +142,7 @@ class ILGenerator(LogosVisitor):
 
         # Combine
         code = []
-        code.extend(code_expr)
+        code.extend(code_cond)
         code.append(InstructionIf(AtomId(place1), AtomId(label1), AtomId(label2)))
         code.append(InstructionLabel(AtomId(label1)))
         code.extend(code_stmts)
@@ -152,20 +152,32 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#while.
     def visitWhile(self, ctx: LogosParser.WhileContext):
-        label1 = self.newlabel()
-        label2 = self.newlabel()
-        label3 = self.newlabel()
+        label_cond = self.newlabel()
+        label_body = self.newlabel()
+        label_end = self.newlabel()
 
         # Visit condition
         place1 = self.newvar()
         self.place = place1
-        code0 = self.visit(ctx.expr())
+        code_cond = self.visit(ctx.expr())
+        print("---")
+        print(code_cond)
+        print("---")
 
         # Visit stmt
-        code1 = self.visit(ctx.stmt())
+        code_stmts = []
+        for stmt in ctx.stmts:
+            code_stmt = self.visit(stmt)
+            if code_stmt:
+                code_stmts.extend(code_stmt)
 
-        return [InstructionLabel(AtomId(label1))] \
-            + code0 \
-            + [InstructionIf(AtomId(place1), AtomId(label2), AtomId(label3)), InstructionLabel(AtomId(label2))] \
-            + code1 \
-            + [InstructionGoto(AtomId(label1)), InstructionLabel(AtomId(label3))]
+        # Combine
+        code = []
+        code.append(InstructionLabel(AtomId(label_cond)))
+        code.extend(code_cond)
+        code.append(InstructionIf(AtomId(place1), AtomId(label_body), AtomId(label_end)))
+        code.append(InstructionLabel(AtomId(label_body)))
+        code.extend(code_stmts)
+        code.append(InstructionGoto(AtomId(label_cond)))
+        code.append(InstructionLabel(AtomId(label_end)))
+        return code
