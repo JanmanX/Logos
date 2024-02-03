@@ -17,8 +17,25 @@ class ILGenerator(LogosVisitor):
     def bind(self, table, name, place):
         table[name] = place
 
-    def visitProg(self, ctx: LogosParser.ProgContext) -> Program:
-        self.program = Program([], [], {})
+    def visitProg(self, ctx:LogosParser.ProgContext):
+        rituals = []
+        for ritual in ctx.children:
+            _ritual = self.visit(ritual)
+            if _ritual:
+                rituals.append(_ritual)
+
+        return Program(
+            rituals=rituals,
+            data=[],
+            instructions=[],
+            variable_colors={}
+        )
+
+    # Visit a parse tree produced by LogosParser#ritual.
+    def visitRitual(self, ctx:LogosParser.RitualContext):
+        id = AtomId(ctx.ID().getText())
+        args = [AtomId(x.getText()) for x in ctx.args]
+
         self.vtable = dict()
         self.ftable = dict()
         self.place = None
@@ -28,15 +45,19 @@ class ILGenerator(LogosVisitor):
         self._newvar_index = 0
         self._newlabel_index = 0
 
-        code = []
-        for child in ctx.children:
-            _code = self.visit(child)
-            if _code:
-                code += _code
+        instructions = []
+        for stmt in ctx.stmts:
+            _instructions = self.visit(stmt)
+            if _instructions:
+                instructions += _instructions
 
-        self.program.instructions = code
-
-        return self.program
+        return Ritual(
+            id=id,
+            args=args,
+            data=[],
+            instructions=instructions,
+            variable_colors={}
+        )
 
     def visitAssign(self, ctx: LogosParser.AssignContext):
         id = ctx.ID().getText()

@@ -17,6 +17,15 @@ class LogosListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LogosParser#ritual.
+    def enterRitual(self, ctx:LogosParser.RitualContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#ritual.
+    def exitRitual(self, ctx:LogosParser.RitualContext):
+        pass
+
+
     # Enter a parse tree produced by LogosParser#assign.
     def enterAssign(self, ctx:LogosParser.AssignContext):
         pass
@@ -95,6 +104,24 @@ class LogosListener(ParseTreeListener):
 
     # Exit a parse tree produced by LogosParser#include.
     def exitInclude(self, ctx:LogosParser.IncludeContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#return.
+    def enterReturn(self, ctx:LogosParser.ReturnContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#return.
+    def exitReturn(self, ctx:LogosParser.ReturnContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#ids.
+    def enterIds(self, ctx:LogosParser.IdsContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#ids.
+    def exitIds(self, ctx:LogosParser.IdsContext):
         pass
 
 

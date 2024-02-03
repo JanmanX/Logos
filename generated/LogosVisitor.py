@@ -14,6 +14,11 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LogosParser#ritual.
+    def visitRitual(self, ctx:LogosParser.RitualContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#assign.
     def visitAssign(self, ctx:LogosParser.AssignContext):
         return self.visitChildren(ctx)
@@ -56,6 +61,16 @@ class LogosVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by LogosParser#include.
     def visitInclude(self, ctx:LogosParser.IncludeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#return.
+    def visitReturn(self, ctx:LogosParser.ReturnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#ids.
+    def visitIds(self, ctx:LogosParser.IdsContext):
         return self.visitChildren(ctx)
 
 

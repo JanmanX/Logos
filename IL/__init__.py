@@ -154,16 +154,25 @@ class DataEntry:
 
 # --- Other
 @dataclass
-class Function:
-    header: str
-    body: list
-
-
-@dataclass
-class Program:
+class Ritual:
+    id: AtomId
+    args: list[AtomId]
     data: list[DataEntry]
     instructions: list
     variable_colors: dict
 
     def __repr__(self) -> str:
-        return '\n'.join([str(i) for i in self.instructions])
+        signature = f'{self.id} ({",".join([a.id for a in self.args])})\n'
+        body = '  \n'.join([str(i) for i in self.instructions])
+        return signature + body
+
+@dataclass
+class Program:
+    rituals: list[Ritual]
+
+    data: list[DataEntry]
+    instructions: list
+    variable_colors: dict
+
+    def __repr__(self) -> str:
+        return '\n\n '.join([str(r) for r in self.rituals])
