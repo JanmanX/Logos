@@ -78,7 +78,7 @@ class ILGenerator(LogosVisitor):
 
         code = [
             InstructionAssign(AtomId(self.place), AtomId(x)),
-            InstructionAllocMem(AtomId(place))
+            InstructionAllocMem(AtomId(place), size=int(ctx.size.getText()))
         ]
 
         return code
