@@ -58,6 +58,40 @@ class ILGenerator(LogosVisitor):
         # Add assignment instruction
         return code + [InstructionAssign(AtomId(x), AtomId(place))]
 
+    def visitAllocMem(self, ctx:LogosParser.AllocMemContext):
+        code = []
+
+        # If id not in vtable, add it
+        id = ctx.ID().getText()
+        if id not in self.vtable:
+            x = self.newvar()
+            self.bind(self.vtable, id, x)
+        else:
+            x = self.vtable[id]
+
+        # Set place
+        self.place = self.newvar()
+        place = self.place  # I need to do this because self.place will be changed by visit(ctx.expr())
+
+        # Visit expression
+        code = self.visit(ctx.expr())
+
+        code = [
+            InstructionAssign(AtomId(self.place), AtomId(x)),
+            InstructionAllocMem(AtomId(place))
+        ]
+
+        return code
+
+
+    def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
+        return self.visitChildren(ctx)
+
+
+    def visitReadMem(self, ctx:LogosParser.ReadMemContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#MulDiv.
     def visitMulDiv(self, ctx: LogosParser.MulDivContext):
         place0 = self.place

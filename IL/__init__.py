@@ -61,6 +61,29 @@ class InstructionAssign(Instruction):
 
         return f'{self.dest} = {self.src}'
 
+@dataclass
+class InstructionAllocMem(Instruction):
+    dest: AtomId
+    size: int
+
+    def __repr__(self) -> str:
+        return f'{self.dest} = ALLOC_MEM({self.size})'
+
+@dataclass
+class InstructionWriteMem(Instruction):
+    dest: AtomId
+    src: AtomId | AtomNum
+
+    def __repr__(self) -> str:
+        return f'MEM[{self.dest}] = {self.src}'
+
+@dataclass
+class InstructionReadMem(Instruction):
+    dest: AtomId
+    src: AtomId | AtomNum
+
+    def __repr__(self) -> str:
+        return f'{self.dest} = MEM[{self.src}]'
 
 @dataclass
 class InstructionAssignBinop(Instruction):
