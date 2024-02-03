@@ -24,6 +24,16 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LogosParser#writeMem.
+    def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#readMem.
+    def visitReadMem(self, ctx:LogosParser.ReadMemContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#if.
     def visitIf(self, ctx:LogosParser.IfContext):
         return self.visitChildren(ctx)
@@ -34,18 +44,23 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by LogosParser#callReturn.
+    def visitCallReturn(self, ctx:LogosParser.CallReturnContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#call.
+    def visitCall(self, ctx:LogosParser.CallContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by LogosParser#include.
     def visitInclude(self, ctx:LogosParser.IncludeContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by LogosParser#writeMem.
-    def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by LogosParser#readMem.
-    def visitReadMem(self, ctx:LogosParser.ReadMemContext):
+    # Visit a parse tree produced by LogosParser#exprs.
+    def visitExprs(self, ctx:LogosParser.ExprsContext):
         return self.visitChildren(ctx)
 
 

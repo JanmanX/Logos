@@ -75,6 +75,8 @@ def get_kill(instruction: Instruction):
             return {instruction.atom.id}
         return set()
 
+    return set()
+
 
 def get_in(gen: set, out: set, kill: set):
     # gen[i] U (out[i] \ kill[i])

@@ -1,5 +1,6 @@
 from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionAssignFromMem, \
-    InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId
+    InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
+    InstructionAllocMem
 
 BINOP_INSTRUCTION_MAP = {
     Binop.ADD: 'ADD',
@@ -104,6 +105,9 @@ def codegen_return(instruction: InstructionReturn):
     return []
 #    return ['RET']
 
+def codegen_alloc_mem(instruction: InstructionAllocMem):
+    return []
+
 
 def codegen(program: Program) -> str:
     prolog = [
@@ -124,6 +128,8 @@ def codegen(program: Program) -> str:
             code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
             code.extend(codegen_assign(instruction))
+        elif isinstance(instruction, InstructionAllocMem):
+            code.extend(codegen_alloc_mem(instruction))
         elif isinstance(instruction, InstructionAssignBinop):
             code.extend(codegen_binop(instruction))
         elif isinstance(instruction, InstructionAssignFromMem):

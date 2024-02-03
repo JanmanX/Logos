@@ -35,6 +35,24 @@ class LogosListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LogosParser#writeMem.
+    def enterWriteMem(self, ctx:LogosParser.WriteMemContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#writeMem.
+    def exitWriteMem(self, ctx:LogosParser.WriteMemContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#readMem.
+    def enterReadMem(self, ctx:LogosParser.ReadMemContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#readMem.
+    def exitReadMem(self, ctx:LogosParser.ReadMemContext):
+        pass
+
+
     # Enter a parse tree produced by LogosParser#if.
     def enterIf(self, ctx:LogosParser.IfContext):
         pass
@@ -53,6 +71,24 @@ class LogosListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by LogosParser#callReturn.
+    def enterCallReturn(self, ctx:LogosParser.CallReturnContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#callReturn.
+    def exitCallReturn(self, ctx:LogosParser.CallReturnContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#call.
+    def enterCall(self, ctx:LogosParser.CallContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#call.
+    def exitCall(self, ctx:LogosParser.CallContext):
+        pass
+
+
     # Enter a parse tree produced by LogosParser#include.
     def enterInclude(self, ctx:LogosParser.IncludeContext):
         pass
@@ -62,21 +98,12 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#writeMem.
-    def enterWriteMem(self, ctx:LogosParser.WriteMemContext):
+    # Enter a parse tree produced by LogosParser#exprs.
+    def enterExprs(self, ctx:LogosParser.ExprsContext):
         pass
 
-    # Exit a parse tree produced by LogosParser#writeMem.
-    def exitWriteMem(self, ctx:LogosParser.WriteMemContext):
-        pass
-
-
-    # Enter a parse tree produced by LogosParser#readMem.
-    def enterReadMem(self, ctx:LogosParser.ReadMemContext):
-        pass
-
-    # Exit a parse tree produced by LogosParser#readMem.
-    def exitReadMem(self, ctx:LogosParser.ReadMemContext):
+    # Exit a parse tree produced by LogosParser#exprs.
+    def exitExprs(self, ctx:LogosParser.ExprsContext):
         pass
 
 

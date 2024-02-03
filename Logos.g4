@@ -10,8 +10,12 @@ stmt: ID '=' expr                               #assign
     | dest=ID '=' source=ID '[' index=expr ']'  #readMem
     | 'if' expr '{' stmts+=stmt* '}'            #if
     | 'while' expr '{' stmts+=stmt* '}'         #while
+    | ID '=' func=ID '(' args=exprs* ')'        #callReturn
+    | func=ID '(' args=exprs* ')'               #call
     | 'include' path=STRING                     #include
    ;
+
+exprs: expr (',' expr)*;
 
 expr: left=expr op=(OP_MUL|OP_DIV) right=expr                       # MulDiv
     | left=expr op=(OP_ADD|OP_SUB) right=expr                       # AddSub

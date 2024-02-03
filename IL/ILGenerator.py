@@ -69,16 +69,9 @@ class ILGenerator(LogosVisitor):
         else:
             x = self.vtable[id]
 
-        # Set place
-        self.place = self.newvar()
-        place = self.place  # I need to do this because self.place will be changed by visit(ctx.expr())
-
-        # Visit expression
-        code = self.visit(ctx.expr())
-
         code = [
-            InstructionAssign(AtomId(self.place), AtomId(x)),
-            InstructionAllocMem(AtomId(place), size=int(ctx.size.getText()))
+            InstructionAllocMem(dest=AtomId(x), size=int(ctx.INT().getText())),
+            InstructionAssign(dest=AtomId(x), src=AtomId(x))
         ]
 
         return code
