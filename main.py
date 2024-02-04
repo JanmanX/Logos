@@ -3,7 +3,7 @@ import argparse
 from antlr4 import *
 
 from IL.ILGenerator import ILGenerator
-from IL.RegisterAllocator import liveness_analysis
+from IL.RegisterAllocator import allocate_registers
 from codegen import Architecture, TargetConfig, codegen
 from generated.LogosLexer import LogosLexer
 from generated.LogosParser import LogosParser
@@ -22,7 +22,7 @@ def main(program_path: str, config: TargetConfig, output_path: str):
 
     # Analyze
     for ritual in program.rituals:
-        ritual.variable_colors = liveness_analysis(ritual, num_registers=config.num_registers)
+        ritual.variable_colors = allocate_registers(ritual, num_registers=config.num_registers)
 
     # Codegen
     code = codegen(program, config)

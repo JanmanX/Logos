@@ -20,6 +20,6 @@ def test_simple_ritual():
     )
 
     # Test liveness analysis
-    colors = liveness_analysis(ritual=ritual, num_registers=2)
+    colors = allocate_registers(ritual=ritual, num_registers=2)
 
     assert colors

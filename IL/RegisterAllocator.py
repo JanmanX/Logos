@@ -292,7 +292,7 @@ def get_live_in_out(instructions: list, successors: list[set], gen: list[set], k
     return live_in, live_out
 
 
-def liveness_analysis(ritual: Ritual, num_registers=6):
+def allocate_registers(ritual: Ritual, num_registers=6):
     ritual.instructions.append(InstructionReturn(AtomNum(0)))
 
     _breakpoint = 0
