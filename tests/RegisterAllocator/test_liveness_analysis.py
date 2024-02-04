@@ -1,9 +1,14 @@
 from IL.RegisterAllocator import *
 
 
-def test_simple_program():
-    program = Program(
+def test_simple_ritual():
+
+
+    ritual = Ritual(
+        id = AtomId('main'),
+        args = [],
         data=[],
+        variable_colors={},
         instructions=[
             InstructionAssign(AtomId('a'), AtomNum(1)),
             InstructionAssign(AtomId('b'), AtomNum(2)),
@@ -15,6 +20,6 @@ def test_simple_program():
     )
 
     # Test liveness analysis
-    colors = liveness_analysis(program, 2)
+    colors = liveness_analysis(ritual=ritual, num_registers=2)
 
     assert colors

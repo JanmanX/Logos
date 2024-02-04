@@ -19,16 +19,13 @@ class ILGenerator(LogosVisitor):
 
     def visitProg(self, ctx:LogosParser.ProgContext):
         rituals = []
-        for ritual in ctx.children:
-            _ritual = self.visit(ritual)
+        for ritual in ctx.rituals():
+            _ritual = self.visitRitual(ritual)
             if _ritual:
                 rituals.append(_ritual)
 
         return Program(
             rituals=rituals,
-            data=[],
-            instructions=[],
-            variable_colors={}
         )
 
     # Visit a parse tree produced by LogosParser#ritual.
@@ -36,10 +33,13 @@ class ILGenerator(LogosVisitor):
         id = AtomId(ctx.ID().getText())
         args = [AtomId(x.getText()) for x in ctx.args]
 
+        assert len(args) < 9, "More than 8 arguments are not supported yet."
+
         self.vtable = dict()
         self.ftable = dict()
         self.place = None
         self.label = None
+        self.stack_offset = 0
 
         # internals
         self._newvar_index = 0
@@ -90,8 +90,13 @@ class ILGenerator(LogosVisitor):
         else:
             x = self.vtable[id]
 
+        # Calculate stack offset
+        size = int(ctx.INT().getText())
+        stack_offset = self.stack_offset
+        self.stack_offset += int(ctx.INT().getText())
+
         code = [
-            InstructionAllocMem(dest=AtomId(x), size=int(ctx.INT().getText())),
+            InstructionAllocMem(dest=AtomId(x), stack_offset=stack_offset, size=size),
             InstructionAssign(dest=AtomId(x), src=AtomId(x))
         ]
 
@@ -208,9 +213,6 @@ class ILGenerator(LogosVisitor):
         place1 = self.newvar()
         self.place = place1
         code_cond = self.visit(ctx.expr())
-        print("---")
-        print(code_cond)
-        print("---")
 
         # Visit stmt
         code_stmts = []

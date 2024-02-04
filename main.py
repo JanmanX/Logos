@@ -21,7 +21,8 @@ def main(program_path: str, config: TargetConfig, output_path: str):
     program = visitor.visit(tree)
 
     # Analyze
-    program.variable_colors = liveness_analysis(program, num_registers=config.num_registers)
+    for ritual in program.rituals:
+        ritual.variable_colors = liveness_analysis(ritual, num_registers=config.num_registers)
 
     # Codegen
     code = codegen(program, config)

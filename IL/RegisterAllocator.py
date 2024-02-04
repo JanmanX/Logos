@@ -34,8 +34,8 @@ def get_gen(instruction: Instruction) -> set:
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
     elif isinstance(instruction, InstructionAssignToMem):
-        if isinstance(instruction.atom, AtomId):
-            return {instruction.atom.id}
+        if isinstance(instruction.dest, AtomId):
+            return {instruction.dest.id}
     elif isinstance(instruction, InstructionGoto):
         return set()
     elif isinstance(instruction, InstructionIf):
@@ -206,7 +206,7 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        address_entry = DataEntry(f"address_{variable}", 0, REGISTER_SIZE)
+        address_entry = StackEntry(f"address_{variable}", 0, REGISTER_SIZE)
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
@@ -292,8 +292,8 @@ def get_live_in_out(instructions: list, successors: list[set], gen: list[set], k
     return live_in, live_out
 
 
-def liveness_analysis(program: Program, num_registers=6):
-    program.instructions.append(InstructionReturn(AtomNum(0)))
+def liveness_analysis(ritual: Ritual, num_registers=6):
+    ritual.instructions.append(InstructionReturn(AtomNum(0)))
 
     _breakpoint = 0
     while True:
@@ -302,53 +302,28 @@ def liveness_analysis(program: Program, num_registers=6):
             raise Exception("Could not color program using {} registers".format(num_registers))
 
         # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
-        successors = get_successors(program.instructions)
+        successors = get_successors(ritual.instructions)
 
         # List of instructions that may be read from the current instruction
         # eg., gen[i] = {x} means that x is read from instruction i
-        gen = [get_gen(instruction) for instruction in program.instructions]
+        gen = [get_gen(instruction) for instruction in ritual.instructions]
 
         # A set that lists that may be written to by the current instruction
         # eg., kill[i] = set(x,y) means that x and y are written to by instruction i
-        kill = [get_kill(instruction) for instruction in program.instructions]
+        kill = [get_kill(instruction) for instruction in ritual.instructions]
 
         # Get live_in and live_out
-        live_in, live_out = get_live_in_out(program.instructions, successors, gen, kill)
-
-        # print the results
-        #        print("Liveness analysis:")
-        #        for i, instruction in enumerate(program.instructions):
-        #            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
+        live_in, live_out = get_live_in_out(ritual.instructions, successors, gen, kill)
 
         # Get inteference graph
-        graph = get_interference_graph(program.instructions, kill, live_out)
+        graph = get_interference_graph(ritual.instructions, kill, live_out)
 
         # Color graph
         colors = color_graph(graph, N=num_registers)
-        #
-        #        import networkx as nx
-        #        import matplotlib.pyplot as plt
-        #
-        #        G = nx.Graph()
-        #        G.add_edges_from(graph.edges)
-        #
-        #        nx.draw(G, with_labels=True)
-        #        plt.show()
 
         if 'spill' in colors.values():
-            import networkx as nx
-            import matplotlib.pyplot as plt
-
-            G = nx.Graph()
-            G.add_edges_from(graph.edges)
-
-            plt.clf()
-            nx.draw(G, with_labels=True)
-            plt.show()
-
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
-            print(f"Spilling registers: {regs}")
-            program.instructions = spill_registers(program.instructions, regs, live_in, live_out)
+            ritual.instructions = spill_registers(ritual.instructions, regs, live_in, live_out)
             continue
         else:
             break

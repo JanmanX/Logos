@@ -1,6 +1,7 @@
 from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionAssignFromMem, \
     InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
-    InstructionAllocMem
+    InstructionAllocMem, Ritual
+from utils.math import round_up
 
 BINOP_INSTRUCTION_MAP = {
     Binop.ADD: 'ADD',
@@ -73,11 +74,17 @@ def codegen_label(instruction: InstructionLabel):
 
 
 def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
-    raise NotImplemented
+    code = [
+        f'LDR {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.src.id]}]'
+    ]
+    return code
 
 
 def codegen_assign_to_mem(instruction: InstructionAssignToMem):
-    raise NotImplemented
+    code = [
+        f'STR {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.dest.id]}]'
+    ]
+    return code
 
 
 def codegen_goto(instruction: InstructionGoto):
@@ -109,21 +116,27 @@ def codegen_alloc_mem(instruction: InstructionAllocMem):
     return []
 
 
-def codegen(program: Program) -> str:
-    prolog = [
-        '.text',
-        '.global _main',
-        '_main:',
-    ]
+def codegen_alloc_stack(instructions: list):
+    # Every instruction that allocates memory on the stack,
+    # calculate the total size and allign to 16 bytes
+    stack_size = sum([x.size for x in instructions if isinstance(x, InstructionAllocMem)]) 
+    stack_size = round_up(stack_size, 16)
 
-    epilog = """
-        MOV     X16, #1  // System call number 1 terminates this program
-        SVC     #0x80  // Call kernel to terminate the program
-    """.splitlines()
+    return instructions
 
+def codegen_ritual(ritual: Ritual):
     code = []
 
-    for instruction in program.instructions:
+    # Calculate stack size and allign to 16 bytes
+    stack_size = sum([x.size for x in ritual.instructions if isinstance(x, InstructionAllocMem)])
+    stack_size = round_up(stack_size, 16)
+
+    # Prolog
+    code.extend([
+        f'SUB SP, SP, #{stack_size}',
+    ])
+
+    for instruction in ritual.instructions:
         if isinstance(instruction, InstructionLabel):
             code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
@@ -146,6 +159,25 @@ def codegen(program: Program) -> str:
             code.extend(codegen_return(instruction))
         else:
             raise Exception("Unknown instruction")
+
+    return code
+
+def codegen(program: Program) -> str:
+    prolog = [
+        '.text',
+        '.global _main',
+        '_main:',
+    ]
+
+    epilog = """
+        MOV     X16, #1  // System call number 1 terminates this program
+        SVC     #0x80  // Call kernel to terminate the program
+    """.splitlines()
+
+    code = []
+
+    for ritual in program.rituals:
+        code.extend(codegen_ritual(ritual))
 
     code = prolog + code + epilog
     return '\n'.join(code) + '\n'

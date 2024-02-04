@@ -16,7 +16,7 @@ class TargetConfig:
     @staticmethod
     def from_architecture(architecture: Architecture):
         if architecture == Architecture.ARM:
-            return TargetConfig(architecture, 32)
+            return TargetConfig(architecture, 8)
         elif architecture == Architecture.X86_64:
             raise NotImplemented
         else:

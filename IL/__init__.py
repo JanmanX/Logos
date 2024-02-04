@@ -64,6 +64,8 @@ class InstructionAssign(Instruction):
 @dataclass
 class InstructionAllocMem(Instruction):
     dest: AtomId
+    stack_offset: int 
+    """The offset from the base pointer to the start of the allocated memory."""
     size: int
 
     def __repr__(self) -> str:
@@ -108,10 +110,10 @@ class InstructionAssignFromMem(Instruction):
 @dataclass
 class InstructionAssignToMem(Instruction):
     mem: AtomId
-    atom: AtomId | AtomNum
+    dest: AtomId | AtomNum
 
     def __repr__(self) -> str:
-        return f'MEM[{self.mem}] = {self.atom}'
+        return f'MEM[{self.mem}] = {self.dest}'
 
 
 @dataclass
@@ -143,7 +145,7 @@ class InstructionReturn(Instruction):
 
 # --- Data
 @dataclass
-class DataEntry:
+class StackEntry:
     label: str
     value: str
     size: int
@@ -157,7 +159,7 @@ class DataEntry:
 class Ritual:
     id: AtomId
     args: list[AtomId]
-    data: list[DataEntry]
+    data: list[StackEntry]
     instructions: list
     variable_colors: dict
 
@@ -169,10 +171,6 @@ class Ritual:
 @dataclass
 class Program:
     rituals: list[Ritual]
-
-    data: list[DataEntry]
-    instructions: list
-    variable_colors: dict
 
     def __repr__(self) -> str:
         return '\n\n '.join([str(r) for r in self.rituals])
