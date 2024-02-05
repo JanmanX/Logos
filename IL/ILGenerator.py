@@ -39,7 +39,6 @@ class ILGenerator(LogosVisitor):
         self.ftable = dict()
         self.place = None
         self.label = None
-        self.stack_offset = 0
 
         # internals
         self._newvar_index = 0

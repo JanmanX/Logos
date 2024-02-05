@@ -201,16 +201,18 @@ def color_graph(graph: Graph, N: int) -> dict:
     return colors
 
 
-def spill_registers(instructions: list[Instruction], variables: set[str], live_in: list[set], live_out: list[set]):
-    instructions_updated = instructions.copy()
+def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], live_out: list[set]) -> (Ritual, list):
+    instructions_updated = ritual.instructions.copy()
+    stack_updated = ritual.stack.copy()
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        address_entry = StackEntry(f"address_{variable}", 0, REGISTER_SIZE)
+        stack_entry = StackEntry(f"address_{variable}", 0, REGISTER_SIZE)
+        stack_updated.append(stack_entry)
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
@@ -228,42 +230,43 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
                     instruction.right.id = variable_replacement
 
         # 3. before an instruction i that reads x_i, insert the instruction x_i = MEM[address_x]
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.src, address_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(dest=instruction.src, addr=stack_entry))
+
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, address_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, stack_entry))
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, address_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, stack_entry))
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionAssignToMem(stack_entry, instruction.dest))
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionAssignToMem(stack_entry, instruction.dest))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
         if variable in live_in[0]:
-            instructions_updated.insert(0, InstructionAssignToMem(address_entry, AtomId(variable)))
+            instructions_updated.insert(0, InstructionAssignToMem(stack_entry, AtomId(variable)))
 
         # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
         #   the end of the program. Note that we use the original name for x here.
         if variable in live_out[-1]:
-            instructions_updated.append(InstructionAssignFromMem(AtomId(variable), address_entry))
+            instructions_updated.append(InstructionAssignFromMem(AtomId(variable), stack_entry))
 
-    return instructions_updated
+    return (instructions_updated, stack_updated)
 
 
 def get_live_in_out(instructions: list, successors: list[set], gen: list[set], kill: list[set]):
@@ -323,7 +326,7 @@ def allocate_registers(ritual: Ritual, num_registers=6):
 
         if 'spill' in colors.values():
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
-            ritual.instructions = spill_registers(ritual.instructions, regs, live_in, live_out)
+            (ritual.instructions, ritual.stack) = spill_registers(ritual, regs, live_in, live_out)
             continue
         else:
             break

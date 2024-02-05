@@ -101,19 +101,19 @@ class InstructionAssignBinop(Instruction):
 @dataclass
 class InstructionAssignFromMem(Instruction):
     dest: AtomId
-    atom: AtomId | AtomNum
+    addr: AtomId 
 
     def __repr__(self) -> str:
-        return f'{self.dest} = MEM[{self.atom}]'
+        return f'{self.dest} = MEM[{self.addr}]'
 
 
 @dataclass
 class InstructionAssignToMem(Instruction):
     mem: AtomId
-    dest: AtomId | AtomNum
+    addr: AtomId 
 
     def __repr__(self) -> str:
-        return f'MEM[{self.mem}] = {self.dest}'
+        return f'MEM[{self.mem}] = {self.addr}'
 
 
 @dataclass
@@ -159,7 +159,8 @@ class StackEntry:
 class Ritual:
     id: AtomId
     args: list[AtomId]
-    data: list[StackEntry]
+
+    stack: list[StackEntry]
     instructions: list
     variable_colors: dict
 

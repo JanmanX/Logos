@@ -1,6 +1,6 @@
 from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionAssignFromMem, \
     InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
-    InstructionAllocMem, Ritual
+    InstructionAllocMem, Ritual, StackEntry
 from utils.math import round_up
 
 BINOP_INSTRUCTION_MAP = {
@@ -82,7 +82,7 @@ def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
 
 def codegen_assign_to_mem(instruction: InstructionAssignToMem):
     code = [
-        f'STR {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.dest.id]}]'
+        f'STR {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
     ]
     return code
 
@@ -112,7 +112,7 @@ def codegen_return(instruction: InstructionReturn):
     return []
 #    return ['RET']
 
-def codegen_alloc_mem(instruction: InstructionAllocMem):
+def codegen_alloc_stack(stack_entries: list[StackEntry]):
     return []
 
 
@@ -142,7 +142,7 @@ def codegen_ritual(ritual: Ritual):
         elif isinstance(instruction, InstructionAssign):
             code.extend(codegen_assign(instruction))
         elif isinstance(instruction, InstructionAllocMem):
-            code.extend(codegen_alloc_mem(instruction))
+            code.extend(codegen_alloc_stack(instruction))
         elif isinstance(instruction, InstructionAssignBinop):
             code.extend(codegen_binop(instruction))
         elif isinstance(instruction, InstructionAssignFromMem):
