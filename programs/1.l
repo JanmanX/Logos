@@ -1,7 +1,12 @@
 ritual main () {
-	a = 0x41
-	b = alloc 8
-	[b] = a
+	a = 4
+	b = alloc 32
+
+	while a > 0 {
+		[b] = a
+		a = a - 1
+		b = b + 1
+	}
 }
 
 

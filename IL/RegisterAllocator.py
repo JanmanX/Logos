@@ -205,12 +205,12 @@ def color_graph(graph: Graph, N: int) -> dict:
 
 def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], live_out: list[set]) -> (Ritual, list):
     instructions_updated = ritual.instructions.copy()
-    stack_updated = ritual.stack.copy()
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        stack_entry = StackEntry(f"address_{variable}", 0, REGISTER_SIZE)
-        stack_updated.append(stack_entry)
+        id = f"{variable}_1"
+        reg_addr = ritual.lookup(id)
+        alloc_instruction = InstructionAllocMem(AtomId(reg_addr), size=REGISTER_SIZE)
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
@@ -237,14 +237,14 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(dest=instruction.src, addr=stack_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(dest=instruction.src, addr=reg_addr))
 
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, stack_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, reg_addr))
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, stack_entry))
+                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, reg_addr))
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
         for i, instruction in enumerate(ritual.instructions):
