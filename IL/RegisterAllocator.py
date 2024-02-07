@@ -30,6 +30,8 @@ def get_gen(instruction: Instruction) -> set:
         if isinstance(instruction.right, AtomId):
             s.add(instruction.right.id)
         return s
+    elif isinstance(instruction, InstructionAllocMem):
+        return {instruction.dest.id}
     elif isinstance(instruction, InstructionAssignFromMem):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}

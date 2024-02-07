@@ -81,8 +81,9 @@ def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
 
 
 def codegen_assign_to_mem(instruction: InstructionAssignToMem):
+    # ST{U}R    rt, [addr]      [addr] = rt
     code = [
-        f'STR {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
+        f'STR {REGISTER_MAP[instruction.atom.id]}, [{REGISTER_MAP[instruction.dest.id]}]'
     ]
     return code
 

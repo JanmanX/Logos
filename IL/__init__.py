@@ -107,11 +107,11 @@ class InstructionAssignFromMem(Instruction):
 
 @dataclass
 class InstructionAssignToMem(Instruction):
-    mem: AtomId
-    addr: AtomId 
+    dest: AtomId
+    atom: AtomId 
 
     def __repr__(self) -> str:
-        return f'MEM[{self.mem}] = {self.addr}'
+        return f'MEM[{self.dest}] = {self.atom}'
 
 
 @dataclass

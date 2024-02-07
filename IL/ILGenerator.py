@@ -75,7 +75,24 @@ class ILGenerator(LogosVisitor):
 
 
     def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
-        return self.visitChildren(ctx)
+        print("WriteMem")
+        print(ctx)
+        id = ctx.ID().getText()
+        x = self.ritual.lookup(id)
+
+
+        place = self.ritual.newvar()
+        self.place = place 
+        code_value = self.visit(ctx.value)
+
+        code = code_value + \
+            [
+                InstructionAssignToMem(dest=AtomId(x), atom=AtomId(place)),
+            ]
+
+        print(code)
+        
+        return code
 
 
     def visitReadMem(self, ctx:LogosParser.ReadMemContext):
@@ -143,7 +160,7 @@ class ILGenerator(LogosVisitor):
     # Visit a parse tree produced by LogosParser#Id.
     def visitId(self, ctx: LogosParser.IdContext):
         id = ctx.ID().getText()
-        x = self.vtable[id]
+        x = self.ritual.vtable[id]
 
         return [InstructionAssign(AtomId(self.place), AtomId(x))]
 
