@@ -110,31 +110,14 @@ def codegen_function_call(instruction: InstructionFunctionCall):
 
 def codegen_return(instruction: InstructionReturn):
     return []
-#    return ['RET']
 
-def codegen_alloc_stack(stack_entries: list[StackEntry]):
-    return []
-
-
-def codegen_alloc_stack(instructions: list):
-    # Every instruction that allocates memory on the stack,
-    # calculate the total size and allign to 16 bytes
-    stack_size = sum([x.size for x in instructions if isinstance(x, InstructionAllocMem)]) 
-    stack_size = round_up(stack_size, 16)
-
-    return instructions
+def codegen_alloc_stack(instruction: InstructionAllocMem):
+    return [f"MOV {REGISTER_MAP[instruction.dest.id]}, SP",
+            f"SUB SP, SP, #{round_up(instruction.size, 16)}"
+            ]
 
 def codegen_ritual(ritual: Ritual):
     code = []
-
-    # Calculate stack size and allign to 16 bytes
-    stack_size = sum([x.size for x in ritual.instructions if isinstance(x, InstructionAllocMem)])
-    stack_size = round_up(stack_size, 16)
-
-    # Prolog
-    code.extend([
-        f'SUB SP, SP, #{stack_size}',
-    ])
 
     for instruction in ritual.instructions:
         if isinstance(instruction, InstructionLabel):

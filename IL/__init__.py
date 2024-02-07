@@ -64,8 +64,6 @@ class InstructionAssign(Instruction):
 @dataclass
 class InstructionAllocMem(Instruction):
     dest: AtomId
-    stack_offset: int 
-    """The offset from the base pointer to the start of the allocated memory."""
     size: int
 
     def __repr__(self) -> str:
@@ -160,9 +158,34 @@ class Ritual:
     id: AtomId
     args: list[AtomId]
 
-    stack: list[StackEntry]
     instructions: list
     variable_colors: dict
+    vtable: dict
+
+    # internals
+    place = None
+    label = None
+    _newvar_index: int = 0
+    _newlabel_index: int = 0
+
+    def newvar(self):
+        name = 't' + str(self._newvar_index)
+        self._newvar_index += 1
+        return name
+
+    def newlabel(self):
+        name = 'l' + str(self._newlabel_index)
+        self._newlabel_index += 1
+        return name
+
+    def lookup(self, name):
+        if name not in self.vtable:
+            x = self.newvar()
+            self.vtable[name] = x
+        else:
+            x = self.vtable[name]
+
+        return x
 
     def __repr__(self) -> str:
         signature = f'{self.id} ({",".join([a.id for a in self.args])})\n'

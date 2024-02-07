@@ -4,19 +4,6 @@ from . import *
 
 
 class ILGenerator(LogosVisitor):
-    def newvar(self):
-        name = 't' + str(self._newvar_index)
-        self._newvar_index += 1
-        return name
-
-    def newlabel(self):
-        name = 'l' + str(self._newlabel_index)
-        self._newlabel_index += 1
-        return name
-
-    def bind(self, table, name, place):
-        table[name] = place
-
     def visitProg(self, ctx:LogosParser.ProgContext):
         rituals = []
         for ritual in ctx.rituals():
@@ -35,14 +22,17 @@ class ILGenerator(LogosVisitor):
 
         assert len(args) < 9, "More than 8 arguments are not supported yet."
 
-        self.vtable = dict()
-        self.ftable = dict()
+        ritual = Ritual(
+            id=id,
+            args=args,
+            instructions=[],
+            variable_colors={},
+            vtable={},
+        )
+
+        self.ritual = ritual
         self.place = None
         self.label = None
-
-        # internals
-        self._newvar_index = 0
-        self._newlabel_index = 0
 
         instructions = []
         for stmt in ctx.stmts:
@@ -50,26 +40,18 @@ class ILGenerator(LogosVisitor):
             if _instructions:
                 instructions += _instructions
 
-        return Ritual(
-            id=id,
-            args=args,
-            data=[],
-            instructions=instructions,
-            variable_colors={}
-        )
+        ritual.instructions = instructions
+
+        return ritual
 
     def visitAssign(self, ctx: LogosParser.AssignContext):
         id = ctx.ID().getText()
 
         # If id not in vtable, add it
-        if id not in self.vtable:
-            x = self.newvar()
-            self.bind(self.vtable, id, x)
-        else:
-            x = self.vtable[id]
+        x = self.ritual.lookup(id)
 
         # Set place
-        self.place = self.newvar()
+        self.place = self.ritual.newvar()
         place = self.place  # I need to do this because self.place will be changed by visit(ctx.expr())
 
         # Visit expression
@@ -81,22 +63,12 @@ class ILGenerator(LogosVisitor):
     def visitAllocMem(self, ctx:LogosParser.AllocMemContext):
         code = []
 
-        # If id not in vtable, add it
         id = ctx.ID().getText()
-        if id not in self.vtable:
-            x = self.newvar()
-            self.bind(self.vtable, id, x)
-        else:
-            x = self.vtable[id]
+        x = self.ritual.lookup(id)
 
-        # Calculate stack offset
         size = int(ctx.INT().getText())
-        stack_offset = self.stack_offset
-        self.stack_offset += int(ctx.INT().getText())
-
         code = [
-            InstructionAllocMem(dest=AtomId(x), stack_offset=stack_offset, size=size),
-            InstructionAssign(dest=AtomId(x), src=AtomId(x))
+            InstructionAllocMem(dest=AtomId(x), size=size),
         ]
 
         return code
@@ -115,12 +87,12 @@ class ILGenerator(LogosVisitor):
         place0 = self.place
 
         # Visit left
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code1 = self.visit(ctx.expr(0))
 
         # Visit right
-        place2 = self.newvar()
+        place2 = self.ritual.newvar()
         self.place = place2
         code2 = self.visit(ctx.expr(1))
 
@@ -134,12 +106,12 @@ class ILGenerator(LogosVisitor):
         place0 = self.place
 
         # Visit left
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code1 = self.visit(ctx.expr(0))
 
         # Visit right
-        place2 = self.newvar()
+        place2 = self.ritual.newvar()
         self.place = place2
         code2 = self.visit(ctx.expr(1))
 
@@ -177,11 +149,11 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#if.
     def visitIf(self, ctx: LogosParser.IfContext):
-        label1 = self.newlabel()
-        label2 = self.newlabel()
+        label1 = self.ritual.newlabel()
+        label2 = self.ritual.newlabel()
 
         # Visit condition
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code_cond = self.visit(ctx.expr())
 
@@ -204,12 +176,12 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#while.
     def visitWhile(self, ctx: LogosParser.WhileContext):
-        label_cond = self.newlabel()
-        label_body = self.newlabel()
-        label_end = self.newlabel()
+        label_cond = self.ritual.newlabel()
+        label_body = self.ritual.newlabel()
+        label_end = self.ritual.newlabel()
 
         # Visit condition
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code_cond = self.visit(ctx.expr())
 
