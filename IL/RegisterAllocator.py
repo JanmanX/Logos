@@ -32,10 +32,10 @@ def get_gen(instruction: Instruction) -> set:
         return s
     elif isinstance(instruction, InstructionAllocMem):
         return {instruction.dest.id}
-    elif isinstance(instruction, InstructionAssignFromMem):
+    elif isinstance(instruction, InstructionReadMem):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
-    elif isinstance(instruction, InstructionAssignToMem):
+    elif isinstance(instruction, InstructionWriteMem):
         if isinstance(instruction.dest, AtomId):
             return {instruction.dest.id}
     elif isinstance(instruction, InstructionGoto):
@@ -62,9 +62,9 @@ def get_kill(instruction: Instruction):
         return {instruction.dest.id}
     elif isinstance(instruction, InstructionAssignBinop):
         return {instruction.dest.id}
-    elif isinstance(instruction, InstructionAssignFromMem):
+    elif isinstance(instruction, InstructionReadMem):
         return {instruction.dest.id}
-    elif isinstance(instruction, InstructionAssignToMem):
+    elif isinstance(instruction, InstructionWriteMem):
         return set()
     elif isinstance(instruction, InstructionGoto):
         return set()
@@ -237,14 +237,14 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(dest=instruction.src, addr=reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(dest=instruction.src, addr=reg_addr))
 
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.left, reg_addr))
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.right, reg_addr))
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
         for i, instruction in enumerate(ritual.instructions):
@@ -252,21 +252,21 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(stack_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(stack_entry, instruction.dest))
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(stack_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(stack_entry, instruction.dest))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
         if variable in live_in[0]:
-            instructions_updated.insert(0, InstructionAssignToMem(stack_entry, AtomId(variable)))
+            instructions_updated.insert(0, InstructionWriteMem(stack_entry, AtomId(variable)))
 
         # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
         #   the end of the program. Note that we use the original name for x here.
         if variable in live_out[-1]:
-            instructions_updated.append(InstructionAssignFromMem(AtomId(variable), stack_entry))
+            instructions_updated.append(InstructionReadMem(AtomId(variable), stack_entry))
 
     return (instructions_updated, stack_updated)
 

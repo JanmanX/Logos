@@ -9,7 +9,7 @@ rituals: 'ritual' name=ID '(' args+=ids* ')' '{' stmts+=stmt* '}'     #ritual
 
 stmt: ID '=' expr                               #assign
     | ID '=' 'alloc' size=INT                   #allocMem
-    | '[' ID ']' '=' value=expr                 #writeMem 
+    | '[' c ']' '=' value=expr                  #writeMem 
     | dest=ID '=' source=ID '[' index=expr ']'  #readMem
     | 'if' expr '{' stmts+=stmt* '}'            #if
     | 'while' expr '{' stmts+=stmt* '}'         #while

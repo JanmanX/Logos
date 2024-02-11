@@ -61,29 +61,6 @@ class InstructionAssign(Instruction):
 
         return f'{self.dest} = {self.src}'
 
-@dataclass
-class InstructionAllocMem(Instruction):
-    dest: AtomId
-    size: int
-
-    def __repr__(self) -> str:
-        return f'{self.dest} = ALLOC_MEM({self.size})'
-
-@dataclass
-class InstructionWriteMem(Instruction):
-    dest: AtomId
-    src: AtomId | AtomNum
-
-    def __repr__(self) -> str:
-        return f'MEM[{self.dest}] = {self.src}'
-
-@dataclass
-class InstructionReadMem(Instruction):
-    dest: AtomId
-    src: AtomId | AtomNum
-
-    def __repr__(self) -> str:
-        return f'{self.dest} = MEM[{self.src}]'
 
 @dataclass
 class InstructionAssignBinop(Instruction):
@@ -97,16 +74,35 @@ class InstructionAssignBinop(Instruction):
 
 
 @dataclass
-class InstructionAssignFromMem(Instruction):
+class InstructionAllocMem(Instruction):
     dest: AtomId
-    addr: AtomId 
+    size: int
+
+    # Private
+    _offset: int # The codegen will set this value
+
+    def __repr__(self) -> str:
+        return f'{self.dest} = ALLOC_MEM({self.size})'
+
+
+
+@dataclass
+class InstructionReadMem(Instruction):
+    """
+    Read from memory.
+    If addr is an int, then it is the offset from the stack pointer.
+    If addr is an AtomId, then it is the address of the memory.
+    """
+
+    dest: AtomId
+    addr: AtomId | int
 
     def __repr__(self) -> str:
         return f'{self.dest} = MEM[{self.addr}]'
 
 
 @dataclass
-class InstructionAssignToMem(Instruction):
+class InstructionWriteMem(Instruction):
     dest: AtomId
     atom: AtomId 
 
@@ -155,12 +151,13 @@ class StackEntry:
 # --- Other
 @dataclass
 class Ritual:
-    id: AtomId
+    name: AtomId
     args: list[AtomId]
 
     instructions: list
     variable_colors: dict
     vtable: dict
+    stack_offset: int = 0
 
     # internals
     place = None
@@ -188,7 +185,7 @@ class Ritual:
         return x
 
     def __repr__(self) -> str:
-        signature = f'{self.id} ({",".join([a.id for a in self.args])})\n'
+        signature = f'{self.name} ({",".join([a.id for a in self.args])})\n'
         body = '  \n'.join([str(i) for i in self.instructions])
         return signature + body
 

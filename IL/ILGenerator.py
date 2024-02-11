@@ -23,7 +23,7 @@ class ILGenerator(LogosVisitor):
         assert len(args) < 9, "More than 8 arguments are not supported yet."
 
         ritual = Ritual(
-            id=id,
+            name=id,
             args=args,
             instructions=[],
             variable_colors={},
@@ -66,20 +66,21 @@ class ILGenerator(LogosVisitor):
         id = ctx.ID().getText()
         x = self.ritual.lookup(id)
 
+        offset = self.ritual.stack_offset
+        self.ritual.stack_offset += 4
+
         size = int(ctx.INT().getText())
+
         code = [
-            InstructionAllocMem(dest=AtomId(x), size=size),
+            InstructionAllocMem(dest=AtomId(x), offset=offset, size=size),
         ]
 
         return code
 
 
     def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
-        print("WriteMem")
-        print(ctx)
         id = ctx.ID().getText()
         x = self.ritual.lookup(id)
-
 
         place = self.ritual.newvar()
         self.place = place 
@@ -87,11 +88,9 @@ class ILGenerator(LogosVisitor):
 
         code = code_value + \
             [
-                InstructionAssignToMem(dest=AtomId(x), atom=AtomId(place)),
+                InstructionWriteMem(dest=AtomId(x), atom=AtomId(place)),
             ]
 
-        print(code)
-        
         return code
 
 

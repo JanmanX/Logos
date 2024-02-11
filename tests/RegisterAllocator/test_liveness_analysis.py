@@ -5,7 +5,7 @@ def test_simple_ritual():
 
 
     ritual = Ritual(
-        id = AtomId('main'),
+        name = AtomId('main'),
         args = [],
         data=[],
         variable_colors={},

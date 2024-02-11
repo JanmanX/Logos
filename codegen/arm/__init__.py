@@ -1,13 +1,13 @@
-from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionAssignFromMem, \
-    InstructionAssignToMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
+from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionReadMem, \
+    InstructionWriteMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
     InstructionAllocMem, Ritual, StackEntry
 from utils.math import round_up
 
 BINOP_INSTRUCTION_MAP = {
-    Binop.ADD: 'ADD',
-    Binop.SUB: 'SUB',
-    Binop.MUL: 'MUL',
-    Binop.DIV: 'SDIV',
+    Binop.ADD: 'add',
+    Binop.SUB: 'sub',
+    Binop.MUL: 'mul',
+    Binop.DIV: 'sdiv',
 }
 
 # TODO: https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms
@@ -62,9 +62,9 @@ def codegen_binop(instruction: InstructionAssignBinop):
 def codegen_assign(instruction: InstructionAssign):
     code = []
     if isinstance(instruction.src, AtomId):
-        code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.src.id]}')
+        code.append(f'mov {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.src.id]}')
     else:
-        code.append(f'MOV {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
+        code.append(f'mov {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
     return code
 
 
@@ -73,33 +73,33 @@ def codegen_label(instruction: InstructionLabel):
     return code
 
 
-def codegen_assign_from_mem(instruction: InstructionAssignFromMem):
+def codegen_assign_from_mem(instruction: InstructionReadMem):
     code = [
-        f'LDR {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.src.id]}]'
+        f'ldr {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.src.id]}]'
     ]
     return code
 
 
-def codegen_assign_to_mem(instruction: InstructionAssignToMem):
+def codegen_assign_to_mem(instruction: InstructionWriteMem):
     # ST{U}R    rt, [addr]      [addr] = rt
     code = [
-        f'STR {REGISTER_MAP[instruction.atom.id]}, [{REGISTER_MAP[instruction.dest.id]}]'
+        f'str {REGISTER_MAP[instruction.atom.id]}, [{REGISTER_MAP[instruction.dest.id]}]'
     ]
     return code
 
 
 def codegen_goto(instruction: InstructionGoto):
     code = [
-        f'B {instruction.label_id.id}'
+        f'b {instruction.label_id.id}'
     ]
     return code
 
 
 def codegen_if(instruction: InstructionIf):
     code = [
-        f'CMP {REGISTER_MAP[instruction.atom.id]}, #0',
-        f'BEQ {instruction.false_label.id}',
-        f'BNE {instruction.true_label.id}'
+        f'cmp {REGISTER_MAP[instruction.atom.id]}, #0',
+        f'beq {instruction.false_label.id}',
+        f'bne {instruction.true_label.id}'
     ]
 
     return code
@@ -113,8 +113,8 @@ def codegen_return(instruction: InstructionReturn):
     return []
 
 def codegen_alloc_stack(instruction: InstructionAllocMem):
-    return [f"MOV {REGISTER_MAP[instruction.dest.id]}, SP",
-            f"SUB SP, SP, #{round_up(instruction.size, 16)}"
+    return [f"mov {REGISTER_MAP[instruction.dest.id]}, SP",
+            f"sub sp, sp, #{round_up(instruction.size, 16)}"
             ]
 
 def codegen_ritual(ritual: Ritual):
@@ -129,9 +129,9 @@ def codegen_ritual(ritual: Ritual):
             code.extend(codegen_alloc_stack(instruction))
         elif isinstance(instruction, InstructionAssignBinop):
             code.extend(codegen_binop(instruction))
-        elif isinstance(instruction, InstructionAssignFromMem):
+        elif isinstance(instruction, InstructionReadMem):
             code.extend(codegen_assign_from_mem(instruction))
-        elif isinstance(instruction, InstructionAssignToMem):
+        elif isinstance(instruction, InstructionWriteMem):
             code.extend(codegen_assign_to_mem(instruction))
         elif isinstance(instruction, InstructionGoto):
             code.extend(codegen_goto(instruction))
@@ -154,14 +154,17 @@ def codegen(program: Program) -> str:
     ]
 
     epilog = """
-        MOV     X16, #1  // System call number 1 terminates this program
-        SVC     #0x80  // Call kernel to terminate the program
+mov     X16, #1  // System call number 1 terminates this program
+svc     #0x80  // Call kernel to terminate the program
     """.splitlines()
 
     code = []
 
     for ritual in program.rituals:
         code.extend(codegen_ritual(ritual))
+
+    # Just a nice formatting
+    code = [f'    {line}' for line in code]
 
     code = prolog + code + epilog
     return '\n'.join(code) + '\n'
