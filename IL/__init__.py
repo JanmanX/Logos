@@ -77,9 +77,7 @@ class InstructionAssignBinop(Instruction):
 class InstructionAllocMem(Instruction):
     dest: AtomId
     size: int
-
-    # Private
-    _offset: int # The codegen will set this value
+    offset: int
 
     def __repr__(self) -> str:
         return f'{self.dest} = ALLOC_MEM({self.size})'
@@ -90,12 +88,13 @@ class InstructionAllocMem(Instruction):
 class InstructionReadMem(Instruction):
     """
     Read from memory.
-    If addr is an int, then it is the offset from the stack pointer.
+
     If addr is an AtomId, then it is the address of the memory.
+    If addr is an AtomNum, then it is the offset from the stack pointer.
     """
 
     dest: AtomId
-    addr: AtomId | int
+    addr: AtomId | AtomNum 
 
     def __repr__(self) -> str:
         return f'{self.dest} = MEM[{self.addr}]'
@@ -103,11 +102,17 @@ class InstructionReadMem(Instruction):
 
 @dataclass
 class InstructionWriteMem(Instruction):
-    dest: AtomId
-    atom: AtomId 
+    """
+    Write to memory.
+
+    If addr is an AtomId, then it is the address of the memory.
+    If addr is an AtomNum, then it is the offset from the stack pointer.
+    """
+    src: AtomId
+    addr: AtomId | AtomNum
 
     def __repr__(self) -> str:
-        return f'MEM[{self.dest}] = {self.atom}'
+        return f'MEM[{self.src}] = {self.addr}'
 
 
 @dataclass

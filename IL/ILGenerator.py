@@ -60,6 +60,7 @@ class ILGenerator(LogosVisitor):
         # Add assignment instruction
         return code + [InstructionAssign(AtomId(x), AtomId(place))]
 
+
     def visitAllocMem(self, ctx:LogosParser.AllocMemContext):
         code = []
 
@@ -88,7 +89,7 @@ class ILGenerator(LogosVisitor):
 
         code = code_value + \
             [
-                InstructionWriteMem(dest=AtomId(x), atom=AtomId(place)),
+                InstructionWriteMem(src=AtomId(x), addr=AtomId(place)),
             ]
 
         return code

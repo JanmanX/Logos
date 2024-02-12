@@ -33,11 +33,11 @@ def get_gen(instruction: Instruction) -> set:
     elif isinstance(instruction, InstructionAllocMem):
         return {instruction.dest.id}
     elif isinstance(instruction, InstructionReadMem):
-        if isinstance(instruction.atom, AtomId):
+        if isinstance(instruction.addr, AtomId):
             return {instruction.atom.id}
     elif isinstance(instruction, InstructionWriteMem):
-        if isinstance(instruction.dest, AtomId):
-            return {instruction.dest.id}
+        if isinstance(instruction.src, AtomId):
+            return {instruction.src.id}
     elif isinstance(instruction, InstructionGoto):
         return set()
     elif isinstance(instruction, InstructionIf):
@@ -208,9 +208,8 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        id = f"{variable}_1"
-        reg_addr = ritual.lookup(id)
-        alloc_instruction = InstructionAllocMem(AtomId(reg_addr), size=REGISTER_SIZE)
+        stack_offset = AtomNum(ritual.stack_offset)
+        ritual.stack_offset += REGISTER_SIZE
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
@@ -237,14 +236,14 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionReadMem(dest=instruction.src, addr=reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(dest=instruction.src, addr=stack_offset))
 
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionReadMem(instruction.left, reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.left, addr=stack_offset))
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionReadMem(instruction.right, reg_addr))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.right, addr=stack_offset))
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
         for i, instruction in enumerate(ritual.instructions):
@@ -252,23 +251,26 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionWriteMem(stack_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(src=instruction.dest, addr=stack_offset))
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionWriteMem(stack_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(src=instruction.dest, addr=stack_offset))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
         if variable in live_in[0]:
-            instructions_updated.insert(0, InstructionWriteMem(stack_entry, AtomId(variable)))
+            instructions_updated.insert(0, InstructionWriteMem(src=AtomId(variable), addr=stack_offset))
 
         # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
         #   the end of the program. Note that we use the original name for x here.
         if variable in live_out[-1]:
-            instructions_updated.append(InstructionReadMem(AtomId(variable), stack_entry))
+            instructions_updated.append(InstructionReadMem(dest=AtomId(variable), addr=stack_offset))
 
-    return (instructions_updated, stack_updated)
+
+    ritual.instructions = instructions_updated
+
+    return ritual
 
 
 def get_live_in_out(instructions: list, successors: list[set], gen: list[set], kill: list[set]):
@@ -326,9 +328,19 @@ def allocate_registers(ritual: Ritual, num_registers=6):
         # Color graph
         colors = color_graph(graph, N=num_registers)
 
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        G = nx.Graph()
+        G.add_edges_from(graph.edges)
+
+        plt.clf()
+        nx.draw(G, with_labels=True)
+        plt.show()
+
         if 'spill' in colors.values():
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
-            (ritual.instructions, ritual.stack) = spill_registers(ritual, regs, live_in, live_out)
+            ritual = spill_registers(ritual, regs, live_in, live_out)
             continue
         else:
             break
