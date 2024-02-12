@@ -30,12 +30,14 @@ def get_gen(instruction: Instruction) -> set:
         if isinstance(instruction.right, AtomId):
             s.add(instruction.right.id)
         return s
-    elif isinstance(instruction, InstructionAssignFromMem):
-        if isinstance(instruction.atom, AtomId):
-            return {instruction.atom.id}
-    elif isinstance(instruction, InstructionAssignToMem):
-        if isinstance(instruction.atom, AtomId):
-            return {instruction.atom.id}
+    elif isinstance(instruction, InstructionAllocMem):
+        return {instruction.dest.id}
+    elif isinstance(instruction, InstructionReadMem):
+        if isinstance(instruction.addr, AtomId):
+            return {instruction.addr.id}
+    elif isinstance(instruction, InstructionWriteMem):
+        if isinstance(instruction.src, AtomId):
+            return {instruction.src.id}
     elif isinstance(instruction, InstructionGoto):
         return set()
     elif isinstance(instruction, InstructionIf):
@@ -60,9 +62,9 @@ def get_kill(instruction: Instruction):
         return {instruction.dest.id}
     elif isinstance(instruction, InstructionAssignBinop):
         return {instruction.dest.id}
-    elif isinstance(instruction, InstructionAssignFromMem):
+    elif isinstance(instruction, InstructionReadMem):
         return {instruction.dest.id}
-    elif isinstance(instruction, InstructionAssignToMem):
+    elif isinstance(instruction, InstructionWriteMem):
         return set()
     elif isinstance(instruction, InstructionGoto):
         return set()
@@ -129,6 +131,13 @@ def get_interference_graph(
         out: list[set]) -> Graph:
     edges = []
 
+    # combine all sets of variables into nodes
+    nodes = set()
+    for s in kill:
+        nodes = nodes.union(s)
+    for s in out:
+        nodes = nodes.union(s)
+
     # A variable x interferes with a variable y if x != y and there is an
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
     for i, instruction in enumerate(instructions):
@@ -141,7 +150,7 @@ def get_interference_graph(
                                  and instruction.src.id == x)):
                     edges.append((x, y))
 
-    return Graph.from_edges(edges)
+    return Graph(nodes=nodes, edges=edges)
 
 
 def simplify(graph: Graph, N: int) -> list[tuple]:
@@ -201,16 +210,17 @@ def color_graph(graph: Graph, N: int) -> dict:
     return colors
 
 
-def spill_registers(instructions: list[Instruction], variables: set[str], live_in: list[set], live_out: list[set]):
-    instructions_updated = instructions.copy()
+def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], live_out: list[set]) -> (Ritual, list):
+    instructions_updated = ritual.instructions.copy()
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        address_entry = DataEntry(f"address_{variable}", 0, REGISTER_SIZE)
+        stack_offset = AtomNum(ritual.stack_size)
+        ritual.stack_size += REGISTER_SIZE
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
@@ -228,42 +238,46 @@ def spill_registers(instructions: list[Instruction], variables: set[str], live_i
                     instruction.right.id = variable_replacement
 
         # 3. before an instruction i that reads x_i, insert the instruction x_i = MEM[address_x]
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
                 if isinstance(instruction.src, AtomId) and instruction.src.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.src, address_entry))
+                    instructions_updated.insert(i, InstructionReadMem(dest=instruction.src, addr=stack_offset))
+
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if isinstance(instruction.left, AtomId) and instruction.left.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.left, address_entry))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.left, addr=stack_offset))
                 if isinstance(instruction.right, AtomId) and instruction.right.id == variable_replacement:
-                    instructions_updated.insert(i, InstructionAssignFromMem(instruction.right, address_entry))
+                    instructions_updated.insert(i, InstructionReadMem(instruction.right, addr=stack_offset))
 
         # 4. after an instruction i that assigns x_i, insert the instruction MEM[address_x] = x_i
-        for i, instruction in enumerate(instructions):
+        for i, instruction in enumerate(ritual.instructions):
             variable_replacement = f"{variable}_{i}"
 
             if isinstance(instruction, InstructionAssign):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(src=instruction.dest, addr=stack_offset))
 
             elif isinstance(instruction, InstructionAssignBinop):
                 if instruction.dest.id == variable_replacement:
-                    instructions_updated.insert(i + 1, InstructionAssignToMem(address_entry, instruction.dest))
+                    instructions_updated.insert(i + 1, InstructionWriteMem(src=instruction.dest, addr=stack_offset))
 
         # 5. If x is live at the start of the program, add an instruction M[addressx] := x
         #   to the start of the program. Note that we use the original name for x here.
         if variable in live_in[0]:
-            instructions_updated.insert(0, InstructionAssignToMem(address_entry, AtomId(variable)))
+            instructions_updated.insert(0, InstructionWriteMem(src=AtomId(variable), addr=stack_offset))
 
         # 6. If x is live at the end of the program, add an instruction x := M[address_x] to
         #   the end of the program. Note that we use the original name for x here.
         if variable in live_out[-1]:
-            instructions_updated.append(InstructionAssignFromMem(AtomId(variable), address_entry))
+            instructions_updated.append(InstructionReadMem(dest=AtomId(variable), addr=stack_offset))
 
-    return instructions_updated
+
+    ritual.instructions = instructions_updated
+
+    return ritual
 
 
 def get_live_in_out(instructions: list, successors: list[set], gen: list[set], kill: list[set]):
@@ -292,8 +306,8 @@ def get_live_in_out(instructions: list, successors: list[set], gen: list[set], k
     return live_in, live_out
 
 
-def liveness_analysis(program: Program, num_registers=6):
-    program.instructions.append(InstructionReturn(AtomNum(0)))
+def allocate_registers(ritual: Ritual, num_registers=6):
+    ritual.instructions.append(InstructionReturn(AtomNum(0)))
 
     _breakpoint = 0
     while True:
@@ -302,53 +316,39 @@ def liveness_analysis(program: Program, num_registers=6):
             raise Exception("Could not color program using {} registers".format(num_registers))
 
         # Successors, indexed by instruction index. These are the instructions that can be reached from the current instruction.
-        successors = get_successors(program.instructions)
+        successors = get_successors(ritual.instructions)
 
         # List of instructions that may be read from the current instruction
         # eg., gen[i] = {x} means that x is read from instruction i
-        gen = [get_gen(instruction) for instruction in program.instructions]
+        gen = [get_gen(instruction) for instruction in ritual.instructions]
 
         # A set that lists that may be written to by the current instruction
         # eg., kill[i] = set(x,y) means that x and y are written to by instruction i
-        kill = [get_kill(instruction) for instruction in program.instructions]
+        kill = [get_kill(instruction) for instruction in ritual.instructions]
 
         # Get live_in and live_out
-        live_in, live_out = get_live_in_out(program.instructions, successors, gen, kill)
-
-        # print the results
-        #        print("Liveness analysis:")
-        #        for i, instruction in enumerate(program.instructions):
-        #            print(f"{i}: out: {live_out[i]}\t\t\t\t\tin: {live_in[i]}")
+        live_in, live_out = get_live_in_out(ritual.instructions, successors, gen, kill)
 
         # Get inteference graph
-        graph = get_interference_graph(program.instructions, kill, live_out)
+        graph = get_interference_graph(ritual.instructions, kill, live_out)
 
         # Color graph
         colors = color_graph(graph, N=num_registers)
-        #
-        #        import networkx as nx
-        #        import matplotlib.pyplot as plt
-        #
-        #        G = nx.Graph()
-        #        G.add_edges_from(graph.edges)
-        #
-        #        nx.draw(G, with_labels=True)
-        #        plt.show()
+
+        import networkx as nx
+        import matplotlib.pyplot as plt
+
+        G = nx.Graph()
+        G.add_edges_from(graph.edges)
+        G.add_nodes_from(graph.nodes)
+
+        plt.clf()
+        nx.draw(G, with_labels=True)
+        plt.show()
 
         if 'spill' in colors.values():
-            import networkx as nx
-            import matplotlib.pyplot as plt
-
-            G = nx.Graph()
-            G.add_edges_from(graph.edges)
-
-            plt.clf()
-            nx.draw(G, with_labels=True)
-            plt.show()
-
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
-            print(f"Spilling registers: {regs}")
-            program.instructions = spill_registers(program.instructions, regs, live_in, live_out)
+            ritual = spill_registers(ritual, regs, live_in, live_out)
             continue
         else:
             break

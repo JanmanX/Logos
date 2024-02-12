@@ -1,7 +1,7 @@
-x := 2 + 2
-y := 3 - 1
-z := x * y
-
-print x
-
-exit z
+ritual main()
+{
+	m = alloc 8
+	a = m
+	
+	[a] = 0xBEEF
+}

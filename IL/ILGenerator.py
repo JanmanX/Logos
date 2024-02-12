@@ -4,52 +4,54 @@ from . import *
 
 
 class ILGenerator(LogosVisitor):
-    def newvar(self):
-        name = 't' + str(self._newvar_index)
-        self._newvar_index += 1
-        return name
+    def visitProg(self, ctx:LogosParser.ProgContext):
+        rituals = []
+        for ritual in ctx.rituals():
+            _ritual = self.visitRitual(ritual)
+            if _ritual:
+                rituals.append(_ritual)
 
-    def newlabel(self):
-        name = 'l' + str(self._newlabel_index)
-        self._newlabel_index += 1
-        return name
+        return Program(
+            rituals=rituals,
+        )
 
-    def bind(self, table, name, place):
-        table[name] = place
+    # Visit a parse tree produced by LogosParser#ritual.
+    def visitRitual(self, ctx:LogosParser.RitualContext):
+        id = AtomId(ctx.ID().getText())
+        args = [AtomId(x.getText()) for x in ctx.args]
 
-    def visitProg(self, ctx: LogosParser.ProgContext) -> Program:
-        self.program = Program([], [], {})
-        self.vtable = dict()
-        self.ftable = dict()
+        assert len(args) < 9, "More than 8 arguments are not supported yet."
+
+        ritual = Ritual(
+            name=id,
+            args=args,
+            instructions=[],
+            variable_register_map={},
+            vtable={},
+        )
+
+        self.ritual = ritual
         self.place = None
         self.label = None
 
-        # internals
-        self._newvar_index = 0
-        self._newlabel_index = 0
+        instructions = []
+        for stmt in ctx.stmts:
+            _instructions = self.visit(stmt)
+            if _instructions:
+                instructions += _instructions
 
-        code = []
-        for child in ctx.children:
-            _code = self.visit(child)
-            if _code:
-                code += _code
+        ritual.instructions = instructions
 
-        self.program.instructions = code
-
-        return self.program
+        return ritual
 
     def visitAssign(self, ctx: LogosParser.AssignContext):
         id = ctx.ID().getText()
 
         # If id not in vtable, add it
-        if id not in self.vtable:
-            x = self.newvar()
-            self.bind(self.vtable, id, x)
-        else:
-            x = self.vtable[id]
+        x = self.ritual.lookup(id)
 
         # Set place
-        self.place = self.newvar()
+        self.place = self.ritual.newvar()
         place = self.place  # I need to do this because self.place will be changed by visit(ctx.expr())
 
         # Visit expression
@@ -58,27 +60,39 @@ class ILGenerator(LogosVisitor):
         # Add assignment instruction
         return code + [InstructionAssign(AtomId(x), AtomId(place))]
 
+
     def visitAllocMem(self, ctx:LogosParser.AllocMemContext):
         code = []
 
-        # If id not in vtable, add it
         id = ctx.ID().getText()
-        if id not in self.vtable:
-            x = self.newvar()
-            self.bind(self.vtable, id, x)
-        else:
-            x = self.vtable[id]
+        x = self.ritual.lookup(id)
+
+        offset = self.ritual.stack_size
+        size = int(ctx.INT().getText())
+        self.ritual.stack_size = self.ritual.stack_size + size
+
 
         code = [
-            InstructionAllocMem(dest=AtomId(x), size=int(ctx.INT().getText())),
-            InstructionAssign(dest=AtomId(x), src=AtomId(x))
+            InstructionAllocMem(dest=AtomId(x), offset=offset, size=size),
         ]
 
         return code
 
 
     def visitWriteMem(self, ctx:LogosParser.WriteMemContext):
-        return self.visitChildren(ctx)
+        id = ctx.ID().getText()
+        x = self.ritual.lookup(id)
+
+        place = self.ritual.newvar()
+        self.place = place 
+        code_value = self.visit(ctx.value)
+
+        code = code_value + \
+            [
+                InstructionWriteMem(src=AtomId(x), addr=AtomId(place)),
+            ]
+
+        return code
 
 
     def visitReadMem(self, ctx:LogosParser.ReadMemContext):
@@ -90,12 +104,12 @@ class ILGenerator(LogosVisitor):
         place0 = self.place
 
         # Visit left
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code1 = self.visit(ctx.expr(0))
 
         # Visit right
-        place2 = self.newvar()
+        place2 = self.ritual.newvar()
         self.place = place2
         code2 = self.visit(ctx.expr(1))
 
@@ -109,12 +123,12 @@ class ILGenerator(LogosVisitor):
         place0 = self.place
 
         # Visit left
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code1 = self.visit(ctx.expr(0))
 
         # Visit right
-        place2 = self.newvar()
+        place2 = self.ritual.newvar()
         self.place = place2
         code2 = self.visit(ctx.expr(1))
 
@@ -146,17 +160,17 @@ class ILGenerator(LogosVisitor):
     # Visit a parse tree produced by LogosParser#Id.
     def visitId(self, ctx: LogosParser.IdContext):
         id = ctx.ID().getText()
-        x = self.vtable[id]
+        x = self.ritual.vtable[id]
 
         return [InstructionAssign(AtomId(self.place), AtomId(x))]
 
     # Visit a parse tree produced by LogosParser#if.
     def visitIf(self, ctx: LogosParser.IfContext):
-        label1 = self.newlabel()
-        label2 = self.newlabel()
+        label1 = self.ritual.newlabel()
+        label2 = self.ritual.newlabel()
 
         # Visit condition
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code_cond = self.visit(ctx.expr())
 
@@ -179,17 +193,14 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#while.
     def visitWhile(self, ctx: LogosParser.WhileContext):
-        label_cond = self.newlabel()
-        label_body = self.newlabel()
-        label_end = self.newlabel()
+        label_cond = self.ritual.newlabel()
+        label_body = self.ritual.newlabel()
+        label_end = self.ritual.newlabel()
 
         # Visit condition
-        place1 = self.newvar()
+        place1 = self.ritual.newvar()
         self.place = place1
         code_cond = self.visit(ctx.expr())
-        print("---")
-        print(code_cond)
-        print("---")
 
         # Visit stmt
         code_stmts = []

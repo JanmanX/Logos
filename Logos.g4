@@ -2,18 +2,24 @@ grammar Logos;
 
 import LogosLexerRules;
 
-prog: stmt+ EOF;
+prog: rituals+ EOF;
+
+rituals: 'ritual' name=ID '(' args+=ids* ')' '{' stmts+=stmt* '}'     #ritual
+    ;
 
 stmt: ID '=' expr                               #assign
     | ID '=' 'alloc' size=INT                   #allocMem
-    | ID '[' index=expr ']' '=' value=expr      #writeMem
+    | '[' c ']' '=' value=expr                  #writeMem 
     | dest=ID '=' source=ID '[' index=expr ']'  #readMem
     | 'if' expr '{' stmts+=stmt* '}'            #if
     | 'while' expr '{' stmts+=stmt* '}'         #while
     | ID '=' func=ID '(' args=exprs* ')'        #callReturn
     | func=ID '(' args=exprs* ')'               #call
     | 'include' path=STRING                     #include
+    | 'return' expr                             #return
    ;
+
+ids : ID (',' ID)*;
 
 exprs: expr (',' expr)*;
 

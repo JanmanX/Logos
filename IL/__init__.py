@@ -61,29 +61,6 @@ class InstructionAssign(Instruction):
 
         return f'{self.dest} = {self.src}'
 
-@dataclass
-class InstructionAllocMem(Instruction):
-    dest: AtomId
-    size: int
-
-    def __repr__(self) -> str:
-        return f'{self.dest} = ALLOC_MEM({self.size})'
-
-@dataclass
-class InstructionWriteMem(Instruction):
-    dest: AtomId
-    src: AtomId | AtomNum
-
-    def __repr__(self) -> str:
-        return f'MEM[{self.dest}] = {self.src}'
-
-@dataclass
-class InstructionReadMem(Instruction):
-    dest: AtomId
-    src: AtomId | AtomNum
-
-    def __repr__(self) -> str:
-        return f'{self.dest} = MEM[{self.src}]'
 
 @dataclass
 class InstructionAssignBinop(Instruction):
@@ -97,21 +74,46 @@ class InstructionAssignBinop(Instruction):
 
 
 @dataclass
-class InstructionAssignFromMem(Instruction):
+class InstructionAllocMem(Instruction):
     dest: AtomId
-    atom: AtomId | AtomNum
+    size: int
+
+    offset: int # TODO: Remove? Do I need this?
 
     def __repr__(self) -> str:
-        return f'{self.dest} = MEM[{self.atom}]'
+        return f'{self.dest} = ALLOC_MEM({self.size})'
+
 
 
 @dataclass
-class InstructionAssignToMem(Instruction):
-    mem: AtomId
-    atom: AtomId | AtomNum
+class InstructionReadMem(Instruction):
+    """
+    Read from memory.
+
+    If addr is an AtomId, then it is the address of the memory.
+    If addr is an AtomNum, then it is the offset from the stack pointer.
+    """
+
+    dest: AtomId
+    addr: AtomId | AtomNum 
 
     def __repr__(self) -> str:
-        return f'MEM[{self.mem}] = {self.atom}'
+        return f'{self.dest} = MEM[{self.addr}]'
+
+
+@dataclass
+class InstructionWriteMem(Instruction):
+    """
+    Write to memory.
+
+    If addr is an AtomId, then it is the address of the memory.
+    If addr is an AtomNum, then it is the offset from the stack pointer.
+    """
+    src: AtomId
+    addr: AtomId | AtomNum
+
+    def __repr__(self) -> str:
+        return f'MEM[{self.src}] = {self.addr}'
 
 
 @dataclass
@@ -143,7 +145,7 @@ class InstructionReturn(Instruction):
 
 # --- Data
 @dataclass
-class DataEntry:
+class StackEntry:
     label: str
     value: str
     size: int
@@ -154,16 +156,48 @@ class DataEntry:
 
 # --- Other
 @dataclass
-class Function:
-    header: str
-    body: list
+class Ritual:
+    name: AtomId
+    args: list[AtomId]
 
+    instructions: list
+    variable_register_map: dict
+    vtable: dict
+    stack_size: int = 0
+
+    # internals
+    place = None
+    label = None
+    _newvar_index: int = 0
+    _newlabel_index: int = 0
+
+    def newvar(self):
+        name = 't' + str(self._newvar_index)
+        self._newvar_index += 1
+        return name
+
+    def newlabel(self):
+        name = 'l' + str(self._newlabel_index)
+        self._newlabel_index += 1
+        return name
+
+    def lookup(self, name):
+        if name not in self.vtable:
+            x = self.newvar()
+            self.vtable[name] = x
+        else:
+            x = self.vtable[name]
+
+        return x
+
+    def __repr__(self) -> str:
+        signature = f'{self.name} ({",".join([a.id for a in self.args])})\n'
+        body = '  \n'.join([str(i) for i in self.instructions])
+        return signature + body
 
 @dataclass
 class Program:
-    data: list[DataEntry]
-    instructions: list
-    variable_colors: dict
+    rituals: list[Ritual]
 
     def __repr__(self) -> str:
-        return '\n'.join([str(i) for i in self.instructions])
+        return '\n\n '.join([str(r) for r in self.rituals])

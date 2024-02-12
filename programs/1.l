@@ -1,5 +1,12 @@
-a = 0x41
-b = 2
+ritual main () {
+	a = 4
+	b = alloc 32
 
-t = a + b
+	while a {
+		[b] = a
+		a = a - 1
+		b = b + 1
+	}
+}
+
 
