@@ -219,3 +219,43 @@ class ILGenerator(LogosVisitor):
         code.append(InstructionGoto(AtomId(label_cond)))
         code.append(InstructionLabel(AtomId(label_end)))
         return code
+
+
+    # Visit a parse tree produced by LogosParser#call.
+    def visitCall(self, ctx:LogosParser.CallContext):
+        code = []
+
+        # Check if we have destination
+        dest = ctx.dest 
+#        if dest:
+#            dest = ctx.ID().getText()
+
+        target_ritual = ctx.func
+
+        # Visit args 
+        code_stmts = []
+        code_args = self.visit(ctx.args)
+
+        # Add instruction
+        code.extend(code_args)
+        code.append(
+            InstructionFunctionCall(dest=AtomId(dest), ritual=AtomId(target_ritual), args=code_args)
+        )
+
+        return code
+
+
+    # Visit a parse tree produced by LogosParser#ids.
+    def visitIds(self, ctx:LogosParser.IdsContext):
+        return self.visitChildren(ctx)
+
+    # Visit a parse tree produced by LogosParser#exprs.
+    def visitExprs(self, ctx:LogosParser.ExprsContext):
+        code_exprs = []
+
+        for expr in ctx.expr():
+            code_expr = self.visit(expr)
+            if code_expr:
+                code_exprs.extend(code_expr)
+
+        return code_exprs

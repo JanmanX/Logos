@@ -133,9 +133,10 @@ class InstructionIf(Instruction):
 
 @dataclass
 class InstructionFunctionCall(Instruction):
-    dest: AtomId
-    function: AtomId
-    args: list
+    dest: AtomId | None
+    ritual: AtomId
+    args: list[AtomId | AtomNum]
+
 
 
 @dataclass

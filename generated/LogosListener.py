@@ -80,15 +80,6 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#callReturn.
-    def enterCallReturn(self, ctx:LogosParser.CallReturnContext):
-        pass
-
-    # Exit a parse tree produced by LogosParser#callReturn.
-    def exitCallReturn(self, ctx:LogosParser.CallReturnContext):
-        pass
-
-
     # Enter a parse tree produced by LogosParser#call.
     def enterCall(self, ctx:LogosParser.CallContext):
         pass
