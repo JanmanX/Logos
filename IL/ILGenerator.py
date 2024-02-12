@@ -26,7 +26,7 @@ class ILGenerator(LogosVisitor):
             name=id,
             args=args,
             instructions=[],
-            variable_colors={},
+            variable_register_map={},
             vtable={},
         )
 

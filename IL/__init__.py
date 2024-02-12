@@ -161,7 +161,7 @@ class Ritual:
     args: list[AtomId]
 
     instructions: list
-    variable_colors: dict
+    variable_register_map: dict
     vtable: dict
     stack_size: int = 0
 

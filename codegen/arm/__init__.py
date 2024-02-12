@@ -13,58 +13,44 @@ BINOP_INSTRUCTION_MAP = {
 # TODO: https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms
 # Dont use register X18 (x18) for anything other than the platform's Thread Local Storage (TLS) pointer.
 
-REGISTER_MAP = {
-    't0': 'X0',
-    't1': 'X1',
-    't2': 'X2',
-    't3': 'X3',
-    't4': 'X4',
-    't5': 'X5',
-    't6': 'X6',
-    't7': 'X7',
-    't8': 'X8',
-    't9': 'X9',
-    't10': 'X10',
-    't11': 'X11',
-    't12': 'X12',
-    't13': 'X13',
-    't14': 'X14',
-    't15': 'X15',
-    't16': 'X16',
-    't17': 'X17',
-    't18': 'X18',
-    't19': 'X19',
-    't20': 'X20',
-    't21': 'X21',
-    't22': 'X22',
-    't23': 'X23',
-    't24': 'X24',
-    't25': 'X25',
-    't26': 'X26',
-    't27': 'X27',
-    't28': 'X28',
-    't29': 'X29',
-    't30': 'X30',
-    't31': 'X31',
+AVAILABLE_REGISTERS = {
+    0: 'x9',
+    1: 'x10',
+    2: 'x11',
+    3: 'x12',
+    4: 'x13',
+    5: 'x14',
+    6: 'x15',
 }
 
+def assign_registers(variable_register_map: list[str]) -> dict:
+    # Real registers
+    real_registers_map = {}
 
-def codegen_binop(instruction: InstructionAssignBinop):
+    for variable in variable_register_map:
+        print(variable)
+        real_registers_map[variable] = AVAILABLE_REGISTERS[variable_register_map[variable]]
+
+
+    return real_registers_map
+
+
+def codegen_binop(instruction: InstructionAssignBinop, register_map: dict):
     code = []
     op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
     code.append(
-        f'{op_instruction} {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.left.id]}, {REGISTER_MAP[instruction.right.id]}')
+        f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
 
     return code
 
 
-def codegen_assign(instruction: InstructionAssign):
+def codegen_assign(instruction: InstructionAssign, register_map: dict):
     code = []
     if isinstance(instruction.src, AtomId):
-        code.append(f'mov {REGISTER_MAP[instruction.dest.id]}, {REGISTER_MAP[instruction.src.id]}')
+        code.append(f'mov {register_map[instruction.dest.id]}, {register_map[instruction.src.id]}')
     else:
-        code.append(f'mov {REGISTER_MAP[instruction.dest.id]}, #{instruction.src.num}')
+        code.append(f'mov {register_map[instruction.dest.id]}, #{instruction.src.num}')
     return code
 
 
@@ -73,40 +59,40 @@ def codegen_label(instruction: InstructionLabel):
     return code
 
 
-def codegen_read_mem(instruction: InstructionReadMem, stack_size: int):
+def codegen_read_mem(instruction: InstructionReadMem, register_map: dict, stack_size: int):
     code = []
 
     # If we are reading from a memory address
     if isinstance(instruction.addr, AtomId):
         code = [
-            f'ldr {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
+            f'ldr {register_map[instruction.dest.id]}, [{register_map[instruction.addr.id]}]'
         ]
     # If we are reading from stack offset
     elif isinstance(instruction.addr, AtomNum):
         # Remember that the stack grows downwards, so take that into account
         stack_offset = stack_size - (instruction.addr.num + 8)
         code = [
-            f'ldr {REGISTER_MAP[instruction.dest.id]}, [sp, #{stack_offset}]'
+            f'ldr {register_map[instruction.dest.id]}, [sp, #{stack_offset}]'
         ]
 
     return code
 
 
-def codegen_write_mem(instruction: InstructionWriteMem, stack_size: int):
+def codegen_write_mem(instruction: InstructionWriteMem, register_map: dict, stack_size: int):
     # ST{U}R    rt, [addr]      [addr] = rt
     code = []
 
     # If we are writing to a memory address
     if isinstance(instruction.addr, AtomId):
         code = [
-            f'str {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
+            f'str {register_map[instruction.src.id]}, [{register_map[instruction.addr.id]}]'
         ]
     # If we are writing to a stack offset
     elif isinstance(instruction.addr, AtomNum):
         # Remember that the stack grows downwards, so take that into account
         stack_offset = stack_size - (instruction.addr.num + 8)
         code = [
-            f'str {REGISTER_MAP[instruction.src.id]}, [sp, #{stack_offset}]'
+            f'str {register_map[instruction.src.id]}, [sp, #{stack_offset}]'
         ]
 
     return code
@@ -119,9 +105,9 @@ def codegen_goto(instruction: InstructionGoto):
     return code
 
 
-def codegen_if(instruction: InstructionIf):
+def codegen_if(instruction: InstructionIf, register_map: dict):
     code = [
-        f'cmp {REGISTER_MAP[instruction.atom.id]}, #0',
+        f'cmp {register_map[instruction.atom.id]}, #0',
         f'beq {instruction.false_label.id}',
         f'bne {instruction.true_label.id}'
     ]
@@ -133,22 +119,24 @@ def codegen_function_call(instruction: InstructionFunctionCall):
     raise NotImplemented
 
 
-def codegen_return(instruction: InstructionReturn):
+def codegen_return(instruction: InstructionReturn, register_map: dict):
     return []
 
 
-def codegen_alloc_mem(instruction: InstructionAllocMem, stack_size: int):
+def codegen_alloc_mem(instruction: InstructionAllocMem, register_map: dict, stack_size: int):
     # Pseudo instruction
     # dest = SP - (stack_offset + offset)
 
     stack_offset = stack_size - instruction.offset 
     code = [
-        f'sub {REGISTER_MAP[instruction.dest.id]}, sp, #{stack_offset}'
+        f'sub {register_map[instruction.dest.id]}, sp, #{stack_offset}'
     ]
     return code
 
 
 def codegen_ritual(ritual: Ritual):
+    register_map = assign_registers(ritual.variable_register_map)
+
     code = []
 
     # Align the stack to 16 bytes
@@ -161,23 +149,23 @@ def codegen_ritual(ritual: Ritual):
         if isinstance(instruction, InstructionLabel):
             code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
-            code.extend(codegen_assign(instruction))
+            code.extend(codegen_assign(instruction, register_map))
         elif isinstance(instruction, InstructionAllocMem):
-            code.extend(codegen_alloc_mem(instruction, ritual.stack_size))
+            code.extend(codegen_alloc_mem(instruction, register_map, ritual.stack_size))
         elif isinstance(instruction, InstructionAssignBinop):
-            code.extend(codegen_binop(instruction))
+            code.extend(codegen_binop(instruction, register_map))
         elif isinstance(instruction, InstructionReadMem):
-            code.extend(codegen_read_mem(instruction, ritual.stack_size))
+            code.extend(codegen_read_mem(instruction, register_map, ritual.stack_size))
         elif isinstance(instruction, InstructionWriteMem):
-            code.extend(codegen_write_mem(instruction, ritual.stack_size))
+            code.extend(codegen_write_mem(instruction, register_map, ritual.stack_size))
         elif isinstance(instruction, InstructionGoto):
-            code.extend(codegen_goto(instruction))
+            code.extend(codegen_goto(instruction, register_map))
         elif isinstance(instruction, InstructionIf):
-            code.extend(codegen_if(instruction))
+            code.extend(codegen_if(instruction, register_map))
         elif isinstance(instruction, InstructionFunctionCall):
-            code.extend(codegen_function_call(instruction))
+            code.extend(codegen_function_call(instruction, register_map))
         elif isinstance(instruction, InstructionReturn):
-            code.extend(codegen_return(instruction))
+            code.extend(codegen_return(instruction, register_map))
         else:
             raise Exception("Unknown instruction")
 

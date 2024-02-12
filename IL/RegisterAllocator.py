@@ -34,7 +34,7 @@ def get_gen(instruction: Instruction) -> set:
         return {instruction.dest.id}
     elif isinstance(instruction, InstructionReadMem):
         if isinstance(instruction.addr, AtomId):
-            return {instruction.atom.id}
+            return {instruction.addr.id}
     elif isinstance(instruction, InstructionWriteMem):
         if isinstance(instruction.src, AtomId):
             return {instruction.src.id}
@@ -131,6 +131,13 @@ def get_interference_graph(
         out: list[set]) -> Graph:
     edges = []
 
+    # combine all sets of variables into nodes
+    nodes = set()
+    for s in kill:
+        nodes = nodes.union(s)
+    for s in out:
+        nodes = nodes.union(s)
+
     # A variable x interferes with a variable y if x != y and there is an
     # instruction i such that x in kill[i], y in out[i], and instruction i is not x = y
     for i, instruction in enumerate(instructions):
@@ -143,7 +150,7 @@ def get_interference_graph(
                                  and instruction.src.id == x)):
                     edges.append((x, y))
 
-    return Graph.from_edges(edges)
+    return Graph(nodes=nodes, edges=edges)
 
 
 def simplify(graph: Graph, N: int) -> list[tuple]:
@@ -333,6 +340,7 @@ def allocate_registers(ritual: Ritual, num_registers=6):
 
         G = nx.Graph()
         G.add_edges_from(graph.edges)
+        G.add_nodes_from(graph.nodes)
 
         plt.clf()
         nx.draw(G, with_labels=True)

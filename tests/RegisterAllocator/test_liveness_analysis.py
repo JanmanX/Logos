@@ -8,7 +8,7 @@ def test_simple_ritual():
         name = AtomId('main'),
         args = [],
         data=[],
-        variable_colors={},
+        variable_register_map={},
         instructions=[
             InstructionAssign(AtomId('a'), AtomNum(1)),
             InstructionAssign(AtomId('b'), AtomNum(2)),
