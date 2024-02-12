@@ -20,14 +20,9 @@ def main(program_path: str, config: TargetConfig, output_path: str):
     visitor = ILGenerator()
     program = visitor.visit(tree)
 
-    print("Program: ")
-    print(program)
-
     # Analyze
     for ritual in program.rituals:
         ritual.variable_register_map = allocate_registers(ritual, num_registers=config.num_registers)
-        print(" ----")
-        print(ritual.variable_register_map)
 
     # Codegen
     code = codegen(program, config)

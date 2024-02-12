@@ -28,7 +28,6 @@ def assign_registers(variable_register_map: list[str]) -> dict:
     real_registers_map = {}
 
     for variable in variable_register_map:
-        print(variable)
         real_registers_map[variable] = AVAILABLE_REGISTERS[variable_register_map[variable]]
 
 
