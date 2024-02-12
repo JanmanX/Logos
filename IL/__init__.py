@@ -77,7 +77,8 @@ class InstructionAssignBinop(Instruction):
 class InstructionAllocMem(Instruction):
     dest: AtomId
     size: int
-    offset: int
+
+    offset: int # TODO: Remove? Do I need this?
 
     def __repr__(self) -> str:
         return f'{self.dest} = ALLOC_MEM({self.size})'
@@ -162,7 +163,7 @@ class Ritual:
     instructions: list
     variable_colors: dict
     vtable: dict
-    stack_offset: int = 0
+    stack_size: int = 0
 
     # internals
     place = None

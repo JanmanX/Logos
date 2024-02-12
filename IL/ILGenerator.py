@@ -67,10 +67,10 @@ class ILGenerator(LogosVisitor):
         id = ctx.ID().getText()
         x = self.ritual.lookup(id)
 
-        offset = self.ritual.stack_offset
-        self.ritual.stack_offset += 4
-
+        offset = self.ritual.stack_size
         size = int(ctx.INT().getText())
+        self.ritual.stack_size = self.ritual.stack_size + size
+
 
         code = [
             InstructionAllocMem(dest=AtomId(x), offset=offset, size=size),

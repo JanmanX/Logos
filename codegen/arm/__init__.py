@@ -1,4 +1,4 @@
-from IL import Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionReadMem, \
+from IL import AtomNum, Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionReadMem, \
     InstructionWriteMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
     InstructionAllocMem, Ritual, StackEntry
 from utils.math import round_up
@@ -73,18 +73,42 @@ def codegen_label(instruction: InstructionLabel):
     return code
 
 
-def codegen_assign_from_mem(instruction: InstructionReadMem):
-    code = [
-        f'ldr {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.src.id]}]'
-    ]
+def codegen_read_mem(instruction: InstructionReadMem, stack_size: int):
+    code = []
+
+    # If we are reading from a memory address
+    if isinstance(instruction.addr, AtomId):
+        code = [
+            f'ldr {REGISTER_MAP[instruction.dest.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
+        ]
+    # If we are reading from stack offset
+    elif isinstance(instruction.addr, AtomNum):
+        # Remember that the stack grows downwards, so take that into account
+        stack_offset = stack_size - (instruction.addr.num + 8)
+        code = [
+            f'ldr {REGISTER_MAP[instruction.dest.id]}, [sp, #{stack_offset}]'
+        ]
+
     return code
 
 
-def codegen_assign_to_mem(instruction: InstructionWriteMem):
+def codegen_write_mem(instruction: InstructionWriteMem, stack_size: int):
     # ST{U}R    rt, [addr]      [addr] = rt
-    code = [
-        f'str {REGISTER_MAP[instruction.addr.id]}, [{REGISTER_MAP[instruction.src.id]}]'
-    ]
+    code = []
+
+    # If we are writing to a memory address
+    if isinstance(instruction.addr, AtomId):
+        code = [
+            f'str {REGISTER_MAP[instruction.src.id]}, [{REGISTER_MAP[instruction.addr.id]}]'
+        ]
+    # If we are writing to a stack offset
+    elif isinstance(instruction.addr, AtomNum):
+        # Remember that the stack grows downwards, so take that into account
+        stack_offset = stack_size - (instruction.addr.num + 8)
+        code = [
+            f'str {REGISTER_MAP[instruction.src.id]}, [sp, #{stack_offset}]'
+        ]
+
     return code
 
 
@@ -112,13 +136,26 @@ def codegen_function_call(instruction: InstructionFunctionCall):
 def codegen_return(instruction: InstructionReturn):
     return []
 
-def codegen_alloc_stack(instruction: InstructionAllocMem):
-    return [f"mov {REGISTER_MAP[instruction.dest.id]}, SP",
-            f"sub sp, sp, #{round_up(instruction.size, 16)}"
-            ]
+
+def codegen_alloc_mem(instruction: InstructionAllocMem, stack_size: int):
+    # Pseudo instruction
+    # dest = SP - (stack_offset + offset)
+
+    stack_offset = stack_size - instruction.offset 
+    code = [
+        f'sub {REGISTER_MAP[instruction.dest.id]}, sp, #{stack_offset}'
+    ]
+    return code
+
 
 def codegen_ritual(ritual: Ritual):
     code = []
+
+    # Align the stack to 16 bytes
+    ritual.stack_size = round_up(ritual.stack_size, 16)
+    code.extend([
+        f"sub sp, sp, #{ritual.stack_size}"
+    ])
 
     for instruction in ritual.instructions:
         if isinstance(instruction, InstructionLabel):
@@ -126,13 +163,13 @@ def codegen_ritual(ritual: Ritual):
         elif isinstance(instruction, InstructionAssign):
             code.extend(codegen_assign(instruction))
         elif isinstance(instruction, InstructionAllocMem):
-            code.extend(codegen_alloc_stack(instruction))
+            code.extend(codegen_alloc_mem(instruction, ritual.stack_size))
         elif isinstance(instruction, InstructionAssignBinop):
             code.extend(codegen_binop(instruction))
         elif isinstance(instruction, InstructionReadMem):
-            code.extend(codegen_assign_from_mem(instruction))
+            code.extend(codegen_read_mem(instruction, ritual.stack_size))
         elif isinstance(instruction, InstructionWriteMem):
-            code.extend(codegen_assign_to_mem(instruction))
+            code.extend(codegen_write_mem(instruction, ritual.stack_size))
         elif isinstance(instruction, InstructionGoto):
             code.extend(codegen_goto(instruction))
         elif isinstance(instruction, InstructionIf):

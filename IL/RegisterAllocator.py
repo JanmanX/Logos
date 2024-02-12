@@ -208,8 +208,8 @@ def spill_registers(ritual: Ritual, variables: set[str], live_in: list[set], liv
 
     for variable in variables:
         # 1. choose an address to store the variable address_x
-        stack_offset = AtomNum(ritual.stack_offset)
-        ritual.stack_offset += REGISTER_SIZE
+        stack_offset = AtomNum(ritual.stack_size)
+        ritual.stack_size += REGISTER_SIZE
 
         # 2. n every instruction i that reads or assigns x, we locally in this instruction
         #   rename x to x_i
