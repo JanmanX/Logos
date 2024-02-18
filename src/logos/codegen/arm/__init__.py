@@ -158,7 +158,7 @@ def codegen_ritual(ritual: Ritual):
         elif isinstance(instruction, InstructionWriteMem):
             code.extend(codegen_write_mem(instruction, register_map, ritual.stack_size))
         elif isinstance(instruction, InstructionGoto):
-            code.extend(codegen_goto(instruction, register_map))
+            code.extend(codegen_goto(instruction))
         elif isinstance(instruction, InstructionIf):
             code.extend(codegen_if(instruction, register_map))
         elif isinstance(instruction, InstructionFunctionCall):
