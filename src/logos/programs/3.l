@@ -1,3 +1,4 @@
 ritual main() {
-	a = test(1,2,3)
+	a = 1
+	b = test(a, 2)
 }

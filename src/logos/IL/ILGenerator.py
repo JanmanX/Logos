@@ -233,8 +233,10 @@ class ILGenerator(LogosVisitor):
         target_ritual = ctx.func
 
         # Visit args 
-        code_stmts = []
+
         code_args = self.visit(ctx.args)
+        print(code_args)
+
 
         # Add instruction
         code.extend(code_args)
@@ -254,7 +256,10 @@ class ILGenerator(LogosVisitor):
         code_exprs = []
 
         for expr in ctx.expr():
+            self.place = self.ritual.newvar()
+
             code_expr = self.visit(expr)
+
             if code_expr:
                 code_exprs.extend(code_expr)
 

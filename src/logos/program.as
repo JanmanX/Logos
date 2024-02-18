@@ -17,9 +17,9 @@ _main:
     mov x11, #1
     sub x10, x10, x11
     mov x10, x10
-    mov x9, x9
-    mov x11, #1
-    add x9, x9, x11
+    mov x11, x9
+    mov x9, #1
+    add x9, x11, x9
     mov x9, x9
     b l0
     l2:
