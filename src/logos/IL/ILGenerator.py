@@ -1,3 +1,4 @@
+from typing import List, Tuple
 from generated.LogosParser import LogosParser
 from generated.LogosVisitor import LogosVisitor
 from . import *
@@ -18,13 +19,13 @@ class ILGenerator(LogosVisitor):
     # Visit a parse tree produced by LogosParser#ritual.
     def visitRitual(self, ctx:LogosParser.RitualContext):
         id = AtomId(ctx.ID().getText())
-        args = [AtomId(x.getText()) for x in ctx.args]
 
-        assert len(args) < 9, "More than 8 arguments are not supported yet."
+        parameters = [AtomId(x.getText()) for x in ctx.ids().ID()]
+        assert len(parameters) < 9, "More than 8 arguments are not supported yet."
 
         ritual = Ritual(
             name=id,
-            args=args,
+            params=parameters,
             instructions=[],
             variable_register_map={},
             vtable={},
@@ -34,7 +35,10 @@ class ILGenerator(LogosVisitor):
         self.place = None
         self.label = None
 
-        instructions = []
+        instructions = [
+            InstructionLabel(AtomId(id)),
+        ]
+
         for stmt in ctx.stmts:
             _instructions = self.visit(stmt)
             if _instructions:
@@ -226,22 +230,23 @@ class ILGenerator(LogosVisitor):
         code = []
 
         # Check if we have destination
-        dest = ctx.dest 
-#        if dest:
-#            dest = ctx.ID().getText()
-
-        target_ritual = ctx.func
+        dest = ctx.dest
+        if dest:
+            dest = self.ritual.lookup(dest.text)
+        
+        target_ritual = ctx.func.text
 
         # Visit args 
-
-        code_args = self.visit(ctx.args)
-        print(code_args)
-
+        (code_args, places) = self.visitExprs(ctx.args)
 
         # Add instruction
         code.extend(code_args)
         code.append(
-            InstructionFunctionCall(dest=AtomId(dest), ritual=AtomId(target_ritual), args=code_args)
+            InstructionFunctionCall(
+                dest=AtomId(dest) if dest else None, 
+                ritual=AtomId(target_ritual), 
+                args=places
+                )
         )
 
         return code
@@ -252,15 +257,16 @@ class ILGenerator(LogosVisitor):
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by LogosParser#exprs.
-    def visitExprs(self, ctx:LogosParser.ExprsContext):
+    def visitExprs(self, ctx:LogosParser.ExprsContext) -> Tuple[List[Instruction], List[str]]:
         code_exprs = []
+        places = [] 
 
         for expr in ctx.expr():
             self.place = self.ritual.newvar()
-
             code_expr = self.visit(expr)
 
             if code_expr:
                 code_exprs.extend(code_expr)
+                places.append(self.place)
 
-        return code_exprs
+        return (code_exprs, places)

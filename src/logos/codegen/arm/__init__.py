@@ -114,8 +114,46 @@ def codegen_if(instruction: InstructionIf, register_map: dict):
     return code
 
 
-def codegen_function_call(instruction: InstructionFunctionCall):
-    raise NotImplemented
+
+def codegen_function_call(instruction: InstructionFunctionCall, register_map: dict):
+    code = []
+
+    # Dump registers x8 - x15 to the stack
+    code.extend([
+        f"sub sp, sp, #64", 
+        f"str x8, [sp, #0]",
+        f"str x9, [sp, #8]",
+        f"str x10, [sp, #16]",
+        f"str x11, [sp, #24]",
+        f"str x12, [sp, #32]",
+        f"str x13, [sp, #40]",
+        f"str x14, [sp, #48]",
+        f"str x15, [sp, #56]",
+    ])
+
+    code.extend([
+        f'bl {instruction.ritual.id}'
+    ])
+
+    # Restore registers x8 - x15 from the stack
+    code.extend([
+        f"ldr x8, [sp, #0]",
+        f"ldr x9, [sp, #8]",
+        f"ldr x10, [sp, #16]",
+        f"ldr x11, [sp, #24]",
+        f"ldr x12, [sp, #32]",
+        f"ldr x13, [sp, #40]",
+        f"ldr x14, [sp, #48]",
+        f"ldr x15, [sp, #56]",
+        f"add sp, sp, #64"
+    ])
+
+    if instruction.dest:
+        code.extend([
+            f'mov {register_map[instruction.dest.id]}, x0'
+        ])
+
+    return code
 
 
 def codegen_return(instruction: InstructionReturn, register_map: dict):

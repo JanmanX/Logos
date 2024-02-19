@@ -50,6 +50,9 @@ def get_gen(instruction: Instruction) -> set:
             return {instruction.atom.id}
         else:
             return set()
+        
+    elif isinstance(instruction, InstructionFunctionCall):
+        return set([a for a in instruction.args if isinstance(a, AtomId)])
 
     return set()
 
@@ -76,6 +79,10 @@ def get_kill(instruction: Instruction):
         if isinstance(instruction.atom, AtomId):
             return {instruction.atom.id}
         return set()
+    elif isinstance(instruction, InstructionFunctionCall):
+        if instruction.dest:
+            return {instruction.dest.id}
+
 
     return set()
 

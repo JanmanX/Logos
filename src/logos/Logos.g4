@@ -4,7 +4,7 @@ import LogosLexerRules;
 
 prog: rituals+ EOF;
 
-rituals: 'ritual' name=ID '(' args+=ids* ')' '{' stmts+=stmt* '}'     #ritual
+rituals: 'ritual' name=ID '(' args=ids? ')' '{' stmts+=stmt* '}'     #ritual
     ;
 
 stmt: ID '=' expr                               #assign

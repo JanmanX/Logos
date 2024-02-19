@@ -16,7 +16,7 @@ FLOAT   : DIGIT+ '.' DIGIT*
 STRING  : '"' ( ESC | .)*? '"'; // Notice the non-greedy notation *?
 
 // Comments
-COMMENT : '//' .*? '\n' -> skip;
+COMMENT : '#' .*? '\n' -> skip;
 // COMMENT_BLOCK        : '/*' .*? '*/' -> skip;
 
 // Whitespaces

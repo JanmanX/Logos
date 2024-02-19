@@ -159,7 +159,7 @@ class StackEntry:
 @dataclass
 class Ritual:
     name: AtomId
-    args: list[AtomId]
+    params: list[AtomId]
 
     instructions: list
     variable_register_map: dict
@@ -192,7 +192,7 @@ class Ritual:
         return x
 
     def __repr__(self) -> str:
-        signature = f'{self.name} ({",".join([a.id for a in self.args])})\n'
+        signature = f'{self.name} ({",".join([a.id for a in self.params])})\n'
         body = '  \n'.join([str(i) for i in self.instructions])
         return signature + body
 

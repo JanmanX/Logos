@@ -6,7 +6,7 @@ def test_simple_ritual():
 
     ritual = Ritual(
         name = AtomId('main'),
-        args = [],
+        params = [],
         data=[],
         variable_register_map={},
         instructions=[
