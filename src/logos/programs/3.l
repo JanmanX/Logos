@@ -1,7 +1,12 @@
-ritual main(x, y, z) {
-	a = 1
+ritual main () {
+	x = 10
+	y = 20
+	z = add(x, y)
 
-	# my test 
-
-	b = test(a, 2)
+	return z 
 }
+
+ritual add(a, b) {
+	return a + b
+}
+

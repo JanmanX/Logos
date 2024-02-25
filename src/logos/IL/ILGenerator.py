@@ -20,8 +20,11 @@ class ILGenerator(LogosVisitor):
     def visitRitual(self, ctx:LogosParser.RitualContext):
         id = AtomId(ctx.ID().getText())
 
-        parameters = [AtomId(x.getText()) for x in ctx.ids().ID()]
-        assert len(parameters) < 9, "More than 8 arguments are not supported yet."
+        parameters = []
+
+        if ctx.ids():
+            parameters = [AtomId(x.getText()) for x in ctx.ids().ID()]
+            assert len(parameters) < 9, "More than 8 arguments are not supported yet."
 
         ritual = Ritual(
             name=id,
@@ -36,8 +39,16 @@ class ILGenerator(LogosVisitor):
         self.label = None
 
         instructions = [
-            InstructionLabel(AtomId(id)),
+            InstructionLabel(id),
         ]
+
+        # Assign parameters to vtable
+        setup_code = []
+        for i, p in enumerate(parameters):
+            place = self.ritual.lookup(p.id)
+            setup_code.append(InstructionAssign(AtomId(place), AtomId(f'arg_{i}'))) 
+
+        instructions.extend(setup_code)
 
         for stmt in ctx.stmts:
             _instructions = self.visit(stmt)
@@ -267,6 +278,17 @@ class ILGenerator(LogosVisitor):
 
             if code_expr:
                 code_exprs.extend(code_expr)
-                places.append(self.place)
+                places.append(AtomId(self.place))
 
         return (code_exprs, places)
+
+    # Visit a parse tree produced by LogosParser#return.
+    def visitReturn(self, ctx:LogosParser.ReturnContext):
+        place = self.ritual.newvar()
+        self.place = place
+        code = self.visit(ctx.expr())
+
+        return code + [
+            InstructionReturn(AtomId(place))
+            ]
+

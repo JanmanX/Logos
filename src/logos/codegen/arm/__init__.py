@@ -27,9 +27,16 @@ def assign_registers(variable_register_map: list[str]) -> dict:
     # Real registers
     real_registers_map = {}
 
-    for variable in variable_register_map:
-        real_registers_map[variable] = AVAILABLE_REGISTERS[variable_register_map[variable]]
+    # Map argument registers to the ARM64 X0-X7 registers
+    for i in range(8):
+        name = f'arg_{i}'
+        real_registers_map[name] = f'x{i}'
 
+
+    for variable in variable_register_map:
+        if variable in real_registers_map:
+            continue
+        real_registers_map[variable] = AVAILABLE_REGISTERS[variable_register_map[variable]]
 
     return real_registers_map
 
@@ -118,9 +125,16 @@ def codegen_if(instruction: InstructionIf, register_map: dict):
 def codegen_function_call(instruction: InstructionFunctionCall, register_map: dict):
     code = []
 
-    # Dump registers x8 - x15 to the stack
+    # Move arguments to registers
+    for i, arg in enumerate(instruction.args):
+        if isinstance(arg, AtomId):
+            code.append(f'mov x{i}, {register_map[arg.id]}')
+        else:
+            code.append(f'mov x{i}, #{arg.num}')
+
+    # Dump registers x8 - x15 and x30 to the stack
     code.extend([
-        f"sub sp, sp, #64", 
+        f"sub sp, sp, #80", 
         f"str x8, [sp, #0]",
         f"str x9, [sp, #8]",
         f"str x10, [sp, #16]",
@@ -129,6 +143,7 @@ def codegen_function_call(instruction: InstructionFunctionCall, register_map: di
         f"str x13, [sp, #40]",
         f"str x14, [sp, #48]",
         f"str x15, [sp, #56]",
+        f"str x30, [sp, #64]"
     ])
 
     code.extend([
@@ -145,7 +160,8 @@ def codegen_function_call(instruction: InstructionFunctionCall, register_map: di
         f"ldr x13, [sp, #40]",
         f"ldr x14, [sp, #48]",
         f"ldr x15, [sp, #56]",
-        f"add sp, sp, #64"
+        f"ldr x30, [sp, #64]",
+        f"add sp, sp, #80"
     ])
 
     if instruction.dest:
@@ -157,7 +173,28 @@ def codegen_function_call(instruction: InstructionFunctionCall, register_map: di
 
 
 def codegen_return(instruction: InstructionReturn, register_map: dict):
-    return []
+    code = []
+
+    if instruction.atom:
+        if isinstance(instruction.atom, AtomId):
+            code.extend([
+                f'mov x0, {register_map[instruction.atom.id]}'
+            ])
+        else:
+            code.extend([
+                f'mov x0, #{instruction.atom.num}'
+            ])
+    else:
+        code.extend([
+            f'mov x0, #0'
+        ])
+
+    
+    return code + [
+        f'blr x30'
+    ]
+
+
 
 
 def codegen_alloc_mem(instruction: InstructionAllocMem, register_map: dict, stack_size: int):
@@ -176,6 +213,9 @@ def codegen_ritual(ritual: Ritual):
 
     code = []
 
+    # Add ritual label
+    code.extend(codegen_label(InstructionLabel(ritual.name)))
+
     # Align the stack to 16 bytes
     ritual.stack_size = round_up(ritual.stack_size, 16)
     code.extend([
@@ -184,6 +224,10 @@ def codegen_ritual(ritual: Ritual):
 
     for instruction in ritual.instructions:
         if isinstance(instruction, InstructionLabel):
+            if instruction.label_id.id == ritual.name.id:
+                # Skip ritual label
+                continue
+
             code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
             code.extend(codegen_assign(instruction, register_map))
@@ -213,20 +257,21 @@ def codegen(program: Program) -> str:
         '.text',
         '.global _main',
         '_main:',
+        'stp x29, x30, [sp, #-16]!',
+        'bl main',
+        'mov x16, #1',
+        'svc #0x80'
     ]
-
-    epilog = """
-mov     X16, #1  // System call number 1 terminates this program
-svc     #0x80  // Call kernel to terminate the program
-    """.splitlines()
 
     code = []
 
     for ritual in program.rituals:
         code.extend(codegen_ritual(ritual))
 
-    # Just a nice formatting
-    code = [f'    {line}' for line in code]
+    # Add spaces in front of each line if it is not a label
+    for i in range(len(code)):
+        if not code[i].endswith(':'):
+            code[i] = '    ' + code[i]
 
-    code = prolog + code + epilog
+    code = prolog + code
     return '\n'.join(code) + '\n'

@@ -52,7 +52,7 @@ def get_gen(instruction: Instruction) -> set:
             return set()
         
     elif isinstance(instruction, InstructionFunctionCall):
-        return set([a for a in instruction.args if isinstance(a, AtomId)])
+        return set([a.id for a in instruction.args if isinstance(a, AtomId)])
 
     return set()
 
