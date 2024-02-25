@@ -71,7 +71,7 @@ class LogosParser ( Parser ):
 
     literalNames = [ "<INVALID>", "'ritual'", "'('", "')'", "'{'", "'}'", 
                      "'='", "'alloc'", "'['", "']'", "'if'", "'while'", 
-                     "'include'", "'return'", "','", "<INVALID>", "<INVALID>", 
+                     "'include'", "'end'", "','", "<INVALID>", "<INVALID>", 
                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
                      "'+'", "'-'", "'*'", "'/'", "'=='", "'!='", "'>'", 
                      "'>='", "'<'", "'<='", "'&'", "'^'", "'|'", "'||'", 

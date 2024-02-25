@@ -15,7 +15,7 @@ stmt: ID '=' expr                               #assign
     | 'while' expr '{' stmts+=stmt* '}'         #while
     | (dest=ID '=')? func=ID '(' args=exprs? ')'#call
     | 'include' path=STRING                     #include
-    | 'return' expr                             #return
+    | 'end' expr                             #return
    ;
 
 ids : ID (',' ID)*;
