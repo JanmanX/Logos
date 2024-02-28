@@ -224,11 +224,8 @@ def codegen_ritual(ritual: Ritual):
 
     for instruction in ritual.instructions:
         if isinstance(instruction, InstructionLabel):
-            if instruction.label_id.id == ritual.name.id:
-                # Skip ritual label
-                continue
-
-            code.extend(codegen_label(instruction))
+            if instruction.label_id.id != ritual.name.id:
+                code.extend(codegen_label(instruction))
         elif isinstance(instruction, InstructionAssign):
             code.extend(codegen_assign(instruction, register_map))
         elif isinstance(instruction, InstructionAllocMem):

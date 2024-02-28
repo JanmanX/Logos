@@ -356,7 +356,6 @@ def allocate_registers(ritual: Ritual, num_registers=6):
         if 'spill' in colors.values():
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
             ritual = spill_registers(ritual, regs, live_in, live_out)
-            continue
         else:
             break
 
