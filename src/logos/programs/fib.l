@@ -12,5 +12,6 @@ ritual fib(n) {
 		end a + b
 	}
 
-	end 1
+	a = fib(n-1) + fib(n-2)
+	end a
 }
