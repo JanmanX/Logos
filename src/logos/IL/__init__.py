@@ -178,7 +178,7 @@ class Ritual:
         return name
 
     def newlabel(self):
-        name = 'l' + str(self._newlabel_index)
+        name = self.name.id + '_l_' + str(self._newlabel_index)
         self._newlabel_index += 1
         return name
 

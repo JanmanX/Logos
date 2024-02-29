@@ -41,19 +41,15 @@ main:
 fib:
     sub sp, sp, #0
     mov x9, x0
-    mov x11, x9
-    mov x10, #2
-    sub x10, x11, x10
+    mov x10, x9
+    mov x11, #2
+    sub x10, x10, x11
     mov x10, x10
     mov x10, x10
     cmp x10, #0
-    beq l1
-    bne l0
-l0:
-    mov x9, #1
-    mov x0, x9
-    blr x30
-l1:
+    beq fib_l_1
+    bne fib_l_0
+fib_l_0:
     mov x11, x9
     mov x10, #1
     sub x11, x11, x10
@@ -105,10 +101,14 @@ l1:
     ldr x15, [sp, #56]
     ldr x30, [sp, #64]
     add sp, sp, #80
-    mov x11, x0
-    mov x9, x10
-    mov x10, x11
-    add x9, x9, x10
+    mov x9, x0
+    mov x10, x10
+    mov x9, x9
+    add x9, x10, x9
+    mov x0, x9
+    blr x30
+fib_l_1:
+    mov x9, #1
     mov x0, x9
     blr x30
     mov x0, #0
