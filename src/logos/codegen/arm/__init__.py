@@ -8,6 +8,11 @@ BINOP_INSTRUCTION_MAP = {
     Binop.SUB: 'sub',
     Binop.MUL: 'mul',
     Binop.DIV: 'sdiv',
+
+    Binop.LT: 'LT',
+    Binop.LEQ: 'LE',
+    Binop.GT: 'GT',
+    Binop.GEQ: 'GE',
 }
 
 # TODO: https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms
@@ -45,8 +50,19 @@ def codegen_binop(instruction: InstructionAssignBinop, register_map: dict):
     code = []
     op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
-    code.append(
-        f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
+    # add / sub / mul / div
+    if instruction.op in [Binop.ADD, Binop.SUB, Binop.MUL, Binop.DIV]: 
+        code.append(
+            f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
+
+    # lt / leq / gt / geq
+    if instruction.op in [Binop.LT, Binop.LEQ, Binop.GT, Binop.GEQ]:
+        # cmp left, right
+        # cset dest, condition
+        code.extend([
+            f'cmp {register_map[instruction.left.id]}, {register_map[instruction.right.id]}',
+            f'cset {register_map[instruction.dest.id]}, {op_instruction}'
+        ])
 
     return code
 
@@ -208,7 +224,7 @@ def codegen_alloc_mem(instruction: InstructionAllocMem, register_map: dict, stac
     return code
 
 
-def codegen_ritual(ritual: Ritual):
+def codegen_ritual(ritual: Ritual, add_annotations=False):
     register_map = assign_registers(ritual.variable_register_map)
 
     code = []
@@ -223,6 +239,10 @@ def codegen_ritual(ritual: Ritual):
     ])
 
     for instruction in ritual.instructions:
+        if add_annotations:
+            # Add annotations to code
+            code.append(f"/* {instruction} */")
+
         if isinstance(instruction, InstructionLabel):
             if instruction.label_id.id != ritual.name.id:
                 code.extend(codegen_label(instruction))
@@ -245,7 +265,7 @@ def codegen_ritual(ritual: Ritual):
         elif isinstance(instruction, InstructionReturn):
             code.extend(codegen_return(instruction, register_map))
         else:
-            raise Exception("Unknown instruction")
+            raise Exception(f"Unknown instruction: {type(instruction)}: {instruction}")
 
     return code
 

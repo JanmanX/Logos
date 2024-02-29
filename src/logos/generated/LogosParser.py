@@ -906,45 +906,6 @@ class LogosParser ( Parser ):
             super().copyFrom(ctx)
 
 
-    class LeLeqGeGeqContext(ExprContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.ExprContext
-            super().__init__(parser)
-            self.left = None # ExprContext
-            self.op = None # Token
-            self.right = None # ExprContext
-            self.copyFrom(ctx)
-
-        def expr(self, i:int=None):
-            if i is None:
-                return self.getTypedRuleContexts(LogosParser.ExprContext)
-            else:
-                return self.getTypedRuleContext(LogosParser.ExprContext,i)
-
-        def OP_LT(self):
-            return self.getToken(LogosParser.OP_LT, 0)
-        def OP_LEQ(self):
-            return self.getToken(LogosParser.OP_LEQ, 0)
-        def OP_GT(self):
-            return self.getToken(LogosParser.OP_GT, 0)
-        def OP_GEQ(self):
-            return self.getToken(LogosParser.OP_GEQ, 0)
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterLeLeqGeGeq" ):
-                listener.enterLeLeqGeGeq(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitLeLeqGeGeq" ):
-                listener.exitLeLeqGeGeq(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitLeLeqGeGeq" ):
-                return visitor.visitLeLeqGeGeq(self)
-            else:
-                return visitor.visitChildren(self)
-
-
     class MulDivContext(ExprContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.ExprContext
@@ -1011,6 +972,45 @@ class LogosParser ( Parser ):
         def accept(self, visitor:ParseTreeVisitor):
             if hasattr( visitor, "visitAddSub" ):
                 return visitor.visitAddSub(self)
+            else:
+                return visitor.visitChildren(self)
+
+
+    class LtLeqGtGeqContext(ExprContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.ExprContext
+            super().__init__(parser)
+            self.left = None # ExprContext
+            self.op = None # Token
+            self.right = None # ExprContext
+            self.copyFrom(ctx)
+
+        def expr(self, i:int=None):
+            if i is None:
+                return self.getTypedRuleContexts(LogosParser.ExprContext)
+            else:
+                return self.getTypedRuleContext(LogosParser.ExprContext,i)
+
+        def OP_LT(self):
+            return self.getToken(LogosParser.OP_LT, 0)
+        def OP_LEQ(self):
+            return self.getToken(LogosParser.OP_LEQ, 0)
+        def OP_GT(self):
+            return self.getToken(LogosParser.OP_GT, 0)
+        def OP_GEQ(self):
+            return self.getToken(LogosParser.OP_GEQ, 0)
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterLtLeqGtGeq" ):
+                listener.enterLtLeqGtGeq(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitLtLeqGtGeq" ):
+                listener.exitLtLeqGtGeq(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLtLeqGtGeq" ):
+                return visitor.visitLtLeqGtGeq(self)
             else:
                 return visitor.visitChildren(self)
 
@@ -1255,7 +1255,7 @@ class LogosParser ( Parser ):
                         pass
 
                     elif la_ == 3:
-                        localctx = LogosParser.LeLeqGeGeqContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
+                        localctx = LogosParser.LtLeqGtGeqContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 119

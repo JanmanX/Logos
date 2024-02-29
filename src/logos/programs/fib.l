@@ -6,8 +6,7 @@ ritual main() {
 }
 
 ritual fib(n) {
-	t = n - 2 # I don't have le,leq,ge,geq operators yet, so I test like this ;) 
-	if t {
+	if n < 2 {
 		a = fib(n-1)
 		b = fib(n-2)
 		end a + b

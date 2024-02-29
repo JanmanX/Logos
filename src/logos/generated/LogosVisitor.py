@@ -74,11 +74,6 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by LogosParser#LeLeqGeGeq.
-    def visitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by LogosParser#MulDiv.
     def visitMulDiv(self, ctx:LogosParser.MulDivContext):
         return self.visitChildren(ctx)
@@ -86,6 +81,11 @@ class LogosVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by LogosParser#AddSub.
     def visitAddSub(self, ctx:LogosParser.AddSubContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#LtLeqGtGeq.
+    def visitLtLeqGtGeq(self, ctx:LogosParser.LtLeqGtGeqContext):
         return self.visitChildren(ctx)
 
 

@@ -41,11 +41,17 @@ main:
 fib:
     sub sp, sp, #0
     mov x9, x0
-    mov x10, x9
-    mov x11, #2
-    sub x10, x10, x11
-    mov x10, x10
-    mov x10, x10
+    mov x10, #0
+    mov x11, x9
+    mov x10, #2
+    cmp x11, x10
+    cset x10, LT
+    cmp x10, #0
+    beq fib_l_3
+    bne fib_l_2
+fib_l_2:
+    mov x10, #1
+fib_l_3:
     cmp x10, #0
     beq fib_l_1
     bne fib_l_0

@@ -125,15 +125,6 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#LeLeqGeGeq.
-    def enterLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
-        pass
-
-    # Exit a parse tree produced by LogosParser#LeLeqGeGeq.
-    def exitLeLeqGeGeq(self, ctx:LogosParser.LeLeqGeGeqContext):
-        pass
-
-
     # Enter a parse tree produced by LogosParser#MulDiv.
     def enterMulDiv(self, ctx:LogosParser.MulDivContext):
         pass
@@ -149,6 +140,15 @@ class LogosListener(ParseTreeListener):
 
     # Exit a parse tree produced by LogosParser#AddSub.
     def exitAddSub(self, ctx:LogosParser.AddSubContext):
+        pass
+
+
+    # Enter a parse tree produced by LogosParser#LtLeqGtGeq.
+    def enterLtLeqGtGeq(self, ctx:LogosParser.LtLeqGtGeqContext):
+        pass
+
+    # Exit a parse tree produced by LogosParser#LtLeqGtGeq.
+    def exitLtLeqGtGeq(self, ctx:LogosParser.LtLeqGtGeqContext):
         pass
 
 

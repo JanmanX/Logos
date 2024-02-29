@@ -152,9 +152,50 @@ class ILGenerator(LogosVisitor):
         code = code1 + code2 + [InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2))]
         return code
 
-    # Visit a parse tree produced by LogosParser#LeLeqGeGeq.
-    def visitLeLeqGeGeq(self, ctx: LogosParser.LeLeqGeGeqContext):
-        return self.visitChildren(ctx)
+    # Visit a parse tree produced by LogosParser#LtLeqGtGeq.
+    def visitLtLeqGtGeq(self, ctx:LogosParser.LtLeqGtGeqContext):
+        place0 = self.place
+
+        # labels
+        label_true = self.ritual.newlabel()
+        label_false = self.ritual.newlabel()
+
+        # Visit left
+        place1 = self.ritual.newvar()
+        self.place = place1
+        code1 = self.visit(ctx.expr(0))
+
+        # Visit right
+        place2 = self.ritual.newvar()
+        self.place = place2
+        code2 = self.visit(ctx.expr(1))
+
+        # Get operator
+        op = Binop.LT
+        if ctx.op.type == LogosParser.OP_LT:
+            op = Binop.LT
+        elif ctx.op.type == LogosParser.OP_LEQ:
+            op = Binop.LEQ
+        elif ctx.op.type == LogosParser.OP_GEQ:
+            op = Binop.GEQ
+        elif ctx.op.type == LogosParser.OP_GT:
+            op = Binop.GT
+
+        # Add instruction
+        code = []
+        code.append(InstructionAssign(AtomId(place0), AtomNum(0)))
+        code.extend(code1)
+        code.extend(code2)
+
+        code.extend([
+            InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2)),            
+            InstructionIf(AtomId(place0), AtomId(label_true), AtomId(label_false)),
+            InstructionLabel(AtomId(label_true)),
+            InstructionAssign(AtomId(place0), AtomNum(1)),
+            InstructionLabel(AtomId(label_false)),
+        ])
+
+        return code
 
     # Visit a parse tree produced by LogosParser#EqNeq.
     def visitEqNeq(self, ctx: LogosParser.EqNeqContext):

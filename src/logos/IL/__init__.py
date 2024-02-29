@@ -14,9 +14,9 @@ class Binop(Enum):
     EQ = '=='
     NE = '!='
     LT = '<'
-    LE = '<='
+    LEQ = '<='
     GT = '>'
-    GE = '>='
+    GEQ = '>='
 
 
 # --- Atoms
