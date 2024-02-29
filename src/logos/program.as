@@ -56,9 +56,13 @@ fib_l_3:
     beq fib_l_1
     bne fib_l_0
 fib_l_0:
+    mov x9, #1
+    mov x0, x9
+    blr x30
+fib_l_1:
     mov x11, x9
     mov x10, #1
-    sub x11, x11, x10
+    sub x10, x11, x10
     mov x0, x10
     sub sp, sp, #80
     str x8, [sp, #0]
@@ -82,9 +86,9 @@ fib_l_0:
     ldr x30, [sp, #64]
     add sp, sp, #80
     mov x10, x0
-    mov x11, x9
-    mov x9, #2
-    sub x11, x11, x9
+    mov x9, x9
+    mov x11, #2
+    sub x9, x9, x11
     mov x0, x9
     sub sp, sp, #80
     str x8, [sp, #0]
@@ -111,10 +115,6 @@ fib_l_0:
     mov x10, x10
     mov x9, x9
     add x9, x10, x9
-    mov x0, x9
-    blr x30
-fib_l_1:
-    mov x9, #1
     mov x0, x9
     blr x30
     mov x0, #0

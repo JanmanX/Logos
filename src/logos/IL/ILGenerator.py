@@ -315,11 +315,12 @@ class ILGenerator(LogosVisitor):
 
         for expr in ctx.expr():
             self.place = self.ritual.newvar()
+            place = self.place
             code_expr = self.visit(expr)
 
             if code_expr:
                 code_exprs.extend(code_expr)
-                places.append(AtomId(self.place))
+                places.append(AtomId(place))
 
         return (code_exprs, places)
 
