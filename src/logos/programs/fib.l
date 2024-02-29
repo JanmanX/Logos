@@ -6,7 +6,7 @@ ritual main() {
 
 ritual fib(n) {
 	if n < 2 {
-		end 1
+		end n
 	}
 
 	a = fib(n-1)
