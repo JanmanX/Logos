@@ -114,7 +114,7 @@ class ILGenerator(LogosVisitor):
         code = []
 
         dest = self.ritual.lookup(ctx.dest.text)
-        src = self.ritual.lookup(ctx.src.text)
+        src = self.ritual.lookup(ctx.source.text)
 
         code = [
             InstructionReadMem(dest=AtomId(dest), addr=AtomId(src)),
