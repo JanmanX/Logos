@@ -10,53 +10,52 @@ else:
 
 def serializedATN():
     return [
-        4,1,35,137,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,1,0,4,
+        4,1,35,133,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,1,0,4,
         0,14,8,0,11,0,12,0,15,1,0,1,0,1,1,1,1,1,1,1,1,3,1,24,8,1,1,1,1,1,
         1,1,5,1,29,8,1,10,1,12,1,32,9,1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,1,2,
         1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,
         1,2,5,2,59,8,2,10,2,12,2,62,9,2,1,2,1,2,1,2,1,2,1,2,1,2,5,2,70,8,
-        2,10,2,12,2,73,9,2,1,2,1,2,1,2,1,2,3,2,79,8,2,1,2,1,2,1,2,3,2,84,
-        8,2,1,2,1,2,1,2,1,2,1,2,3,2,91,8,2,1,3,1,3,1,3,5,3,96,8,3,10,3,12,
-        3,99,9,3,1,4,1,4,1,4,5,4,104,8,4,10,4,12,4,107,9,4,1,5,1,5,1,5,3,
-        5,112,8,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,
-        5,1,5,1,5,1,5,1,5,5,5,132,8,5,10,5,12,5,135,9,5,1,5,0,1,10,6,0,2,
-        4,6,8,10,0,6,1,0,23,24,1,0,21,22,1,0,27,30,1,0,25,26,1,0,31,33,1,
-        0,34,35,154,0,13,1,0,0,0,2,19,1,0,0,0,4,90,1,0,0,0,6,92,1,0,0,0,
-        8,100,1,0,0,0,10,111,1,0,0,0,12,14,3,2,1,0,13,12,1,0,0,0,14,15,1,
-        0,0,0,15,13,1,0,0,0,15,16,1,0,0,0,16,17,1,0,0,0,17,18,5,0,0,1,18,
-        1,1,0,0,0,19,20,5,1,0,0,20,21,5,15,0,0,21,23,5,2,0,0,22,24,3,6,3,
-        0,23,22,1,0,0,0,23,24,1,0,0,0,24,25,1,0,0,0,25,26,5,3,0,0,26,30,
-        5,4,0,0,27,29,3,4,2,0,28,27,1,0,0,0,29,32,1,0,0,0,30,28,1,0,0,0,
-        30,31,1,0,0,0,31,33,1,0,0,0,32,30,1,0,0,0,33,34,5,5,0,0,34,3,1,0,
-        0,0,35,36,5,15,0,0,36,37,5,6,0,0,37,91,3,10,5,0,38,39,5,15,0,0,39,
-        40,5,6,0,0,40,41,5,7,0,0,41,91,5,16,0,0,42,43,5,8,0,0,43,44,5,15,
-        0,0,44,45,5,9,0,0,45,46,5,6,0,0,46,91,3,10,5,0,47,48,5,15,0,0,48,
-        49,5,6,0,0,49,50,5,15,0,0,50,51,5,8,0,0,51,52,3,10,5,0,52,53,5,9,
-        0,0,53,91,1,0,0,0,54,55,5,10,0,0,55,56,3,10,5,0,56,60,5,4,0,0,57,
-        59,3,4,2,0,58,57,1,0,0,0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,
-        0,61,63,1,0,0,0,62,60,1,0,0,0,63,64,5,5,0,0,64,91,1,0,0,0,65,66,
-        5,11,0,0,66,67,3,10,5,0,67,71,5,4,0,0,68,70,3,4,2,0,69,68,1,0,0,
-        0,70,73,1,0,0,0,71,69,1,0,0,0,71,72,1,0,0,0,72,74,1,0,0,0,73,71,
-        1,0,0,0,74,75,5,5,0,0,75,91,1,0,0,0,76,77,5,15,0,0,77,79,5,6,0,0,
-        78,76,1,0,0,0,78,79,1,0,0,0,79,80,1,0,0,0,80,81,5,15,0,0,81,83,5,
-        2,0,0,82,84,3,8,4,0,83,82,1,0,0,0,83,84,1,0,0,0,84,85,1,0,0,0,85,
-        91,5,3,0,0,86,87,5,12,0,0,87,91,5,18,0,0,88,89,5,13,0,0,89,91,3,
-        10,5,0,90,35,1,0,0,0,90,38,1,0,0,0,90,42,1,0,0,0,90,47,1,0,0,0,90,
-        54,1,0,0,0,90,65,1,0,0,0,90,78,1,0,0,0,90,86,1,0,0,0,90,88,1,0,0,
-        0,91,5,1,0,0,0,92,97,5,15,0,0,93,94,5,14,0,0,94,96,5,15,0,0,95,93,
-        1,0,0,0,96,99,1,0,0,0,97,95,1,0,0,0,97,98,1,0,0,0,98,7,1,0,0,0,99,
-        97,1,0,0,0,100,105,3,10,5,0,101,102,5,14,0,0,102,104,3,10,5,0,103,
-        101,1,0,0,0,104,107,1,0,0,0,105,103,1,0,0,0,105,106,1,0,0,0,106,
-        9,1,0,0,0,107,105,1,0,0,0,108,109,6,5,-1,0,109,112,5,15,0,0,110,
-        112,5,16,0,0,111,108,1,0,0,0,111,110,1,0,0,0,112,133,1,0,0,0,113,
-        114,10,8,0,0,114,115,7,0,0,0,115,132,3,10,5,9,116,117,10,7,0,0,117,
-        118,7,1,0,0,118,132,3,10,5,8,119,120,10,6,0,0,120,121,7,2,0,0,121,
-        132,3,10,5,7,122,123,10,5,0,0,123,124,7,3,0,0,124,132,3,10,5,6,125,
-        126,10,4,0,0,126,127,7,4,0,0,127,132,3,10,5,5,128,129,10,3,0,0,129,
-        130,7,5,0,0,130,132,3,10,5,4,131,113,1,0,0,0,131,116,1,0,0,0,131,
-        119,1,0,0,0,131,122,1,0,0,0,131,125,1,0,0,0,131,128,1,0,0,0,132,
-        135,1,0,0,0,133,131,1,0,0,0,133,134,1,0,0,0,134,11,1,0,0,0,135,133,
-        1,0,0,0,13,15,23,30,60,71,78,83,90,97,105,111,131,133
+        2,10,2,12,2,73,9,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,81,8,2,1,3,1,3,1,
+        3,5,3,86,8,3,10,3,12,3,89,9,3,1,4,1,4,1,4,5,4,94,8,4,10,4,12,4,97,
+        9,4,1,5,1,5,1,5,1,5,3,5,103,8,5,1,5,1,5,1,5,3,5,108,8,5,1,5,1,5,
+        1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,
+        5,5,128,8,5,10,5,12,5,131,9,5,1,5,0,1,10,6,0,2,4,6,8,10,0,6,1,0,
+        23,24,1,0,21,22,1,0,27,30,1,0,25,26,1,0,31,33,1,0,34,35,149,0,13,
+        1,0,0,0,2,19,1,0,0,0,4,80,1,0,0,0,6,82,1,0,0,0,8,90,1,0,0,0,10,107,
+        1,0,0,0,12,14,3,2,1,0,13,12,1,0,0,0,14,15,1,0,0,0,15,13,1,0,0,0,
+        15,16,1,0,0,0,16,17,1,0,0,0,17,18,5,0,0,1,18,1,1,0,0,0,19,20,5,1,
+        0,0,20,21,5,15,0,0,21,23,5,2,0,0,22,24,3,6,3,0,23,22,1,0,0,0,23,
+        24,1,0,0,0,24,25,1,0,0,0,25,26,5,3,0,0,26,30,5,4,0,0,27,29,3,4,2,
+        0,28,27,1,0,0,0,29,32,1,0,0,0,30,28,1,0,0,0,30,31,1,0,0,0,31,33,
+        1,0,0,0,32,30,1,0,0,0,33,34,5,5,0,0,34,3,1,0,0,0,35,36,5,15,0,0,
+        36,37,5,6,0,0,37,81,3,10,5,0,38,39,5,15,0,0,39,40,5,6,0,0,40,41,
+        5,7,0,0,41,81,5,16,0,0,42,43,5,8,0,0,43,44,5,15,0,0,44,45,5,9,0,
+        0,45,46,5,6,0,0,46,81,3,10,5,0,47,48,5,15,0,0,48,49,5,6,0,0,49,50,
+        5,15,0,0,50,51,5,8,0,0,51,52,3,10,5,0,52,53,5,9,0,0,53,81,1,0,0,
+        0,54,55,5,10,0,0,55,56,3,10,5,0,56,60,5,4,0,0,57,59,3,4,2,0,58,57,
+        1,0,0,0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,0,61,63,1,0,0,0,
+        62,60,1,0,0,0,63,64,5,5,0,0,64,81,1,0,0,0,65,66,5,11,0,0,66,67,3,
+        10,5,0,67,71,5,4,0,0,68,70,3,4,2,0,69,68,1,0,0,0,70,73,1,0,0,0,71,
+        69,1,0,0,0,71,72,1,0,0,0,72,74,1,0,0,0,73,71,1,0,0,0,74,75,5,5,0,
+        0,75,81,1,0,0,0,76,77,5,12,0,0,77,81,5,18,0,0,78,79,5,13,0,0,79,
+        81,3,10,5,0,80,35,1,0,0,0,80,38,1,0,0,0,80,42,1,0,0,0,80,47,1,0,
+        0,0,80,54,1,0,0,0,80,65,1,0,0,0,80,76,1,0,0,0,80,78,1,0,0,0,81,5,
+        1,0,0,0,82,87,5,15,0,0,83,84,5,14,0,0,84,86,5,15,0,0,85,83,1,0,0,
+        0,86,89,1,0,0,0,87,85,1,0,0,0,87,88,1,0,0,0,88,7,1,0,0,0,89,87,1,
+        0,0,0,90,95,3,10,5,0,91,92,5,14,0,0,92,94,3,10,5,0,93,91,1,0,0,0,
+        94,97,1,0,0,0,95,93,1,0,0,0,95,96,1,0,0,0,96,9,1,0,0,0,97,95,1,0,
+        0,0,98,99,6,5,-1,0,99,100,5,15,0,0,100,102,5,2,0,0,101,103,3,8,4,
+        0,102,101,1,0,0,0,102,103,1,0,0,0,103,104,1,0,0,0,104,108,5,3,0,
+        0,105,108,5,15,0,0,106,108,5,16,0,0,107,98,1,0,0,0,107,105,1,0,0,
+        0,107,106,1,0,0,0,108,129,1,0,0,0,109,110,10,9,0,0,110,111,7,0,0,
+        0,111,128,3,10,5,10,112,113,10,8,0,0,113,114,7,1,0,0,114,128,3,10,
+        5,9,115,116,10,7,0,0,116,117,7,2,0,0,117,128,3,10,5,8,118,119,10,
+        6,0,0,119,120,7,3,0,0,120,128,3,10,5,7,121,122,10,5,0,0,122,123,
+        7,4,0,0,123,128,3,10,5,6,124,125,10,4,0,0,125,126,7,5,0,0,126,128,
+        3,10,5,5,127,109,1,0,0,0,127,112,1,0,0,0,127,115,1,0,0,0,127,118,
+        1,0,0,0,127,121,1,0,0,0,127,124,1,0,0,0,128,131,1,0,0,0,129,127,
+        1,0,0,0,129,130,1,0,0,0,130,11,1,0,0,0,131,129,1,0,0,0,12,15,23,
+        30,60,71,80,87,95,102,107,127,129
     ]
 
 class LogosParser ( Parser ):
@@ -328,39 +327,6 @@ class LogosParser ( Parser ):
 
 
 
-    class CallContext(StmtContext):
-
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.StmtContext
-            super().__init__(parser)
-            self.dest = None # Token
-            self.func = None # Token
-            self.args = None # ExprsContext
-            self.copyFrom(ctx)
-
-        def ID(self, i:int=None):
-            if i is None:
-                return self.getTokens(LogosParser.ID)
-            else:
-                return self.getToken(LogosParser.ID, i)
-        def exprs(self):
-            return self.getTypedRuleContext(LogosParser.ExprsContext,0)
-
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCall" ):
-                listener.enterCall(self)
-
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCall" ):
-                listener.exitCall(self)
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCall" ):
-                return visitor.visitCall(self)
-            else:
-                return visitor.visitChildren(self)
-
-
     class IncludeContext(StmtContext):
 
         def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.StmtContext
@@ -599,9 +565,9 @@ class LogosParser ( Parser ):
         self.enterRule(localctx, 4, self.RULE_stmt)
         self._la = 0 # Token type
         try:
-            self.state = 90
+            self.state = 80
             self._errHandler.sync(self)
-            la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
+            la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
             if la_ == 1:
                 localctx = LogosParser.AssignContext(self, localctx)
                 self.enterOuterAlt(localctx, 1)
@@ -707,49 +673,20 @@ class LogosParser ( Parser ):
                 pass
 
             elif la_ == 7:
-                localctx = LogosParser.CallContext(self, localctx)
-                self.enterOuterAlt(localctx, 7)
-                self.state = 78
-                self._errHandler.sync(self)
-                la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
-                if la_ == 1:
-                    self.state = 76
-                    localctx.dest = self.match(LogosParser.ID)
-                    self.state = 77
-                    self.match(LogosParser.T__5)
-
-
-                self.state = 80
-                localctx.func = self.match(LogosParser.ID)
-                self.state = 81
-                self.match(LogosParser.T__1)
-                self.state = 83
-                self._errHandler.sync(self)
-                _la = self._input.LA(1)
-                if _la==15 or _la==16:
-                    self.state = 82
-                    localctx.args = self.exprs()
-
-
-                self.state = 85
-                self.match(LogosParser.T__2)
-                pass
-
-            elif la_ == 8:
                 localctx = LogosParser.IncludeContext(self, localctx)
-                self.enterOuterAlt(localctx, 8)
-                self.state = 86
+                self.enterOuterAlt(localctx, 7)
+                self.state = 76
                 self.match(LogosParser.T__11)
-                self.state = 87
+                self.state = 77
                 localctx.path = self.match(LogosParser.STRING)
                 pass
 
-            elif la_ == 9:
+            elif la_ == 8:
                 localctx = LogosParser.ReturnContext(self, localctx)
-                self.enterOuterAlt(localctx, 9)
-                self.state = 88
+                self.enterOuterAlt(localctx, 8)
+                self.state = 78
                 self.match(LogosParser.T__12)
-                self.state = 89
+                self.state = 79
                 self.expr(0)
                 pass
 
@@ -803,17 +740,17 @@ class LogosParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 92
+            self.state = 82
             self.match(LogosParser.ID)
-            self.state = 97
+            self.state = 87
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==14:
-                self.state = 93
+                self.state = 83
                 self.match(LogosParser.T__13)
-                self.state = 94
+                self.state = 84
                 self.match(LogosParser.ID)
-                self.state = 99
+                self.state = 89
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -867,17 +804,17 @@ class LogosParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 100
+            self.state = 90
             self.expr(0)
-            self.state = 105
+            self.state = 95
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==14:
-                self.state = 101
+                self.state = 91
                 self.match(LogosParser.T__13)
-                self.state = 102
+                self.state = 92
                 self.expr(0)
-                self.state = 107
+                self.state = 97
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -904,6 +841,35 @@ class LogosParser ( Parser ):
      
         def copyFrom(self, ctx:ParserRuleContext):
             super().copyFrom(ctx)
+
+
+    class CallContext(ExprContext):
+
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a LogosParser.ExprContext
+            super().__init__(parser)
+            self.func = None # Token
+            self.args = None # ExprsContext
+            self.copyFrom(ctx)
+
+        def ID(self):
+            return self.getToken(LogosParser.ID, 0)
+        def exprs(self):
+            return self.getTypedRuleContext(LogosParser.ExprsContext,0)
+
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterCall" ):
+                listener.enterCall(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitCall" ):
+                listener.exitCall(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCall" ):
+                return visitor.visitCall(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class MulDivContext(ExprContext):
@@ -1181,48 +1147,68 @@ class LogosParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 111
+            self.state = 107
             self._errHandler.sync(self)
-            token = self._input.LA(1)
-            if token in [15]:
+            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
+            if la_ == 1:
+                localctx = LogosParser.CallContext(self, localctx)
+                self._ctx = localctx
+                _prevctx = localctx
+
+                self.state = 99
+                localctx.func = self.match(LogosParser.ID)
+                self.state = 100
+                self.match(LogosParser.T__1)
+                self.state = 102
+                self._errHandler.sync(self)
+                _la = self._input.LA(1)
+                if _la==15 or _la==16:
+                    self.state = 101
+                    localctx.args = self.exprs()
+
+
+                self.state = 104
+                self.match(LogosParser.T__2)
+                pass
+
+            elif la_ == 2:
                 localctx = LogosParser.IdContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-
-                self.state = 109
+                self.state = 105
                 self.match(LogosParser.ID)
                 pass
-            elif token in [16]:
+
+            elif la_ == 3:
                 localctx = LogosParser.IntContext(self, localctx)
                 self._ctx = localctx
                 _prevctx = localctx
-                self.state = 110
+                self.state = 106
                 self.match(LogosParser.INT)
                 pass
-            else:
-                raise NoViableAltException(self)
+
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 133
+            self.state = 129
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,12,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 131
+                    self.state = 127
                     self._errHandler.sync(self)
-                    la_ = self._interp.adaptivePredict(self._input,11,self._ctx)
+                    la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
                     if la_ == 1:
                         localctx = LogosParser.MulDivContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 113
-                        if not self.precpred(self._ctx, 8):
+                        self.state = 109
+                        if not self.precpred(self._ctx, 9):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 8)")
-                        self.state = 114
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 9)")
+                        self.state = 110
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not(_la==23 or _la==24):
@@ -1230,19 +1216,19 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 115
-                        localctx.right = self.expr(9)
+                        self.state = 111
+                        localctx.right = self.expr(10)
                         pass
 
                     elif la_ == 2:
                         localctx = LogosParser.AddSubContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 116
-                        if not self.precpred(self._ctx, 7):
+                        self.state = 112
+                        if not self.precpred(self._ctx, 8):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
-                        self.state = 117
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 8)")
+                        self.state = 113
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not(_la==21 or _la==22):
@@ -1250,19 +1236,19 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 118
-                        localctx.right = self.expr(8)
+                        self.state = 114
+                        localctx.right = self.expr(9)
                         pass
 
                     elif la_ == 3:
                         localctx = LogosParser.LtLeqGtGeqContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 119
-                        if not self.precpred(self._ctx, 6):
+                        self.state = 115
+                        if not self.precpred(self._ctx, 7):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
-                        self.state = 120
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 7)")
+                        self.state = 116
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 2013265920) != 0)):
@@ -1270,19 +1256,19 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 121
-                        localctx.right = self.expr(7)
+                        self.state = 117
+                        localctx.right = self.expr(8)
                         pass
 
                     elif la_ == 4:
                         localctx = LogosParser.EqNeqContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 122
-                        if not self.precpred(self._ctx, 5):
+                        self.state = 118
+                        if not self.precpred(self._ctx, 6):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
-                        self.state = 123
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 6)")
+                        self.state = 119
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not(_la==25 or _la==26):
@@ -1290,19 +1276,19 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 124
-                        localctx.right = self.expr(6)
+                        self.state = 120
+                        localctx.right = self.expr(7)
                         pass
 
                     elif la_ == 5:
                         localctx = LogosParser.AndXorOrContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 125
-                        if not self.precpred(self._ctx, 4):
+                        self.state = 121
+                        if not self.precpred(self._ctx, 5):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
-                        self.state = 126
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 5)")
+                        self.state = 122
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not((((_la) & ~0x3f) == 0 and ((1 << _la) & 15032385536) != 0)):
@@ -1310,19 +1296,19 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 127
-                        localctx.right = self.expr(5)
+                        self.state = 123
+                        localctx.right = self.expr(6)
                         pass
 
                     elif la_ == 6:
                         localctx = LogosParser.LogicalAndOrContext(self, LogosParser.ExprContext(self, _parentctx, _parentState))
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
-                        self.state = 128
-                        if not self.precpred(self._ctx, 3):
+                        self.state = 124
+                        if not self.precpred(self._ctx, 4):
                             from antlr4.error.Errors import FailedPredicateException
-                            raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 129
+                            raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
+                        self.state = 125
                         localctx.op = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not(_la==34 or _la==35):
@@ -1330,14 +1316,14 @@ class LogosParser ( Parser ):
                         else:
                             self._errHandler.reportMatch(self)
                             self.consume()
-                        self.state = 130
-                        localctx.right = self.expr(4)
+                        self.state = 126
+                        localctx.right = self.expr(5)
                         pass
 
              
-                self.state = 135
+                self.state = 131
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,12,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1361,27 +1347,27 @@ class LogosParser ( Parser ):
 
     def expr_sempred(self, localctx:ExprContext, predIndex:int):
             if predIndex == 0:
-                return self.precpred(self._ctx, 8)
+                return self.precpred(self._ctx, 9)
          
 
             if predIndex == 1:
-                return self.precpred(self._ctx, 7)
+                return self.precpred(self._ctx, 8)
          
 
             if predIndex == 2:
-                return self.precpred(self._ctx, 6)
+                return self.precpred(self._ctx, 7)
          
 
             if predIndex == 3:
-                return self.precpred(self._ctx, 5)
+                return self.precpred(self._ctx, 6)
          
 
             if predIndex == 4:
-                return self.precpred(self._ctx, 4)
+                return self.precpred(self._ctx, 5)
          
 
             if predIndex == 5:
-                return self.precpred(self._ctx, 3)
+                return self.precpred(self._ctx, 4)
          
 
 

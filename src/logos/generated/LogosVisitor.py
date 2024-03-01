@@ -49,11 +49,6 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by LogosParser#call.
-    def visitCall(self, ctx:LogosParser.CallContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by LogosParser#include.
     def visitInclude(self, ctx:LogosParser.IncludeContext):
         return self.visitChildren(ctx)
@@ -71,6 +66,11 @@ class LogosVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by LogosParser#exprs.
     def visitExprs(self, ctx:LogosParser.ExprsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by LogosParser#call.
+    def visitCall(self, ctx:LogosParser.CallContext):
         return self.visitChildren(ctx)
 
 

@@ -279,13 +279,9 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#call.
     def visitCall(self, ctx:LogosParser.CallContext):
+        place = self.place
         code = []
 
-        # Check if we have destination
-        dest = ctx.dest
-        if dest:
-            dest = self.ritual.lookup(dest.text)
-        
         target_ritual = ctx.func.text
 
         # Visit args 
@@ -295,7 +291,7 @@ class ILGenerator(LogosVisitor):
         code.extend(code_args)
         code.append(
             InstructionFunctionCall(
-                dest=AtomId(dest) if dest else None, 
+                dest=AtomId(place), 
                 ritual=AtomId(target_ritual), 
                 args=places
                 )
