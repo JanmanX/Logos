@@ -1,9 +1,9 @@
-ritual t(n) {
-	end n	
-}
-
 ritual main () {
-	a = t(1) + t(2)
+	m = alloc 10
+	[m] = 10
+	a = [m]
+
+	end a
 }
 
 

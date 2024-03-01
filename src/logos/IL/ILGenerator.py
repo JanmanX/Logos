@@ -104,14 +104,23 @@ class ILGenerator(LogosVisitor):
 
         code = code_value + \
             [
-                InstructionWriteMem(src=AtomId(x), addr=AtomId(place)),
+                InstructionWriteMem(src=AtomId(place), addr=AtomId(x)),
             ]
 
         return code
 
 
     def visitReadMem(self, ctx:LogosParser.ReadMemContext):
-        return self.visitChildren(ctx)
+        code = []
+
+        dest = self.ritual.lookup(ctx.dest.text)
+        src = self.ritual.lookup(ctx.src.text)
+
+        code = [
+            InstructionReadMem(dest=AtomId(dest), addr=AtomId(src)),
+        ] 
+
+        return code
 
 
     # Visit a parse tree produced by LogosParser#MulDiv.
