@@ -272,8 +272,8 @@ def codegen_ritual(ritual: Ritual, add_annotations=False):
 def codegen(program: Program) -> str:
     prolog = [
         '.text',
-        '.global _main',
-        '_main:',
+        '.global _start',
+        '_start:',
         'bl main',
         'mov x8, #0x5d',
         'svc #0'
