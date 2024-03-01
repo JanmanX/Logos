@@ -207,7 +207,7 @@ def codegen_return(instruction: InstructionReturn, register_map: dict):
 
     
     return code + [
-        f'blr x30'
+        f'ret'
     ]
 
 
@@ -274,10 +274,9 @@ def codegen(program: Program) -> str:
         '.text',
         '.global _main',
         '_main:',
-        'stp x29, x30, [sp, #-16]!',
         'bl main',
-        'mov x16, #1',
-        'svc #0x80'
+        'mov x8, #0x5d',
+        'svc #0'
     ]
 
     code = []

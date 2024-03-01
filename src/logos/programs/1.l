@@ -1,5 +1,9 @@
+ritual t(n) {
+	end n	
+}
+
 ritual main () {
-	a = 1 < 2
+	a = t(1) + t(2)
 }
 
 
