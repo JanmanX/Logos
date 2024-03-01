@@ -207,7 +207,7 @@ def codegen_return(instruction: InstructionReturn, register_map: dict):
 
     
     return code + [
-        f'blr x30'
+        f'ret'
     ]
 
 
