@@ -216,8 +216,7 @@ def codegen_return(instruction: InstructionReturn, register_map: dict):
 def codegen_alloc_mem(instruction: InstructionAllocMem, register_map: dict, stack_size: int):
     # Pseudo instruction
     # dest = SP - (stack_offset + offset)
-
-    stack_offset = stack_size - instruction.offset 
+    stack_offset = instruction.offset 
     code = [
         f'sub {register_map[instruction.dest.id]}, sp, #{stack_offset}'
     ]
