@@ -318,8 +318,8 @@ class ILGenerator(LogosVisitor):
         code_exprs = []
         places = [] 
 
-        if not ctx.expr():
-            return (code_exprs, places)
+        if ctx is None:
+            return ([], [])
 
         for expr in ctx.expr():
             self.place = self.ritual.newvar()
