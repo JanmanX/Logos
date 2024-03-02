@@ -342,16 +342,16 @@ def allocate_registers(ritual: Ritual, num_registers=6):
         # Color graph
         colors = color_graph(graph, N=num_registers)
 
-        import networkx as nx
-        import matplotlib.pyplot as plt
-
-        G = nx.Graph()
-        G.add_edges_from(graph.edges)
-        G.add_nodes_from(graph.nodes)
-
-        plt.clf()
-        nx.draw(G, with_labels=True)
-        plt.show()
+#         import networkx as nx
+#         import matplotlib.pyplot as plt
+# 
+#         G = nx.Graph()
+#         G.add_edges_from(graph.edges)
+#         G.add_nodes_from(graph.nodes)
+# 
+#         plt.clf()
+#         nx.draw(G, with_labels=True)
+#         plt.show()
 
         if 'spill' in colors.values():
             regs = set([variable for variable, color in colors.items() if color == 'spill'])
