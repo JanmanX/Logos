@@ -1,6 +1,6 @@
-from IL import *
-from consts import REGISTER_SIZE
-from utils.graph import Graph
+from logos.IL import *
+from logos.consts import REGISTER_SIZE
+from logos.utils.graph import Graph
 
 
 def lists_of_sets_equal(l1, l2):

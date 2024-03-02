@@ -2,11 +2,11 @@ import argparse
 
 from antlr4 import *
 
-from IL.ILGenerator import ILGenerator
-from IL.RegisterAllocator import allocate_registers
-from codegen import Architecture, TargetConfig, codegen
-from generated.LogosLexer import LogosLexer
-from generated.LogosParser import LogosParser
+from logos.IL.ILGenerator import ILGenerator
+from logos.IL.RegisterAllocator import allocate_registers
+from logos.codegen import Architecture, TargetConfig, codegen
+from logos.generated.LogosLexer import LogosLexer
+from logos.generated.LogosParser import LogosParser
 
 
 def main(program_path: str, config: TargetConfig, output_path: str, output_ast: bool = False):
@@ -39,11 +39,9 @@ def main(program_path: str, config: TargetConfig, output_path: str, output_ast: 
                     f.write('\n')
                 f.write('\n')
 
-    print(code)
 
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Logos compiler')
+def cli(): 
+    parser = argparse.ArgumentParser(prog="logos", description='Logos compiler')
     parser.add_argument("program", help="program")
     parser.add_argument('-a', '--arch', help='Target architecture', default='arm')
     parser.add_argument('-o', '--output', help='Output file', default='program.as')
@@ -55,3 +53,9 @@ if __name__ == '__main__':
 
     # Go!
     main(args.program, target_config, args.output, args.debug)
+
+
+
+if __name__ == '__main__':
+    cli()
+

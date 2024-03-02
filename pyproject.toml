@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "Logos"
+name = "logos"
 version = "0.0.1"
 authors = [
   { name="Jan Meznik", email="jan@meznik.dk" },
@@ -16,8 +16,15 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "antlr4-python3-runtime",
+  "antlr4-tools"
+]
 
 [project.urls]
 Homepage = "https://github.com/JanmanX/Logos"
 Issues = "https://github.com/JanmanX/Logos/issues"
 [tool]
+
+[project.scripts]
+logos = "logos.cli:cli"

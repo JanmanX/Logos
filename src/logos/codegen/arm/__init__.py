@@ -1,7 +1,7 @@
-from IL import AtomNum, Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionReadMem, \
+from logos.IL import AtomNum, Binop, Program, InstructionLabel, InstructionAssign, InstructionAssignBinop, InstructionReadMem, \
     InstructionWriteMem, InstructionGoto, InstructionIf, InstructionFunctionCall, InstructionReturn, AtomId, \
     InstructionAllocMem, Ritual, StackEntry
-from utils.math import round_up
+from logos.utils.math import round_up
 
 BINOP_INSTRUCTION_MAP = {
     Binop.ADD: 'add',

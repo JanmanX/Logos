@@ -1,6 +1,6 @@
 from typing import List, Tuple
-from generated.LogosParser import LogosParser
-from generated.LogosVisitor import LogosVisitor
+from logos.generated.LogosParser import LogosParser
+from logos.generated.LogosVisitor import LogosVisitor
 from . import *
 
 
