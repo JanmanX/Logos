@@ -13,7 +13,6 @@ stmt: ID '=' expr                               #assign
     | dest=ID '=' '[' source=ID ']'            #readMem
     | 'if' expr '{' stmts+=stmt* '}'            #if
     | 'while' expr '{' stmts+=stmt* '}'         #while
-    | 'include' path=STRING                     #include
     | 'end' expr                                #return
    ;
 

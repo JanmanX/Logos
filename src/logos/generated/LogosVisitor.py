@@ -49,11 +49,6 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by LogosParser#include.
-    def visitInclude(self, ctx:LogosParser.IncludeContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by LogosParser#return.
     def visitReturn(self, ctx:LogosParser.ReturnContext):
         return self.visitChildren(ctx)

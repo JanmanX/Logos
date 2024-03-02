@@ -80,15 +80,6 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#include.
-    def enterInclude(self, ctx:LogosParser.IncludeContext):
-        pass
-
-    # Exit a parse tree produced by LogosParser#include.
-    def exitInclude(self, ctx:LogosParser.IncludeContext):
-        pass
-
-
     # Enter a parse tree produced by LogosParser#return.
     def enterReturn(self, ctx:LogosParser.ReturnContext):
         pass
