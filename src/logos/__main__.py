@@ -27,10 +27,7 @@ def main(program_path: str, config: TargetConfig, output_path: str, output_ast: 
     # Codegen
     code = codegen(program, config)
 
-    # Output
-    with open(output_path, 'w') as f:
-        f.write(code)
-
+    # Output debug file
     if output_ast:
         with open(output_path + '.ast', 'w') as f:
             for ritual in program.rituals:
@@ -38,6 +35,10 @@ def main(program_path: str, config: TargetConfig, output_path: str, output_ast: 
                     f.write(str(instruction))
                     f.write('\n')
                 f.write('\n')
+
+    # Output assembly
+    with open(output_path, 'w') as f:
+        f.write(code)
 
 
 def cli(): 
@@ -54,6 +55,11 @@ def cli():
     # Go!
     main(args.program, target_config, args.output, args.debug)
 
+    # Done
+    print("Done.")
+    print("You can assemble and link with: ")
+    print(f"    as -o {args.output}.o {args.output}")
+    print(f"    ld -o {args.output}.bin {args.output}.o <-lc> <-lSystem>")
 
 
 if __name__ == '__main__':
