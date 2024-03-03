@@ -22,8 +22,9 @@ python -m logos my_program.l
 
 # Examples
 ```bash
-python -m logos examples/fib.l
-as 
-
-
+python -m logos examples/fib.l -o fib.s
+as -o fib.o fib.s
+ld -o fib fib.o
+./fib
+echo $?
 ```

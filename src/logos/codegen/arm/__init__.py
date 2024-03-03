@@ -271,7 +271,7 @@ def codegen(program: Program) -> str:
         '.global _start',
         '.global _main',
         '_start:',
-        '_main:'
+        '_main:',
         'bl main',
         'mov x8, #0x5d',
         'svc #0'
