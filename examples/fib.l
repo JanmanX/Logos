@@ -1,9 +1,3 @@
-ritual main() {
-	a = 10
-	x = fib(10)
-	end x
-}
-
 ritual fib(n) {
 	if n < 2 {
 		end n
@@ -14,3 +8,8 @@ ritual fib(n) {
 
 	end a + b
 }
+
+ritual main() {
+	end fib(10)
+}
+
