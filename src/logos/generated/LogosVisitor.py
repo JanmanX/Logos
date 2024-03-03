@@ -84,11 +84,6 @@ class LogosVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by LogosParser#LogicalAndOr.
-    def visitLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by LogosParser#Id.
     def visitId(self, ctx:LogosParser.IdContext):
         return self.visitChildren(ctx)

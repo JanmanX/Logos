@@ -143,15 +143,6 @@ class LogosListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by LogosParser#LogicalAndOr.
-    def enterLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
-        pass
-
-    # Exit a parse tree produced by LogosParser#LogicalAndOr.
-    def exitLogicalAndOr(self, ctx:LogosParser.LogicalAndOrContext):
-        pass
-
-
     # Enter a parse tree produced by LogosParser#Id.
     def enterId(self, ctx:LogosParser.IdContext):
         pass

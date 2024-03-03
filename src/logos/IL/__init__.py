@@ -18,6 +18,10 @@ class Binop(Enum):
     GT = '>'
     GEQ = '>='
 
+    AND = '&'
+    OR = '|'
+    XOR = '^'
+
 
 # --- Atoms
 @dataclass

@@ -13,6 +13,10 @@ BINOP_INSTRUCTION_MAP = {
     Binop.LEQ: 'LE',
     Binop.GT: 'GT',
     Binop.GEQ: 'GE',
+
+    Binop.AND: 'and',
+    Binop.OR: 'orr',
+    Binop.XOR: 'eor'
 }
 
 # TODO: https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms
@@ -51,7 +55,7 @@ def codegen_binop(instruction: InstructionAssignBinop, register_map: dict):
     op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
     # add / sub / mul / div
-    if instruction.op in [Binop.ADD, Binop.SUB, Binop.MUL, Binop.DIV]: 
+    if instruction.op in [Binop.ADD, Binop.SUB, Binop.MUL, Binop.DIV, Binop.AND, Binop.OR, Binop.XOR]: 
         code.append(
             f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
 

@@ -36,8 +36,6 @@ OP_LEQ   : '<=' ;
 OP_AND   : '&' ;
 OP_XOR  : '^' ;
 OP_OR   : '|' ;
-OP_LOGICAL_OR : '||' ;
-OP_LOGICAL_AND : '&&' ;
 
 // Fragments
 fragment DIGIT      : '0'..'9';

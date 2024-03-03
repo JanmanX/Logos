@@ -208,15 +208,61 @@ class ILGenerator(LogosVisitor):
 
     # Visit a parse tree produced by LogosParser#EqNeq.
     def visitEqNeq(self, ctx: LogosParser.EqNeqContext):
-        return self.visitChildren(ctx)
+        place0 = self.place
 
-    # Visit a parse tree produced by LogosParser#LogicalAndOr.
-    def visitLogicalAndOr(self, ctx: LogosParser.LogicalAndOrContext):
-        return self.visitChildren(ctx)
+        # Visit left
+        place1 = self.ritual.newvar()
+        self.place = place1
+        code1 = self.visit(ctx.expr(0))
 
+        # Visit right
+        place2 = self.ritual.newvar()
+        self.place = place2
+        code2 = self.visit(ctx.expr(1))
+
+        op = Binop.EQ
+
+        if ctx.op.type == LogosParser.OP_NEQ:
+            op = Binop.NE
+
+        code = []
+        code.extend(code1)
+        code.extend(code2)
+        code.append(
+            InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2))
+        )
+
+        return code
+    
     # Visit a parse tree produced by LogosParser#AndXorOr.
     def visitAndXorOr(self, ctx: LogosParser.AndXorOrContext):
-        return self.visitChildren(ctx)
+        place0 = self.place
+
+        # Visit left
+        place1 = self.ritual.newvar()
+        self.place = place1
+        code1 = self.visit(ctx.expr(0))
+
+        # Visit right
+        place2 = self.ritual.newvar()
+        self.place = place2
+        code2 = self.visit(ctx.expr(1))
+
+        op = Binop.AND
+
+        if ctx.op.type == LogosParser.OP_OR:
+            op = Binop.OR
+
+        if ctx.op.type == LogosParser.OP_XOR:
+            op = Binop.XOR
+
+        code = []
+        code.extend(code1)
+        code.extend(code2)
+        code.append(
+            InstructionAssignBinop(AtomId(place0), op, AtomId(place1), AtomId(place2))
+        )
+        return code
 
     # Visit a parse tree produced by LogosParser#Int.
     def visitInt(self, ctx: LogosParser.IntContext):
