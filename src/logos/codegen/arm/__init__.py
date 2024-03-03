@@ -269,7 +269,9 @@ def codegen(program: Program) -> str:
     prolog = [
         '.text',
         '.global _start',
+        '.global _main',
         '_start:',
+        '_main:'
         'bl main',
         'mov x8, #0x5d',
         'svc #0'

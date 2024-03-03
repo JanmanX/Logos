@@ -18,3 +18,12 @@ pip install dist/logos-0.0.1-py3-none-any.whl
 ```bash
 python -m logos my_program.l
 ```
+
+
+# Examples
+```bash
+python -m logos examples/fib.l
+as 
+
+
+```
