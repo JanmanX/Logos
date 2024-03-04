@@ -1,6 +1,8 @@
 # The Logos programming language
 The Logos programming language is a hobby language intended for extreme simplicity and
 ease of interoperation with the OS.
+Currently it supports only the ARM64 architecture, but it is designed to be
+easily extensible to other architectures.
 
 ## Features
 ### No types
