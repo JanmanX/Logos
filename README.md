@@ -42,7 +42,12 @@ ld -o fib fib.o -lc  # -L libc/macos/arm64 (for MacOS)
 - [ ] RISC-V backend
 - [ ] x86_64 backend
 
-## Notes
-## License
+## Acknowledgments
+Thanks [André Bittencourt](https://github.com/andrejcbittencourt) and [Lucie Meznikova](https://github.com/WaackingQueen) for your support and motivation throughout the development of this project. I would never have gotten this far without encouragement :) 
 
+
+
+
+
+## License
 Logos is licensed under the MIT license (see `LICENSE` in the main repository).
