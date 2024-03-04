@@ -13,6 +13,8 @@ BINOP_INSTRUCTION_MAP = {
     Binop.LEQ: 'LE',
     Binop.GT: 'GT',
     Binop.GEQ: 'GE',
+    Binop.EQ: 'EQ',
+    Binop.NE: 'NE',
 
     Binop.AND: 'and',
     Binop.OR: 'orr',
