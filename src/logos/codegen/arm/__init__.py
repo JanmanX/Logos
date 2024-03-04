@@ -62,7 +62,7 @@ def codegen_binop(instruction: InstructionAssignBinop, register_map: dict):
             f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
 
     # lt / leq / gt / geq
-    if instruction.op in [Binop.LT, Binop.LEQ, Binop.GT, Binop.GEQ]:
+    if instruction.op in [Binop.LT, Binop.LEQ, Binop.GT, Binop.GEQ, Binop.EQ, Binop.NE]:
         # cmp left, right
         # cset dest, condition
         code.extend([
