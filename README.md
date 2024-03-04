@@ -42,3 +42,7 @@ ld -o fib fib.o -lc  # -L libc/macos/arm64 (for MacOS)
 - [ ] RISC-V backend
 - [ ] x86_64 backend
 
+## Notes
+## License
+
+Logos is licensed under the MIT license (see `LICENSE` in the main repository).
