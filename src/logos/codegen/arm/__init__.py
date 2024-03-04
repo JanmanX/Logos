@@ -55,7 +55,7 @@ def codegen_binop(instruction: InstructionAssignBinop, register_map: dict):
     op_instruction = BINOP_INSTRUCTION_MAP[instruction.op]
 
     # add / sub / mul / div
-    if instruction.op in [Binop.ADD, Binop.SUB, Binop.MUL, Binop.DIV, Binop.AND, Binop.OR, Binop.XOR]: 
+    if instruction.op in [Binop.ADD, Binop.SUB, Binop.MUL, Binop.DIV, Binop.AND, Binop.OR, Binop.XOR]:
         code.append(
             f'{op_instruction} {register_map[instruction.dest.id]}, {register_map[instruction.left.id]}, {register_map[instruction.right.id]}')
 
@@ -154,7 +154,7 @@ def codegen_function_call(instruction: InstructionFunctionCall, register_map: di
 
     # Dump registers x8 - x15 and x30 to the stack
     code.extend([
-        f"sub sp, sp, #80", 
+        f"sub sp, sp, #80",
         f"str x8, [sp, #0]",
         f"str x9, [sp, #8]",
         f"str x10, [sp, #16]",
@@ -209,7 +209,7 @@ def codegen_return(instruction: InstructionReturn, register_map: dict):
             f'mov x0, #0'
         ])
 
-    
+
     return code + [
         f'ret'
     ]
@@ -217,7 +217,7 @@ def codegen_return(instruction: InstructionReturn, register_map: dict):
 
 def codegen_alloc_mem(instruction: InstructionAllocMem, register_map: dict, stack_size: int):
     # Pseudo instruction
-    stack_offset = instruction.offset 
+    stack_offset = instruction.offset
     code = [
         f'sub {register_map[instruction.dest.id]}, sp, #{stack_offset}'
     ]
@@ -277,8 +277,7 @@ def codegen(program: Program) -> str:
         '_start:',
         '_main:',
         'bl main',
-        'mov x8, #0x5d',
-        'svc #0'
+        'bl exit'
     ]
 
     code = []
