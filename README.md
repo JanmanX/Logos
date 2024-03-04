@@ -27,27 +27,11 @@ pip install dist/logos-0.0.1-py3-none-any.whl
 
 ## Usage
 ```bash
-python -m logos program.l -o program.s
-```
-
-## Example (Apple Silicon)
-```bash
 python -m logos examples/fib.l -o fib.s
 as -o fib.o fib.s
-ld -o fib fib.o -lc -L libc/macos/arm64
+ld -o fib fib.o -lc  # -L libc/macos/arm64 (for MacOS)
 ./fib
-echo $?
 ```
-
-## Example (Linux)
-```bash
-python -m logos examples/fib.l -o fib.s
-as -o fib.o fib.s
-ld -o fib fib.o
-./fib
-echo $?
-```
-
 
 ## To do
 - [ ] Implement optimization step
